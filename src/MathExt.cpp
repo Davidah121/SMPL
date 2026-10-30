@@ -720,8 +720,8 @@ namespace smpl
 		double eA = MathExt::angleToStandardRange(endAngle, false);
 
 		bool returnVal = true;
-		double minAngle = MathExt::min(sA, eA);
-		double maxAngle = MathExt::max(sA, eA);
+		double minAngle = smpl::min(sA, eA);
+		double maxAngle = smpl::max(sA, eA);
 
 		if(sA > eA)
 			returnVal = false;
@@ -743,8 +743,8 @@ namespace smpl
 		double eA = MathExt::angleToStandardRange(endAngle, true);
 
 		bool returnVal = true;
-		double minAngle = MathExt::min(sA, eA);
-		double maxAngle = MathExt::max(sA, eA);
+		double minAngle = smpl::min(sA, eA);
+		double maxAngle = smpl::max(sA, eA);
 
 		if(sA > eA)
 			returnVal = false;
@@ -1187,8 +1187,8 @@ namespace smpl
 	Mat4f MathExt::lookAtMatrix(Vec3f eyePos, Vec3f toPos, Vec3f upVec)
 	{
 		Vec3f forward = (toPos - eyePos).normalize(); 
-		Vec3f right = forward.crossProduct(upVec).normalize(); //right
-		Vec3f up = forward.crossProduct(right); //up
+		Vec3f right = forward.cross(upVec).normalize(); //right
+		Vec3f up = forward.cross(right); //up
 
 		Mat4f cameraView = Mat4f(
 			right.x, right.y, right.z, -right.dot(eyePos),
@@ -1714,7 +1714,7 @@ namespace smpl
 		return MathExt::solveQuadraticReal(nA, nB, nC);
 	}
 
-	std::vector<double> MathExt::getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b)
+	std::vector<double> MathExt::getIntersectionQuadratic(const PolynomialMathFunction& a, const PolynomialMathFunction& b)
 	{
 		if(a.size() == 3 && b.size() == 3)
 		{

@@ -123,7 +123,7 @@ namespace smpl
 		if(pixels == nullptr)
 			return Color4f();
 
-		if(edgeBehavior == NONE)
+		if(edgeBehavior == EDGE_NONE)
 		{
 			if (x < 0 || x >= width)
 				return Color4f();
@@ -131,7 +131,7 @@ namespace smpl
 				return Color4f();
 			return pixels[y * width + x];
 		}
-		else if(edgeBehavior == CLAMP)
+		else if(edgeBehavior == EDGE_CLAMP)
 		{
 			int tX, tY;
 			tX = MathExt::clamp(x, 0, width-1);
@@ -139,7 +139,7 @@ namespace smpl
 			
 			return pixels[tY * width + tX];
 		}
-		else if(edgeBehavior == REPEAT)
+		else if(edgeBehavior == EDGE_REPEAT)
 		{
 			int tX, tY;
 			tX = x % width;
@@ -153,14 +153,14 @@ namespace smpl
 
 	Color4f HiResImage::getPixel(double x, double y, int edgeBehavior) const
 	{
-		if(samplingMethod == NEAREST)
+		if(samplingMethod == SAMPLING_NEAREST)
 		{
 			int nX = (int)round(x);
 			int nY = (int)round(y);
 			
 			return getPixel(nX, nY, edgeBehavior);
 		}
-		else if(samplingMethod == BILINEAR)
+		else if(samplingMethod == SAMPLING_BILINEAR)
 		{
 			//average 4 pixels
 			int nX = (int)floor(x);
@@ -194,7 +194,7 @@ namespace smpl
 			Vec4f finalC = SimpleGraphics::lerp(blend1, blend2, yFrac);
 			return Color4f{finalC.x, finalC.y, finalC.z, finalC.w};
 		}
-		else if(samplingMethod == BICUBIC)
+		else if(samplingMethod == SAMPLING_BICUBIC)
 		{
 			//Same as a 3D bezier patch. (Bicubic Patch)
 			//Need 16 points

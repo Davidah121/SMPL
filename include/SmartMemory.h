@@ -58,132 +58,168 @@ namespace smpl
 	class DLL_OPTION GenericSmartMemory
 	{
 	public:
+	
 		/**
-			* @brief Destroy the Generic Smart Memory object
-			*      This will delete the pointer if it is supposed to.
-			* 
-			*/
+		 * @brief Construct a new Generic Smart Memory object.
+		 * 		Will always be a nullptr. Must construct a templated SmartMemory. This can be utilized as a means to 
+		 *		manage void pointers and have them delete properly assuming they were created properly to begin with.
+		 * 
+		 */
+		GenericSmartMemory();
+
+		/**
+		* @brief Destroy the Generic Smart Memory object
+		*      This will delete the pointer if it is supposed to.
+		* 
+		*/
 		virtual ~GenericSmartMemory();
 
 		/**
-			* @brief Move Constructor
-			* 
-			* @param other 
-			*/
+		* @brief Move Constructor
+		* 
+		* @param other 
+		*/
 		GenericSmartMemory(GenericSmartMemory&& other) noexcept;
 
 		/**
-			* @brief Move Assign a new GenericSmartMemory object from another GenericSmartMemory object.
-			* 
-			* @param other 
-			*/
-		void operator=(GenericSmartMemory&& other) noexcept;
+		* @brief Move Assign a new GenericSmartMemory object from another GenericSmartMemory object.
+		* 
+		* @param other 
+		*/
+		GenericSmartMemory& operator=(GenericSmartMemory&& other) noexcept;
 
 		/**
-			* @brief Construct a new GenericSmartMemory object from another GenericSmartMemory object.
-			*      It will not have delete rights.
-			*      If the object originally stored a pointer and had delete rights, it will delete its pointer.
-			* 
-			*      Equavelent to a shared_ptr<T>
-			* 
-			* @param other 
-			*/
+		* @brief Construct a new GenericSmartMemory object from another GenericSmartMemory object.
+		*      It will not have delete rights.
+		*      If the object originally stored a pointer and had delete rights, it will delete its pointer.
+		* 
+		*      Equavelent to a shared_ptr<T>
+		* 
+		* @param other 
+		*/
 		GenericSmartMemory(const GenericSmartMemory& other);
 
 		/**
-			* @brief Copy Assign a new GenericSmartMemory object from another GenericSmartMemory object.
-			*      It will not have delete rights.
-			*      If the object originally stored a pointer and had delete rights, it will delete its pointer.
-			* 
-			*      Equavelent to a shared_ptr<T>
-			* 
-			* @param other 
-			*/
-		void operator=(const GenericSmartMemory& other);
+		* @brief Copy Assign a new GenericSmartMemory object from another GenericSmartMemory object.
+		*      It will not have delete rights.
+		*      If the object originally stored a pointer and had delete rights, it will delete its pointer.
+		* 
+		*      Equavelent to a shared_ptr<T>
+		* 
+		* @param other 
+		*/
+		GenericSmartMemory& operator=(const GenericSmartMemory& other);
 
 		/**
-			* @brief Returns if the object has delete rights.
-			*      If it has delete rights, the data pointer will be deleted when the object is destroyed.
-			* 
-			* @return true 
-			* @return false 
-			*/
-		bool getDeleteRights();
+		* @brief Returns if the object has delete rights.
+		*      If it has delete rights, the data pointer will be deleted when the object is destroyed.
+		* 
+		* @return true 
+		* @return false 
+		*/
+		bool getDeleteRights() const;
 
 		/**
-			* @brief Returns in the object will delete the pointer if it is the last known holder of it.
-			*      By default, most objects will have this property but if an object is not intended to be
-			*          deleted at all, this should be false and delete rights should also be false.
-			* 
-			* @return true 
-			* @return false 
-			*/
-		bool getWillDeleteOnLast();
+		* @brief Returns in the object will delete the pointer if it is the last known holder of it.
+		*      By default, most objects will have this property but if an object is not intended to be
+		*          deleted at all, this should be false and delete rights should also be false.
+		* 
+		* @return true 
+		* @return false 
+		*/
+		bool getWillDeleteOnLast() const;
 
 		/**
-			* @brief Returns if the object is an array.
-			*      This is mostly for internal use for how to delete the object.
-			* 
-			* @return true 
-			* @return false 
-			*/
-		bool getIsArray();
+		* @brief Returns if the object is an array.
+		*      This is mostly for internal use for how to delete the object.
+		* 
+		* @return true 
+		* @return false 
+		*/
+		bool getIsArray() const;
 
 		/**
-			* @brief Gets the size in terms of bytes.
-			* 
-			* @return size_t 
-			*/
-		size_t getSizeInBytes();
+		* @brief Gets the size in terms of bytes.
+		* 
+		* @return size_t 
+		*/
+		size_t getSizeInBytes() const;
 
 		/**
-			* @brief Gets the stored pointer.
-			*      If it has been deleted, a nullptr will be returned.
-			* 
-			* @return void* 
-			*/
+		* @brief Gets the stored pointer.
+		*      If it has been deleted, a nullptr will be returned.
+		* 
+		* @return void* 
+		*/
 		void* getPointer();
+		void* getPointer() const;
 
 		/**
-			* @brief Gets the Raw Pointer that is stored.
-			*      Does not check if the pointer is valid.
-			* 
-			*      If the pointer at a previous point was discovered to be deleted,
-			*      this will return a nullptr.
-			* 
-			* @return void* 
-			*/
-		void* getRawPointer();
+		* @brief Gets the Raw Pointer that is stored.
+		*      Does not check if the pointer is valid.
+		* 
+		*      If the pointer at a previous point was discovered to be deleted,
+		*      this will return a nullptr.
+		* 
+		* @return void* 
+		*/
+		void* getRawPointer() const;
 
 		/**
-			* @brief Compares 2 GenericSmartMemory objects.
-			*      Does not check if either pointer is valid but just compares the pointers that they currently store.
-			* 
-			* @param other 
-			* @return true 
-			* @return false 
-			*/
-		bool const operator==(const GenericSmartMemory& other);
+		* @brief Compares 2 GenericSmartMemory objects.
+		*      Does not check if either pointer is valid but just compares the pointers that they currently store.
+		* 
+		* @param other 
+		* @return true 
+		* @return false 
+		*/
+		bool operator==(const GenericSmartMemory& other) const;
 
 		/**
-			* @brief Compares the pointer stored to the specified pointer.
-			*      Does not check if either pointer is valid.
-			* 
-			* @param p 
-			* @return true 
-			* @return false 
-			*/
-		bool const operator==(const void* p);
+		* @brief Compares the pointer stored to the specified pointer.
+		*      Does not check if either pointer is valid.
+		* 
+		* @param p 
+		* @return true 
+		* @return false 
+		*/
+		bool operator==(const void* p) const;
 
 		/**
-			* @brief Checks if the pointer is valid.
-			* 
-			* @return true 
-			* @return false 
-			*/
-		bool isValid();
+		* @brief Compares 2 GenericSmartMemory objects.
+		*      Does not check if either pointer is valid but just compares the pointers that they currently store.
+		* 
+		* @param other 
+		* @return true 
+		* @return false 
+		*/
+		bool operator!=(const GenericSmartMemory& other) const;
+
+		/**
+		* @brief Compares the pointer stored to the specified pointer.
+		*      Does not check if either pointer is valid.
+		* 
+		* @param p 
+		* @return true 
+		* @return false 
+		*/
+		bool operator!=(const void* p) const;
+
+		/**
+		* @brief Checks if the pointer is valid.
+		* 
+		* @return true 
+		* @return false 
+		*/
+		bool isValid() const;
+		
+		template<typename K>
+		explicit operator SmartMemory<K>() const
+		{
+			return SmartMemory<K>((K*)hashValue, sizeInBytes / sizeof(K), deleteOnLast, false);
+		}
 	protected:
-		GenericSmartMemory();
+		void clear();
 
 		bool isArray = false;
 		bool deleteOnLast = false;
@@ -330,7 +366,7 @@ namespace smpl
 			* 
 			* @return T* 
 			*/
-		T* getPointer()
+		T* getPointer() const
 		{
 			return (T*)GenericSmartMemory::getPointer();
 		}
@@ -341,7 +377,7 @@ namespace smpl
 			* 
 			* @return T* 
 			*/
-		T* getRawPointer()
+		T* getRawPointer() const
 		{
 			return (T*)GenericSmartMemory::getRawPointer();
 		}
@@ -351,7 +387,7 @@ namespace smpl
 			* 
 			* @return T* 
 			*/
-		T* operator->()
+		T* operator->() const
 		{
 			return (T*)hashValue;
 		}
@@ -361,7 +397,7 @@ namespace smpl
 			* 
 			* @return T* 
 			*/
-		T& operator[](size_t index)
+		T& operator[](size_t index) const
 		{
 			return ((T*)hashValue)[index];
 		}
@@ -371,7 +407,7 @@ namespace smpl
 			* 
 			* @return T&* 
 			*/
-		T& operator*()
+		T& operator*() const
 		{
 			return *((T*)hashValue);
 		}
@@ -386,7 +422,7 @@ namespace smpl
 			* @return true 
 			* @return false 
 			*/
-		bool operator==(const T* pointer)
+		bool operator==(const T* pointer) const
 		{
 			return getPointer() == pointer;
 		}
@@ -401,7 +437,7 @@ namespace smpl
 			* @return true 
 			* @return false 
 			*/
-		bool operator==(SmartMemory<T>& other)
+		bool operator==(const SmartMemory<T>& other) const
 		{
 			return getPointer() == other.getPointer();
 		}
@@ -416,7 +452,7 @@ namespace smpl
 			* @return true 
 			* @return false 
 			*/
-		bool operator!=(const T* pointer)
+		bool operator!=(const T* pointer) const
 		{
 			return getPointer() != pointer;
 		}
@@ -431,7 +467,7 @@ namespace smpl
 			* @return true 
 			* @return false 
 			*/
-		bool operator!=(SmartMemory<T>& other)
+		bool operator!=(const SmartMemory<T>& other) const
 		{
 			return getPointer() != other.getPointer();
 		}
@@ -455,7 +491,7 @@ namespace smpl
 			* 
 			* @return LockingSmartMemory<T> 
 			*/
-		LockingSmartMemory<T> getLockingPointer()
+		LockingSmartMemory<T> getLockingPointer() const
 		{
 			return LockingSmartMemory<T>(*this); //fix later
 		}

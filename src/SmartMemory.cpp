@@ -168,6 +168,62 @@ namespace smpl
 	GenericSmartMemory::~GenericSmartMemory()
 	{
 		//call delete function
+		clear();
+	}
+	
+	GenericSmartMemory::GenericSmartMemory(GenericSmartMemory&& other) noexcept
+	{
+		clear();
+
+		isArray = other.isArray;
+		deleteOnLast = other.deleteOnLast;
+		deleteRights = other.deleteRights;
+		hashValue = other.hashValue;
+		sizeInBytes = other.sizeInBytes;
+
+		other.hashValue = nullptr;
+	}
+
+	GenericSmartMemory& GenericSmartMemory::operator=(GenericSmartMemory&& other) noexcept
+	{
+		clear();
+
+		isArray = other.isArray;
+		deleteOnLast = other.deleteOnLast;
+		deleteRights = other.deleteRights;
+		hashValue = other.hashValue;
+		sizeInBytes = other.sizeInBytes;
+
+		other.hashValue = nullptr;
+		return *this;
+	}
+
+	GenericSmartMemory::GenericSmartMemory(const GenericSmartMemory& other)
+	{
+		clear();
+
+		hashValue = StaticMemManager::duplicateExistingPointer(other.hashValue);
+		isArray = other.isArray;
+		deleteOnLast = other.deleteOnLast;
+		deleteRights = false;
+		sizeInBytes = other.sizeInBytes;
+	}
+
+	GenericSmartMemory& GenericSmartMemory::operator=(const GenericSmartMemory& other)
+	{
+		clear();
+
+		hashValue = StaticMemManager::duplicateExistingPointer(other.hashValue);
+		isArray = other.isArray;
+		deleteOnLast = other.deleteOnLast;
+		deleteRights = false;
+		sizeInBytes = other.sizeInBytes;
+		return *this;
+	}
+
+	void GenericSmartMemory::clear()
+	{
+		//call delete function
 		if(!deleteRights)
 			StaticMemManager::deletePointer(hashValue);
 		else
@@ -178,69 +234,23 @@ namespace smpl
 		deleteRights = false;
 		hashValue = nullptr;
 	}
-	
-	GenericSmartMemory::GenericSmartMemory(GenericSmartMemory&& other) noexcept
-	{
-		this->~GenericSmartMemory();
 
-		isArray = other.isArray;
-		deleteOnLast = other.deleteOnLast;
-		deleteRights = other.deleteRights;
-		hashValue = other.hashValue;
-		sizeInBytes = other.sizeInBytes;
-
-		other.hashValue = nullptr;
-	}
-
-	void GenericSmartMemory::operator=(GenericSmartMemory&& other) noexcept
-	{
-		this->~GenericSmartMemory();
-
-		isArray = other.isArray;
-		deleteOnLast = other.deleteOnLast;
-		deleteRights = other.deleteRights;
-		hashValue = other.hashValue;
-		sizeInBytes = other.sizeInBytes;
-
-		other.hashValue = nullptr;
-	}
-
-	GenericSmartMemory::GenericSmartMemory(const GenericSmartMemory& other)
-	{
-		this->~GenericSmartMemory();
-		hashValue = StaticMemManager::duplicateExistingPointer(other.hashValue);
-		isArray = other.isArray;
-		deleteOnLast = other.deleteOnLast;
-		deleteRights = false;
-		sizeInBytes = other.sizeInBytes;
-	}
-
-	void GenericSmartMemory::operator=(const GenericSmartMemory& other)
-	{
-		this->~GenericSmartMemory();
-		hashValue = StaticMemManager::duplicateExistingPointer(other.hashValue);
-		isArray = other.isArray;
-		deleteOnLast = other.deleteOnLast;
-		deleteRights = false;
-		sizeInBytes = other.sizeInBytes;
-	}
-
-	bool GenericSmartMemory::getDeleteRights()
+	bool GenericSmartMemory::getDeleteRights() const
 	{
 		return deleteRights;
 	}
 
-	bool GenericSmartMemory::getWillDeleteOnLast()
+	bool GenericSmartMemory::getWillDeleteOnLast() const
 	{
 		return deleteOnLast;
 	}
 
-	bool GenericSmartMemory::getIsArray()
+	bool GenericSmartMemory::getIsArray() const
 	{
 		return isArray;
 	}
 	
-	size_t GenericSmartMemory::getSizeInBytes()
+	size_t GenericSmartMemory::getSizeInBytes() const
 	{
 		return sizeInBytes;
 	}
@@ -254,24 +264,44 @@ namespace smpl
 		return nullptr;
 	}
 
-	void* GenericSmartMemory::getRawPointer()
+	void* GenericSmartMemory::getPointer() const
+	{
+		if(isValid())
+			return hashValue;
+		
+		return nullptr;
+	}
+
+	void* GenericSmartMemory::getRawPointer() const
 	{
 		return hashValue;
 	}
 
-	bool const GenericSmartMemory::operator==(const GenericSmartMemory& other)
+	bool GenericSmartMemory::operator==(const GenericSmartMemory& other) const
 	{
 		//should not matter if they both exist or not.
 		return hashValue == other.hashValue;
 	}
 
-	bool const GenericSmartMemory::operator==(const void* p)
+	bool GenericSmartMemory::operator==(const void* p) const
 	{
 		//should not matter if they both exist or not.
 		return hashValue == p;
 	}
 
-	bool GenericSmartMemory::isValid()
+	bool GenericSmartMemory::operator!=(const GenericSmartMemory& other) const
+	{
+		//should not matter if they both exist or not.
+		return hashValue != other.hashValue;
+	}
+
+	bool GenericSmartMemory::operator!=(const void* p) const
+	{
+		//should not matter if they both exist or not.
+		return hashValue != p;
+	}
+
+	bool GenericSmartMemory::isValid() const
 	{
 		return StaticMemManager::pointerExists(hashValue);
 	}

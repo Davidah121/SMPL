@@ -120,6 +120,7 @@ build $objDir/NewGui_GuiText.o: buildToObject src/NewGui_GuiText.cpp
 build $objDir/NewGui_GuiTextBox.o: buildToObject src/NewGui_GuiTextBox.cpp
 build $objDir/NewGui_Scrollbar.o: buildToObject src/NewGui_Scrollbar.cpp
 build $objDir/NewStringFormatting.o: buildToObject src/NewStringFormatting.cpp
+build $objDir/OAuth.o: buildToObject src/OAuth.cpp
 build $objDir/PolarCoordinate.o: buildToObject src/PolarCoordinate.cpp
 build $objDir/Quaternion.o: buildToObject src/Quaternion.cpp
 build $objDir/RadixTree.o: buildToObject src/RadixTree.cpp
@@ -158,10 +159,7 @@ build $objDir/StringTools.o: buildToObject src/StringTools.cpp
 build $objDir/SuffixArray.o: buildToObject src/SuffixArray.cpp
 build $objDir/SuffixAutomaton.o: buildToObject src/SuffixAutomaton.cpp
 build $objDir/System.o: buildToObject src/System.cpp
-build $objDir/TypeInfo.o: buildToObject src/TypeInfo.cpp
-build $objDir/Vec2f.o: buildToObject src/Vec2f.cpp
-build $objDir/Vec3f.o: buildToObject src/Vec3f.cpp
-build $objDir/Vec4f.o: buildToObject src/Vec4f.cpp
+build $objDir/URL.o: buildToObject src/URL.cpp
 build $objDir/VectorFont.o: buildToObject src/VectorFont.cpp
 build $objDir/VectorFontOTF.o: buildToObject src/VectorFontOTF.cpp
 build $objDir/VectorGraphic.o: buildToObject src/VectorGraphic.cpp
@@ -285,6 +283,7 @@ $objDir/NewGui_GuiText.o $
 $objDir/NewGui_GuiTextBox.o $
 $objDir/NewGui_Scrollbar.o $
 $objDir/NewStringFormatting.o $
+$objDir/OAuth.o $
 $objDir/PolarCoordinate.o $
 $objDir/Quaternion.o $
 $objDir/RadixTree.o $
@@ -323,10 +322,7 @@ $objDir/StringTools.o $
 $objDir/SuffixArray.o $
 $objDir/SuffixAutomaton.o $
 $objDir/System.o $
-$objDir/TypeInfo.o $
-$objDir/Vec2f.o $
-$objDir/Vec3f.o $
-$objDir/Vec4f.o $
+$objDir/URL.o $
 $objDir/VectorFont.o $
 $objDir/VectorFontOTF.o $
 $objDir/VectorGraphic.o $

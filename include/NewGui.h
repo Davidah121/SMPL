@@ -26,6 +26,9 @@ namespace smpl
     class DLL_OPTION GuiManager;
     class DLL_OPTION GuiItem;
 
+	template<typename T>
+	class DLL_OPTION GuiSelfRegisteringLoader;
+
     DLL_OPTION bool loadValueFromAttrib(int8_t& value, std::string data);
     DLL_OPTION bool loadValueFromAttrib(uint8_t& value, std::string data);
     DLL_OPTION bool loadValueFromAttrib(int16_t& value, std::string data);
@@ -43,23 +46,23 @@ namespace smpl
 	public:
 		~GuiResourceManager();
 
-		void addSprite(SpriteInterface* data, std::string key, size_t elements, bool localMemory);
-		void addFont(FontInterface* data, std::string key, size_t elements, bool localMemory);
+		void addSprite(const SpriteInterface& data, const std::string& key, size_t elements, bool localMemory);
+		void addFont(const FontInterface& data, const std::string& key, size_t elements, bool localMemory);
 
-		SmartMemory<SpriteInterface> getSprite(std::string key);
-		SmartMemory<FontInterface> getFont(std::string key);
+		SpriteInterface getSprite(const std::string& key);
+		FontInterface getFont(const std::string& key);
 		
-		void deleteSprite(std::string key);
-		void deleteFont(std::string key);
+		void deleteSprite(const std::string& key);
+		void deleteFont(const std::string& key);
 		
-		ResourceManager<SpriteInterface>* getSpriteResourceManager();
-		ResourceManager<FontInterface>* getFontResourceManager();
+		SimpleHashMap<std::string, SpriteInterface>& getAllSpriteResources();
+		SimpleHashMap<std::string, FontInterface>& getAllFontResources();
 		
 		static GuiResourceManager& getResourceManager();
 	private:
 		GuiResourceManager();
-		ResourceManager<SpriteInterface> spriteResources = ResourceManager<SpriteInterface>();
-		ResourceManager<FontInterface> fontResources = ResourceManager<FontInterface>();
+		SimpleHashMap<std::string, SpriteInterface> spriteResources = SimpleHashMap<std::string, SpriteInterface>();
+		SimpleHashMap<std::string, FontInterface> fontResources = SimpleHashMap<std::string, FontInterface>();
 	};
 
     /**
@@ -120,6 +123,7 @@ namespace smpl
         static const int32_t PERCENTAGE_DIVIDE = 0xFFFF;
 
         GuiItem();
+		GuiItem(SerializedStreamable&, DataFormatter&);
         virtual ~GuiItem();
 
         /**
@@ -145,7 +149,7 @@ namespace smpl
          * 
          * @param manager 
          */
-        void doPreRender(SmartMemory<GuiManager> manager);
+        void doPreRender(const SmartMemory<GuiManager>& manager);
 
         /**
          * @brief This is the proper method that should be called to draw an object.
@@ -153,7 +157,7 @@ namespace smpl
          * 
          * @param manager 
          */
-        void doRender(SmartMemory<GuiManager> manager);
+        void doRender(const SmartMemory<GuiManager>& manager);
 
         /**
          * @brief Only called from the GuiManager to specify that no more rendering is needed this frame.
@@ -168,7 +172,7 @@ namespace smpl
          * 
          * @param manager 
          */
-        void doUpdate(SmartMemory<GuiManager> manager);
+        void doUpdate(const SmartMemory<GuiManager>& manager);
 
         /**
          * @brief This is the proper method that should be called to do a pre update for an object.
@@ -198,8 +202,8 @@ namespace smpl
         GRect getPreviousRenderRect();
         void setShouldRender();
         
-        bool getFocused(SmartMemory<GuiManager> manager);
-        void setFocused(SmartMemory<GuiManager> manager, bool f);
+        bool getFocused(const SmartMemory<GuiManager>& manager);
+        void setFocused(const SmartMemory<GuiManager>& manager, bool f);
 
         bool getFocusable();
         void setFocusable(bool b);
@@ -210,7 +214,7 @@ namespace smpl
 
         std::string getNameID();
 
-        void setParent(SmartMemory<GuiItem> p);
+        void setParent(const SmartMemory<GuiItem>& p);
         SmartMemory<GuiItem> getParent();
 
         int getTrueX();
@@ -237,7 +241,7 @@ namespace smpl
 		 * 
 		 * @param attrib 
 		 */
-		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+		void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
 
     protected:
     
@@ -279,7 +283,7 @@ namespace smpl
          *          All layouts have this functionality by default.
          * @param manager 
          */
-        virtual void update(SmartMemory<GuiManager> manager) = 0;
+        virtual void update(const SmartMemory<GuiManager>& manager) = 0;
         
         /**
          * @brief Called to draw the object.
@@ -290,10 +294,10 @@ namespace smpl
          *          All layouts have this functionality by default.
          * @param manager 
          */
-        virtual void render(SmartMemory<GuiManager> manager) = 0;
+        virtual void render(const SmartMemory<GuiManager>& manager) = 0;
 
-        virtual void onChildRemoved(SmartMemory<GuiItem> removedChild);
-        virtual void onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo);
+        virtual void onChildRemoved(const SmartMemory<GuiItem>& removedChild);
+        virtual void onFocusChanged(const SmartMemory<GuiManager>& manager, bool changedTo);
 
         SmartMemory<GuiItem> parent = nullptr;
         int type = 0;
@@ -310,11 +314,11 @@ namespace smpl
         uint16_t currentLayoutMaxWidth = 0;
         uint16_t currentLayoutMaxHeight = 0;
 
-        void doPreRenderOperations(SmartMemory<GuiManager> manager);
-        void doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager);
+        void doPreRenderOperations(const SmartMemory<GuiManager>& manager);
+        void doPreRenderOperationsForChildren(const SmartMemory<GuiManager>& manager);
 
-        void updateManagerRenderCounter(SmartMemory<GuiManager> manager);
-        void updateManagerRenderCounterForChildren(SmartMemory<GuiManager> manager);
+        void updateManagerRenderCounter(const SmartMemory<GuiManager>& manager);
+        void updateManagerRenderCounterForChildren(const SmartMemory<GuiManager>& manager);
 
         void clearShouldRender();
 
@@ -325,9 +329,10 @@ namespace smpl
         bool shouldReRender = true;
         bool visible = true;
         bool oldFocus = false;
-
     SERIALIZE_CLASS()
     };
+	
+
 
     /**
      * @brief GuiContent - A GuiItem that is just content. This content can be anything but it does not have
@@ -359,7 +364,7 @@ namespace smpl
         int contentWidth = 0;
         int contentHeight = 0;
 
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
     
     SERIALIZE_CLASS()
     };
@@ -376,13 +381,16 @@ namespace smpl
         GuiEmpty();
         ~GuiEmpty();
 
-    	void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-		static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+    	void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+		static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
+        void render(const SmartMemory<GuiManager>& manager);
+
+	private:
+		static GuiSelfRegisteringLoader<GuiEmpty> singleton;
     
     SERIALIZE_CLASS()
     };
@@ -414,8 +422,8 @@ namespace smpl
         GuiLayout();
         ~GuiLayout();
         
-        virtual void addChild(SmartMemory<GuiItem> c);
-        virtual void removeChild(SmartMemory<GuiItem> c);
+        virtual void addChild(const SmartMemory<GuiItem>& c);
+        virtual void removeChild(const SmartMemory<GuiItem>& c);
         size_t getChildrenSize();
         SmartMemory<GuiItem> getChild(size_t i);
         
@@ -433,12 +441,12 @@ namespace smpl
         void setAbsolutePosition(bool t);
 
 
-        void setMargin(GRect r);
-        void setPadding(GRect r);
-        void setBorder(GRect r);
+        void setMargin(const GRect& r);
+        void setPadding(const GRect& r);
+        void setBorder(const GRect& r);
         
-        void setBorderColor(smpl::Color c);
-        void setBackgroundColor(smpl::Color c);
+        void setBorderColor(const Color& c);
+        void setBackgroundColor(const Color& c);
 
         void setFlags(uint16_t f);
 
@@ -446,8 +454,8 @@ namespace smpl
         GRect getMargin();
         GRect getPadding();
         GRect getBorder();
-        smpl::Color getBorderColor();
-        smpl::Color getBackgroundColor();
+        Color getBorderColor();
+        Color getBackgroundColor();
 
         uint16_t getContentWidth();
         uint16_t getContentHeight();
@@ -464,7 +472,7 @@ namespace smpl
         uint16_t getColSpan();
         uint16_t getRowSpan();
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
         
     protected:
         friend GuiItem;
@@ -474,8 +482,8 @@ namespace smpl
 
         
         void preUpdate();
-        void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
+        void render(const SmartMemory<GuiManager>& manager);
 
         uint16_t maxWidth = 0xFFFF;
         uint16_t maxHeight = 0xFFFF;
@@ -517,10 +525,12 @@ namespace smpl
         GuiLayoutFixed();
         ~GuiLayoutFixed();
 
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
+	private:
+		static GuiSelfRegisteringLoader<GuiLayoutFixed> singleton;
     
     SERIALIZE_CLASS()
     };
@@ -547,8 +557,8 @@ namespace smpl
         void setDirection(bool d);
         void setWrap(bool w);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
@@ -581,18 +591,19 @@ namespace smpl
     {
     public:
         GuiLayoutTable(uint16_t numColumns);
+		GuiLayoutTable(SerializedStreamable&, DataFormatter&);
         ~GuiLayoutTable();
 
         void setShowInnerGrid(bool v);
         void setNumberOfColumns(uint16_t c);
         void setInnerTablePadding(uint16_t p);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void render(SmartMemory<GuiManager> manager);
+        void render(const SmartMemory<GuiManager>& manager);
 
     private:
         static const uint8_t COLSPAN = 0b0001;
@@ -617,11 +628,11 @@ namespace smpl
         GuiClippingLayout();
         ~GuiClippingLayout();
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void render(SmartMemory<GuiManager> manager);
+        void render(const SmartMemory<GuiManager>& manager);
     
     SERIALIZE_CLASS()
     }; 
@@ -636,21 +647,21 @@ namespace smpl
         GuiButton();
         ~GuiButton();
 
-        void setOnClickFunction(std::function<void(GuiButton*, int button)> onClick);
-        void setOnClickReleaseFunction(std::function<void(GuiButton*, int button, bool hovering)> onClick);
-        void setOnMouseInFunction(std::function<void(GuiButton*)> onMouseIn);
-        void setOnMouseOutFunction(std::function<void(GuiButton*)> onMouseOut);
+        void setOnClickFunction(const std::function<void(GuiButton*, int button)>& onClick);
+        void setOnClickReleaseFunction(const std::function<void(GuiButton*, int button, bool hovering)>& onClick);
+        void setOnMouseInFunction(const std::function<void(GuiButton*)>& onMouseIn);
+        void setOnMouseOutFunction(const std::function<void(GuiButton*)>& onMouseOut);
 
-        void setHoverColor(Color c);
-        void setPressedColor(Color c);
+        void setHoverColor(const Color& c);
+        void setPressedColor(const Color& c);
         
-        void addChild(SmartMemory<GuiItem> child);
+        void addChild(const SmartMemory<GuiItem>& child);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
     
     protected:
-        void update(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
 
     private:
         bool hovering = false;
@@ -676,15 +687,15 @@ namespace smpl
         GuiScrollBar();
         ~GuiScrollBar();
 
-        void addChild(SmartMemory<GuiItem> c);
-        void removeChild(SmartMemory<GuiItem> c);
+        void addChild(const SmartMemory<GuiItem>& c);
+        void removeChild(const SmartMemory<GuiItem>& c);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
         
         protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
 
     private:
         int offsetX = 0;
@@ -707,11 +718,11 @@ namespace smpl
         GuiText();
         ~GuiText();
 
-        void setText(std::string s);
+        void setText(const std::string& s);
         std::string getText();
-        void setFontColor(Color c);
+        void setFontColor(const Color& c);
         Color getFontColor();
-        void setHighlightColor(Color c);
+        void setHighlightColor(const Color& c);
         Color getHighlightColor();
 
         int getHighlightStartIndex();
@@ -732,13 +743,13 @@ namespace smpl
         void setWrapMode(char w);
         char getWrapMode();
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
+        void render(const SmartMemory<GuiManager>& manager);
         
     private:
         bool isSelectable = false;
@@ -767,8 +778,8 @@ namespace smpl
         GuiSprite();
         ~GuiSprite();
 
-        void setSprite(SmartMemory<SpriteInterface> spr);
-        void setColor(Color c);
+        void setSprite(const SpriteInterface& spr);
+        void setColor(const Color& c);
         void setShouldScale(bool s);
         void setShouldMaintainAspectRatio(bool ar);
         void setShouldAnimate(bool a);
@@ -786,13 +797,13 @@ namespace smpl
         int getMinHeight();
         int getMaxHeight();
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
         void layoutUpdate(int offX, int offY, int maximumWidth, int maximumHeight);
-        void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
+        void render(const SmartMemory<GuiManager>& manager);
 
     private:
         bool shouldMaintainAspectRatio = false;
@@ -802,7 +813,7 @@ namespace smpl
         int spriteIndex = 0;
 
         size_t lastUpdateTime = 0;
-        SmartMemory<SpriteInterface> spr = nullptr;
+        SpriteInterface spr;
 
         int maxWidth = 1;
         int maxHeight = 1;
@@ -822,24 +833,24 @@ namespace smpl
         GuiCanvas(int width, int height, int graphicsInterfaceMode);
         ~GuiCanvas();
 
-        void addChild(SmartMemory<GuiItem> item);
-        void setSurfaceInterface(SmartMemory<SurfaceInterface> s);
+        void addChild(const SmartMemory<GuiItem>& item);
+        void setSurfaceInterface(const SurfaceInterface& s);
 
         Color getClearColor();
         Color getDrawColor();
 
-        void setClearColor(Color c);
-        void setDrawColor(Color c);
+        void setClearColor(const Color& c);
+        void setDrawColor(const Color& c);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
 
     protected:
-        void update(SmartMemory<GuiManager> manager);
-        void render(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
+        void render(const SmartMemory<GuiManager>& manager);
 
     private:
-        SmartMemory<SurfaceInterface> surf = nullptr;
+        SurfaceInterface surf;
         Color clearColor = {255, 255, 255, 255};
         Color drawColor = {255, 255, 255, 255};
     
@@ -856,19 +867,19 @@ namespace smpl
         GuiText& getTextElement();
 
         void setAllowLineBreaks(bool lb);
-        void setDefaultText(std::string s);
+        void setDefaultText(const std::string& s);
 
-        void addChild(SmartMemory<GuiItem> item);
-        void removeChild(SmartMemory<GuiItem> item);
+        void addChild(const SmartMemory<GuiItem>& item);
+        void removeChild(const SmartMemory<GuiItem>& item);
         
-        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager);
-        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager);
+        void loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager);
+        static SmartMemory<GuiItem> loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager);
     
     protected:
-        void update(SmartMemory<GuiManager> manager);
+        void update(const SmartMemory<GuiManager>& manager);
         // void render(SmartMemory<GuiManager> manager);
         
-        virtual void onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo);
+        virtual void onFocusChanged(const SmartMemory<GuiManager>& manager, bool changedTo);
 
     private:
         void setTextEmpty(bool v);
@@ -897,7 +908,7 @@ namespace smpl
 
     #pragma region GUI_MANAGER
 
-    class DLL_OPTION GuiManager : public SerializedObject
+    class DLL_OPTION GuiManager
     {
     public:
         GuiManager(unsigned char type);
@@ -910,8 +921,8 @@ namespace smpl
          */
         void clear();
 
-        void addElement(SmartMemory<GuiItem> k);
-        void removeElement(SmartMemory<GuiItem> k);
+        void addElement(const SmartMemory<GuiItem>& k);
+        void removeElement(const SmartMemory<GuiItem>& k);
 
         /**
          * @brief Gives the GuiItem an ID for which the GuiManager can refer to it as for searching purposes.
@@ -919,7 +930,7 @@ namespace smpl
          * @param k 
          * @param s 
          */
-        void setID(SmartMemory<GuiItem> k, const std::string& s);
+        void setID(const SmartMemory<GuiItem>& k, const std::string& s);
 
         /**
          * @brief Adds the object K to the dispose list for the GuiManager to handle when to dispose the objects.
@@ -927,12 +938,12 @@ namespace smpl
          * 
          * @param k 
          */
-        void addToDisposeList(SmartMemory<GuiItem> k);
-        void setObjectInFocus(SmartMemory<GuiItem> k);
-        bool getObjectInFocus(SmartMemory<GuiItem> k);
+        void addToDisposeList(const SmartMemory<GuiItem>& k);
+        void setObjectInFocus(const SmartMemory<GuiItem>& k);
+        bool getObjectInFocus(const SmartMemory<GuiItem>& k);
         SmartMemory<GuiItem> getFocusObject();
 
-        void setBackgroundColor(Color c);
+        void setBackgroundColor(const Color& c);
 
         /**
 		 * @brief Updates all of the GuiInstances
@@ -949,9 +960,9 @@ namespace smpl
         /**
 		 * @brief Gets the Surface for the GuiManager
 		 * 
-		 * @return SurfaceInterface* 
+		 * @return SurfaceInterface 
 		 */
-		SurfaceInterface* getSurface();
+		SurfaceInterface getSurface();
         
 		/**
 		 * @brief Resizes the Image for the GuiManager.
@@ -959,7 +970,7 @@ namespace smpl
 		 * @param width 
 		 * @param height 
 		 */
-		void resizeImage(int width, int height);
+		void resizeImage(unsigned int width, unsigned int height);
 
 		/**
 		 * @brief Forces a redraw of everything that is visible.
@@ -1059,8 +1070,8 @@ namespace smpl
 
         void updateRenderCounter();
 
-        void addNewDrawnArea(GRect r);
-        void addOldDrawnArea(GRect r);
+        void addNewDrawnArea(const GRect& r);
+        void addOldDrawnArea(const GRect& r);
         GRect getNewDrawnArea();
         GRect getOldDrawnArea();
         
@@ -1073,7 +1084,7 @@ namespace smpl
 		 * @param name 
 		 * @return SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator
 		 */
-		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator getItemsByName(std::string name);
+		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator getItemsByName(const std::string& name);
 
 		/**
 		 * @brief Gets the raw datastructure used to store the name to item mapping. Needed when incrementing iterators returned from getItemsByName()
@@ -1089,8 +1100,8 @@ namespace smpl
 		 * 	
 		 * @param f 
 		 */
-		void loadElementsFromFile(File f);
-		void loadElementsFromXML(SimpleXml& f);
+		void loadElementsFromFile(const File& f);
+		void loadElementsFromXML(const SimpleXml& f);
 
         /**
          * @brief Loads GUI elements from a file or XML. Works in a similar way to how loadElementsFromFile works but
@@ -1101,8 +1112,8 @@ namespace smpl
          * @param f 
          * @return GuiLayoutFixed* 
          */
-        GuiLayoutFixed* createFromTemplate(File f);
-        GuiLayoutFixed* createFromTemplate(SimpleXml& f);
+        GuiLayoutFixed* createFromTemplate(const File& f);
+        GuiLayoutFixed* createFromTemplate(const SimpleXml& f);
         
 
 		/**
@@ -1116,7 +1127,7 @@ namespace smpl
 		 * @param className 
 		 * @param func 
 		 */
-		static void registerLoadFunction(std::string className, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> func);
+		static void registerLoadFunction(const std::string& className, const std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, const SmartMemory<GuiManager>&)>& func);
 
 		/**
 		 * @brief Adds some default loading functions to be used when loading elements from a file.
@@ -1134,11 +1145,11 @@ namespace smpl
 
 
     private:
-		bool loadElement(XmlNode* node, SmartMemory<GuiItem> parent);
+		bool loadElement(XmlNode* node, const SmartMemory<GuiItem>& parent);
         
         GuiLayoutFixed rootLayout = GuiLayoutFixed();
 
-		static SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > elementLoadingFunctions;
+		static SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, const SmartMemory<GuiManager>&)> > elementLoadingFunctions;
 		std::vector<SmartMemory<GuiItem>> shouldDelete = std::vector<SmartMemory<GuiItem>>();
 		SimpleHashMultiMap<std::string, SmartMemory<GuiItem>> objectsByName = SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>();
 
@@ -1163,11 +1174,24 @@ namespace smpl
 
 		Vec2f expectedSize;
 
-		SurfaceInterface* surf;
+		SurfaceInterface surf;
 		unsigned char graphicsInterfaceMode = GraphicsInterface::TYPE_DEFAULT;
         
-    SERIALIZE_CLASS()
     };
 
     #pragma endregion
+
+	
+	//This class contains nothing of value. Just registers the function upon creation which should be from a singleton ONLY.
+	template<typename T>
+	class DLL_OPTION GuiSelfRegisteringLoader
+	{
+	public:
+		GuiSelfRegisteringLoader(const std::string& name)
+		{
+			// GuiManager::registerLoadFunction(name, T::loadFunction);
+		}
+		~GuiSelfRegisteringLoader(){}
+	private:
+	};
 }

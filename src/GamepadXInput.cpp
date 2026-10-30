@@ -191,12 +191,12 @@
 						if (controllerInfo.Gamepad.sThumbLX > 0.0f)
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbLX-DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::min(convertedValue, 1.0f);
+							convertedValue = min(convertedValue, 1.0f);
 						}
 						else
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbLX + DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::max(convertedValue, -1.0f);
+							convertedValue = max(convertedValue, -1.0f);
 						}
 
 						//std::cout << convertedValue << std::endl;
@@ -212,12 +212,12 @@
 						if (controllerInfo.Gamepad.sThumbLY > 0.0f)
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbLY - DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::min(convertedValue, 1.0f);
+							convertedValue = min(convertedValue, 1.0f);
 						}
 						else
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbLY + DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::max(convertedValue, -1.0f);
+							convertedValue = max(convertedValue, -1.0f);
 						}
 
 						setAxis(i, LEFT_Y_AXIS, convertedValue);
@@ -232,12 +232,12 @@
 						if (controllerInfo.Gamepad.sThumbRX > 0.0f)
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbRX - DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::min(convertedValue, 1.0f);
+							convertedValue = min(convertedValue, 1.0f);
 						}
 						else
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbRX + DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::max(convertedValue, -1.0f);
+							convertedValue = max(convertedValue, -1.0f);
 						}
 
 						setAxis(i, RIGHT_X_AXIS, convertedValue);
@@ -252,12 +252,12 @@
 						if (controllerInfo.Gamepad.sThumbRY > 0.0f)
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbRY - DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::min(convertedValue, 1.0f);
+							convertedValue = min(convertedValue, 1.0f);
 						}
 						else
 						{
 							convertedValue = (float)(controllerInfo.Gamepad.sThumbRY + DEAD_ZONE) / (AXIS_DIVIDE_VALUE - DEAD_ZONE);
-							convertedValue = MathExt::max(convertedValue, -1.0f);
+							convertedValue = max(convertedValue, -1.0f);
 						}
 
 						setAxis(i, RIGHT_Y_AXIS, convertedValue);

@@ -156,7 +156,6 @@ namespace smpl
          * @return size_t
          */
         size_t addJob(const std::function<void()>& j);
-
 		size_t addJobs(const std::vector<std::function<void()>>& jobs);
 
         /**
@@ -246,11 +245,14 @@ namespace smpl
 		 */
 		FiberTask* getFreeFiberTask(const JobInfo& jbInfo);
         
-        std::mutex jobQueueMutex;
+        HybridSpinLock jobQueueMutex;
         std::atomic_bool running = false;
         std::atomic_size_t jobID = 0;
 
         Queue<JobInfo> jobs; //queue of jobs that you want to be run but are not yet started.
+
+		std::atomic_bool inParallelizeMode = false;
+		std::vector<std::deque<std::function<void()>>> jobsForThreads; //only for parallelize
 
 		std::vector<FiberTask*> createdTask; //need to delete these at the end.
 		std::vector<FiberTask*> availableFiberTask; //Tasks that are done that could be reused by another function
@@ -435,39 +437,5 @@ namespace smpl
         std::condition_variable jobWaitCV;
 		std::mutex jobWaitHaltMutex;
     };
-
-	class SJQ_OMP_Replacement
-	{
-	public:
-		/**
-		 * @brief Attempts to take an assumed for loop and parallelize it.
-		 *		The assumption is that the loop is defined from a start to an end with a custom increment.
-		 *			This is not strictly required but that is the assumption.
-		 *		
-		 *		The total number of loops are broken up for all threads evenly and are not interlaced which helps with false sharing assuming that is a potential issue.
-		 * 
-		 * @param func 
-		 * @param start 
-		 * @param end 
-		 */
-		static void parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted);
-
-	private:
-		static SimpleJobQueue ompReplacement;
-	};
-
-	#ifdef USE_OMP_REPLACEMENT
-		#ifndef SJQ_MAX_THREADS
-			#define SJQ_MAX_THREADS 1
-		#endif
-		#ifndef SJQ_THREAD_ADJUSTMENTS
-			#define SJQ_THREAD_ADJUSTMENTS
-			#define SJQ_LIGHT_TASK 0x10000
-			#define SJQ_MEDIUM_TASK 0x1000
-			#define SJQ_HEAVY_TASK 0x100
-			#define SJQ_DESIRED_THREADS(problemSize, problemWeight) __min(SJQ_MAX_THREADS, ((problemSize) / (problemWeight)))
-		#endif
-		inline SimpleJobQueue SJQ_OMP_Replacement::ompReplacement(SJQ_MAX_THREADS);
-	#endif
 
 }

@@ -87,6 +87,32 @@ namespace smpl
 			}
 			return v;
 		}
+
+		/**
+		 * @brief Swaps the order of the bits of the byte.
+		 *		By default bits are ordered from left to right where the left most bit is more significant than the right most.
+		 *			Like this: |7-6-5-4-3-2-1-0|
+		 *		In some scenarios, it is advantageous to flip this order depending on the data that you are dealing with.
+		 *			New order like this: |0-1-2-3-4-5-6-7|
+		 *
+		 * 		https://stackoverflow.com/questions/2602823/whats-the-simplest-way-to-reverse-the-order-of-bits-in-a-byte-in-c-c?page=1&tab=scoredesc#tab-top
+		 * @param v 
+		 * @return char 
+		 */
+		static char bitSwap(char v);
+
+		/**
+		 * @brief Swaps the order of the bits of the byte.
+		 *		By default bits are ordered from left to right where the left most bit is more significant than the right most.
+		 *			Like this: |7-6-5-4-3-2-1-0|
+		 *		In some scenarios, it is advantageous to flip this order depending on the data that you are dealing with.
+		 *			New order like this: |0-1-2-3-4-5-6-7|
+		 *
+		 * 		https://stackoverflow.com/questions/2602823/whats-the-simplest-way-to-reverse-the-order-of-bits-in-a-byte-in-c-c?page=1&tab=scoredesc#tab-top
+		 * @param v 
+		 * @return unsigned char 
+		 */
+		static unsigned char bitSwap(unsigned char v);
 	private:
 	};
 }

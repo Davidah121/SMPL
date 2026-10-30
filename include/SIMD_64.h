@@ -22,6 +22,7 @@ namespace smpl
 
 		SIMD_SSE(){}
 		SIMD_SSE(int64_t byte){values = _mm_set1_epi64x(byte);}
+		SIMD_SSE(int64_t v1, int64_t v2){values = _mm_set_epi64x(v2, v1);}
 		SIMD_SSE(__m128i byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<int64_t>& other) {values = other.values;}
@@ -133,6 +134,16 @@ namespace smpl
 		operator SIMD_SSE<double>() const;
 		__m128i values;
 	};
+	template<>
+	inline SIMD_SSE<int64_t> min(const SIMD_SSE<int64_t>& a, const SIMD_SSE<int64_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<int64_t> max(const SIMD_SSE<int64_t>& a, const SIMD_SSE<int64_t>& b)
+	{
+		return a.max(b);
+	}
 
 	template<>
 	class SIMD_SSE<uint64_t> : public SIMD_SSE<int64_t>
@@ -140,6 +151,7 @@ namespace smpl
 	public:
 		SIMD_SSE(){}
 		SIMD_SSE(uint64_t byte){values = _mm_set1_epi64x(byte);}
+		SIMD_SSE(uint64_t v1, uint64_t v2){values = _mm_set_epi64x(v2, v1);}
 		SIMD_SSE(__m128i byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<uint64_t>& other) {values = other.values;}
@@ -245,6 +257,16 @@ namespace smpl
 			return _mm_andnot_si128(temp, temp);
 		}
 	};
+	template<>
+	inline SIMD_SSE<uint64_t> min(const SIMD_SSE<uint64_t>& a, const SIMD_SSE<uint64_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<uint64_t> max(const SIMD_SSE<uint64_t>& a, const SIMD_SSE<uint64_t>& b)
+	{
+		return a.max(b);
+	}
 
 	#endif
 
@@ -259,6 +281,7 @@ namespace smpl
 
 		SIMD_AVX(){}
 		SIMD_AVX(int64_t byte){values = _mm256_set1_epi64x(byte);}
+		SIMD_AVX(int64_t v1, int64_t v2, int64_t v3, int64_t v4){values = _mm256_set_epi64x(v4, v3, v2, v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<int64_t>& other) {values = other.values;}
@@ -392,13 +415,25 @@ namespace smpl
 
 	private:
 	};
+	template<>
+	inline SIMD_AVX<int64_t> min(const SIMD_AVX<int64_t>& a, const SIMD_AVX<int64_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<int64_t> max(const SIMD_AVX<int64_t>& a, const SIMD_AVX<int64_t>& b)
+	{
+		return a.max(b);
+	}
 
 	template<>
 	class SIMD_AVX<uint64_t> : public SIMD_AVX<int64_t>
 	{
 	public:
+		static const int SIZE = 4;
 		SIMD_AVX(){}
 		SIMD_AVX(uint64_t byte){values = _mm256_set1_epi64x(byte);}
+		SIMD_AVX(uint64_t v1, uint64_t v2, uint64_t v3, uint64_t v4){values = _mm256_set_epi64x(v4, v3, v2, v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<uint64_t>& other) {values = other.values;}
@@ -484,5 +519,15 @@ namespace smpl
 		
 		operator SIMD_AVX<double>() const;
 	};
+	template<>
+	inline SIMD_AVX<uint64_t> min(const SIMD_AVX<uint64_t>& a, const SIMD_AVX<uint64_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<uint64_t> max(const SIMD_AVX<uint64_t>& a, const SIMD_AVX<uint64_t>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 }

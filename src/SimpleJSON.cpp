@@ -114,16 +114,38 @@ namespace smpl
 			throw std::runtime_error("Failed to find \"" + key + "\" as the current JNode is not an Object");
 		return ((JObject*)this)->operator[](key);
 	}
+	const JNode& JNode::operator[](const std::string& key) const
+	{
+		if(type != JObject::TYPE)
+			throw std::runtime_error("Failed to find \"" + key + "\" as the current JNode is not an Object");
+		return ((const JObject*)this)->operator[](key);
+	}
 	JNode& JNode::operator[](size_t location)
 	{
 		if(type != JArray::TYPE)
 			throw std::runtime_error("Failed to find JNode at index \"" + StringTools::toString(location) + "\" as the current JNode is not an Array");
 		return ((JArray*)this)->operator[](location);
 	}
-	
-	std::string JNode::getString(bool last, bool prettyPrint, std::string extraTabsString)
+	const JNode& JNode::operator[](size_t location) const
 	{
-		throw std::runtime_error("Failed to get string. This is a JNode and not a specific JSON type like JPair/JObject/JArray. This is the default function and not the overloaded versions");
+		if(type != JArray::TYPE)
+			throw std::runtime_error("Failed to find JNode at index \"" + StringTools::toString(location) + "\" as the current JNode is not an Array");
+		return ((const JArray*)this)->operator[](location);
+	}
+	
+	std::string JNode::getString(bool last, bool prettyPrint, std::string extraTabsString) const
+	{
+		//weird design. Can only be one of 3 though so lets cast. Reduces the need for a dynamic function table since no more virtual functions which reduces class size by 8 bytes.
+		switch (type) {
+			case JPair::TYPE:
+				return getPair().getString(last, prettyPrint, extraTabsString);
+			case JArray::TYPE:
+				return getArray().getString(last, prettyPrint, extraTabsString);
+			case JObject::TYPE:
+				return getObject().getString(last, prettyPrint, extraTabsString);
+			default:
+				throw std::runtime_error("Failed to get string. This is a JNode of some unknown type that can not be deduced from the only 3 allowed.");
+		}
 	}
 	
 	JPair& JNode::getPair()
@@ -137,6 +159,19 @@ namespace smpl
 	JArray& JNode::getArray()
 	{
 		return (JArray&)*this;
+	}
+
+	const JPair& JNode::getPair() const
+	{
+		return (const JPair&)*this;
+	}
+	const JObject& JNode::getObject() const
+	{
+		return (const JObject&)*this;
+	}
+	const JArray& JNode::getArray() const
+	{
+		return (const JArray&)*this;
 	}
 	
 	// std::vector<JNode*> JNode::getNodesPattern(const std::vector<std::string>& s)
@@ -227,7 +262,7 @@ namespace smpl
 		replaceEscapeCodes();
 	}
 
-	std::string JPair::getValue()
+	std::string JPair::getValue() const
 	{
 		return value;
 	}
@@ -238,11 +273,11 @@ namespace smpl
 	}
 
 	
-	std::string JPair::escapeInvalidChars()
+	std::string JPair::escapeInvalidChars() const
 	{
 		//all values under 32 (space) are invalid in the value part when converting to a valid JSON string. escape those values (note that escaping linebreaks and tabs should be \n and \t respectively)
 		std::string outputString = "";
-		for(char& c : value)
+		for(const char& c : value)
 		{
 			if(c < 32)
 			{
@@ -313,7 +348,7 @@ namespace smpl
 		value = outputString;
 	}
 	
-	std::string JPair::getString(bool last, bool prettyPrinting, std::string extraTabsString)
+	std::string JPair::getString(bool last, bool prettyPrinting, std::string extraTabsString) const
 	{
 		std::string result;
 		if(prettyPrinting)
@@ -349,6 +384,14 @@ namespace smpl
 		throw std::runtime_error("Failed to find node with key: " + key);
 	}
 	
+	const JNode& JObject::operator[](const std::string& key) const
+	{
+		auto it = set.find(key);
+		if(it != set.end())
+			return *it;
+		throw std::runtime_error("Failed to find node with key: " + key);
+	}
+
 	void JObject::insert(const JNode& node)
 	{
 		set.insert(node);
@@ -362,7 +405,7 @@ namespace smpl
 		set.erase(name);
 	}
 		
-	size_t JObject::size()
+	size_t JObject::size() const
 	{
 		return set.size();
 	}
@@ -380,7 +423,7 @@ namespace smpl
 		set.tightlyFit();
 	}
 
-	std::string JObject::getString(bool last, bool prettyPrinting, std::string extraTabsString)
+	std::string JObject::getString(bool last, bool prettyPrinting, std::string extraTabsString) const
 	{
 		std::string result;
 		std::string nextExtraTabStr = "";
@@ -399,7 +442,7 @@ namespace smpl
 		size_t index = 0;
 		for(auto& nodeUnion : set)
 		{
-			JNode& node = nodeUnion;
+			const JNode& node = nodeUnion;
 			bool lastOne = (index == set.size()-1);
 			result += node.getString(lastOne, prettyPrinting, nextExtraTabStr);
 			index++;
@@ -429,6 +472,10 @@ namespace smpl
 	{
 		return arr[location];
 	}
+	const JNode& JArray::operator[](size_t location) const
+	{
+		return arr[location];
+	}
 	void JArray::push_back(const JNode& node)
 	{
 		arr.push_back(node);
@@ -438,7 +485,16 @@ namespace smpl
 	{
 		return arr.front();
 	}
+	const JNode& JArray::front() const
+	{
+		return arr.front();
+	}
+
 	JNode& JArray::back()
+	{
+		return arr.back();
+	}
+	const JNode& JArray::back() const
 	{
 		return arr.back();
 	}
@@ -450,11 +506,11 @@ namespace smpl
 	{
 		arr.pop_back();
 	}
-	size_t JArray::size()
+	size_t JArray::size() const
 	{
 		return arr.size();
 	}
-	bool JArray::empty()
+	bool JArray::empty() const
 	{
 		return arr.empty();
 	}
@@ -468,7 +524,7 @@ namespace smpl
 		arr.shrink_to_fit();
 	}
 
-	std::string JArray::getString(bool last, bool prettyPrinting, std::string extraTabsString)
+	std::string JArray::getString(bool last, bool prettyPrinting, std::string extraTabsString) const
 	{
 		std::string result;
 		std::string nextExtraTabStr = "";
@@ -486,7 +542,7 @@ namespace smpl
 			result += '\n';
 		for(size_t i=0; i<set.getInternalData().size(); i++)
 		{
-			JNode& o = set.getInternalData()[i];
+			const JNode& o = set.getInternalData()[i];
 			bool lastOne = (i == set.getInternalData().size()-1);
 			result += o.getString(lastOne, prettyPrinting, nextExtraTabStr); //because this is a reference, it SHOULD pick the correct one
 		}
@@ -505,10 +561,15 @@ namespace smpl
 
 	#pragma region SIMPLEJSON
 
-	SimpleJSON::SimpleJSON(bool arrayRoot)
+	SimpleJSON::SimpleJSON()
 	{
-		if(arrayRoot == true)
-			rootNode = JArray();
+	}
+	
+	SimpleJSON SimpleJSON::createJSONWithArrayRoot()
+	{
+		SimpleJSON json;
+		json.rootNode = JArray();
+		return json;
 	}
 	
 	SimpleJSON::SimpleJSON(Streamable<unsigned char>* data)
@@ -518,7 +579,7 @@ namespace smpl
 			throw std::runtime_error("Failed to load JSON");
 		}
 	}
-	SimpleJSON::SimpleJSON(const std::string& filename)
+	SimpleJSON::SimpleJSON(const File& filename)
 	{
 		if(!load(filename))
 		{
@@ -535,7 +596,7 @@ namespace smpl
 	
 	SimpleJSON::SimpleJSON(const SimpleJSON& other)
 	{
-		if(other.rootNode.getType() != JObject::TYPE || other.rootNode.getType() != JArray::TYPE)
+		if(other.rootNode.getType() != JObject::TYPE && other.rootNode.getType() != JArray::TYPE)
 			throw JSONInvalidRootElement();
 		else
 			rootNode = other.rootNode;
@@ -543,7 +604,7 @@ namespace smpl
 
 	SimpleJSON& SimpleJSON::operator=(const SimpleJSON& other)
 	{
-		if(other.rootNode.getType() != JObject::TYPE || other.rootNode.getType() != JArray::TYPE)
+		if(other.rootNode.getType() != JObject::TYPE && other.rootNode.getType() != JArray::TYPE)
 			throw JSONInvalidRootElement();
 		else
 			rootNode = other.rootNode;
@@ -577,9 +638,9 @@ namespace smpl
 		return isValid;
 	}
 
-	bool SimpleJSON::load(const std::string& filename)
+	bool SimpleJSON::load(const File& filename)
 	{
-		datasource = new StreamableFile(filename, SimpleFile::READ);
+		datasource = new StreamableFile(filename.getFullFileName(), SimpleFile::READ);
 		bool isValid = datasource->isValid();
 		if(isValid)
 		{
@@ -602,9 +663,49 @@ namespace smpl
 		return isValid;
 	}
 
-	JNode& SimpleJSON::getRootNode()
+	JNode& SimpleJSON::getRootNode() const
 	{
 		return (JNode&)rootNode;
+	}
+	
+	std::string SimpleJSON::getString(bool prettyPrint) const
+	{
+		if(rootNode.getType() == JArray::TYPE)
+		{
+			return rootNode.getArray().getString(true, prettyPrint, "");
+		}
+		else if(rootNode.getType() == JObject::TYPE)
+		{
+			return rootNode.getObject().getString(true, prettyPrint, "");
+		}
+		//throw an exception
+		return "";
+	}
+
+	JNode& SimpleJSON::operator[](const std::string& key)
+	{
+		return rootNode[key];
+	}
+	const JNode& SimpleJSON::operator[](const std::string& key) const
+	{
+		return rootNode[key];
+	}
+	
+	JNode& SimpleJSON::operator[](size_t location)
+	{
+		return rootNode[location];
+	}
+	const JNode& SimpleJSON::operator[](size_t location) const
+	{
+		return rootNode[location];
+	}
+	
+	bool SimpleJSON::isEmpty() const
+	{
+		if(rootNode.getType() == JObject::TYPE)
+			return rootNode.getObject().size() == 0;
+		else 
+			return rootNode.getArray().size() == 0;
 	}
 
 	bool SimpleJSON::getNextCharacter(char& c)

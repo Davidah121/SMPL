@@ -85,16 +85,16 @@ namespace smpl
         GuiLayoutFixed::layoutUpdate(offX, offY, maximumWidth, maximumHeight);
     }
     
-    void GuiScrollBar::addChild(SmartMemory<GuiItem> child)
+    void GuiScrollBar::addChild(const SmartMemory<GuiItem>& child)
     {
         clippingLayout.addChild(child);
     }
-    void GuiScrollBar::removeChild(SmartMemory<GuiItem> child)
+    void GuiScrollBar::removeChild(const SmartMemory<GuiItem>& child)
     {
         clippingLayout.removeChild(child);
     }
 
-    void GuiScrollBar::update(SmartMemory<GuiManager> manager)
+    void GuiScrollBar::update(const SmartMemory<GuiManager>& manager)
     {
         //Adjust offset x and y. Adjust bounds in x and y
         //need 2 scroll bars probably. Could just add another scroll bar but meh
@@ -212,7 +212,7 @@ namespace smpl
         GuiLayoutFixed::update(manager);
     }
     
-    void GuiScrollBar::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiScrollBar::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutFixed::loadDataFromXML(attribs, manager);
 
@@ -224,7 +224,7 @@ namespace smpl
         clippingLayout.setFlags(flags);
     }
 
-    SmartMemory<GuiItem> GuiScrollBar::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiScrollBar::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiScrollBar* ins = new GuiScrollBar();
         ins->loadDataFromXML(attributes, manager);

@@ -60,9 +60,11 @@ namespace smpl
 		std::string getName() const;
 		
 		JNode& operator[](const std::string& key);
+		const JNode& operator[](const std::string& key) const;
 		JNode& operator[](size_t location);
+		const JNode& operator[](size_t location) const;
 		
-		virtual std::string getString(bool last = true, bool prettyPrint = false, std::string extraTabsString = "");
+		std::string getString(bool last = true, bool prettyPrint = false, std::string extraTabsString = "") const;
 		
 		bool operator==(const std::string& name) const;
 		bool operator!=(const std::string& name) const;
@@ -73,6 +75,10 @@ namespace smpl
 		JPair& getPair();
 		JObject& getObject();
 		JArray& getArray();
+
+		const JPair& getPair() const;
+		const JObject& getObject() const;
+		const JArray& getArray() const;
 		
 	protected:
 
@@ -104,10 +110,10 @@ namespace smpl
 		JPair(JPair&& other) = default;
 		JPair& operator=(JPair&& other) = default;
 
-		std::string getValue();
-		std::string escapeInvalidChars();
+		std::string getValue() const;
+		std::string escapeInvalidChars() const;
 		void setValue(const std::string& n);
-		virtual std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "");
+		std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "") const;
 	private:
 		void replaceEscapeCodes();
 	};
@@ -122,14 +128,15 @@ namespace smpl
 		JObject(JObject&& other) = default;
 		JObject& operator=(JObject&& other) = default;
 
-		virtual std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "");
+		std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "") const;
 		
 		void insert(const JNode& node);
 		void insert(JNode&& node);
 		void remove(const std::string& name);
 		
 		JNode& operator[](const std::string& key);
-		size_t size();
+		const JNode& operator[](const std::string& key) const;
+		size_t size() const;
 		bool empty();
 		void clear();
 
@@ -148,16 +155,21 @@ namespace smpl
 		JArray(JArray&& other) = default;
 		JArray& operator=(JArray&& other) = default;
 
-		virtual std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "");
+		std::string getString(bool last = true, bool prettyPrinting = false, std::string extraTabsString = "") const;
 		
 		JNode& operator[](size_t location);
+		const JNode& operator[](size_t location) const;
+
 		JNode& front();
+		const JNode& front() const;
 		JNode& back();
+		const JNode& back() const;
+
 		void push_back(const JNode& node);
 		void push_back(JNode&& node);
 		void pop_back();
-		size_t size();
-		bool empty();
+		size_t size() const;
+		bool empty() const;
 		void clear();
 
 		void shrink();
@@ -178,7 +190,8 @@ namespace smpl
 		*          Note that the root element may be a JArray when loading from other sources.
 		* 
 		*/
-		SimpleJSON(bool arrayRoot);
+		SimpleJSON();
+		static SimpleJSON createJSONWithArrayRoot();
 
 		/**
 		* @brief Construct a new SimpleJSON from an existing data stream.
@@ -193,7 +206,7 @@ namespace smpl
 		* 
 		* @param filename 
 		*/
-		SimpleJSON(const std::string& filename);
+		SimpleJSON(const File& filename);
 
 		/**
 		* @brief Construct a new SimpleJSON object using an existing complete buffer of data.
@@ -231,9 +244,57 @@ namespace smpl
 		*/
 		SimpleJSON& operator=(SimpleJSON&& other) noexcept;
 
+		/**
+		 * @brief Destroy the SimpleJSON object
+		 * 
+		 */
 		~SimpleJSON();
 
-		JNode& getRootNode();
+		/**
+		 * @brief Get the Root Node for the JSON.
+		 *		This may be a object or array node but may never be a pair node.
+		 *		All nodes are children of this root node and must be access starting from here.
+		 * 
+		 * @return JNode& 
+		 */
+		JNode& getRootNode() const;
+
+		/**
+		 * @brief Gets the entire JSON as a string. A wrapper around the root node's getString function that automatically casts
+		 *		the root node to its correct type
+		 * 
+		 * @return std::string 
+		 */
+		std::string getString(bool prettyPrint = false) const;
+		
+		/**
+		 * @brief Uses the array operator for the root node.
+		 *		A simple wrapper to reduce the redundant getRootNode() calls before using the array operator.
+		 *			Due to how the class works, this pattern is the only access pattern you can actually use since all other
+		 *			aspects of the class are private so reducing the total amount of words to type is useful here.
+		 *		Note that due to how the root node for a JSON works, its not known if its an array or object till you check. You may still need to check.
+		 * 
+		 * @param key 
+		 * @return JNode& 
+		 */
+		JNode& operator[](const std::string& key);
+		const JNode& operator[](const std::string& key) const;
+		
+		/**
+		 * @brief Uses the array operator for the root node.
+		 *		A simple wrapper to reduce the redundant getRootNode() calls before using the array operator.
+		 *			Due to how the class works, this pattern is the only access pattern you can actually use since all other
+		 *			aspects of the class are private so reducing the total amount of words to type is useful here.
+		 *		Note that due to how the root node for a JSON works, its not known if its an array or object till you check. You may still need to check.
+		 * 
+		 * @param location
+		 * @return JNode& 
+		 */
+		JNode& operator[](size_t location);
+		const JNode& operator[](size_t location) const;
+
+		bool isEmpty() const;
+
 	private:
 		void loadJObject(JNode* parent, const std::string& name);
 		void loadJArray(JNode* parent, const std::string& name);
@@ -242,7 +303,7 @@ namespace smpl
 
 		
 		bool load(Streamable<unsigned char>* data);
-		bool load(const std::string& filename);
+		bool load(const File& filename);
 		bool load(unsigned char* data, size_t size);
 
 		bool getNextCharacter(char& c);

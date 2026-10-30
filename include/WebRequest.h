@@ -10,6 +10,7 @@
 #include <string>
 #include <ctime>
 #include <limits.h>
+#include "URL.h"
 
 namespace smpl
 {
@@ -95,16 +96,17 @@ namespace smpl
 	class DLL_OPTION WebRequest
 	{
 		public:
-			static const unsigned int TYPE_GET = 0x01;
-			static const unsigned int TYPE_POST = 0x02;
-			static const unsigned int TYPE_HEAD = 0x04;
-			static const unsigned int TYPE_PUT = 0x08;
-			static const unsigned int TYPE_DELETE = 0x10;
-			static const unsigned int TYPE_CONNECT = 0x20;
-			static const unsigned int TYPE_OPTIONS = 0x40;
-			static const unsigned int TYPE_TRACE = 0x80;
-			static const unsigned int TYPE_PATCH = 0x100;
-			static const unsigned int TYPE_SERVER = 0xFFFFFFFF;
+			//HERE THE ORDER MATTERS. IF THIS CHANGES, CHANGE THE ARRAYS IN THE IMPLEMENTATION
+			static const unsigned int TYPE_GET;
+			static const unsigned int TYPE_POST;
+			static const unsigned int TYPE_HEAD;
+			static const unsigned int TYPE_PUT;
+			static const unsigned int TYPE_DELETE;
+			static const unsigned int TYPE_CONNECT;
+			static const unsigned int TYPE_OPTIONS;
+			static const unsigned int TYPE_TRACE;
+			static const unsigned int TYPE_PATCH;
+			static const unsigned int TYPE_SERVER;
 
 			static const std::string MIME_FORM_DATA;
 
@@ -113,11 +115,37 @@ namespace smpl
 			WebRequest(const std::string& buffer);
 			WebRequest(const std::vector<unsigned char>& buffer);
 
-			WebRequest(WebRequest& other);
-			void operator=(WebRequest& other);
+			WebRequest(const WebRequest& other);
+			void operator=(const WebRequest& other);
 			WebRequest(WebRequest&& other) noexcept;
 			void operator=(WebRequest&& other) noexcept;
 			
+			/**
+			 * @brief Forms a quick web request in one line. Useful for quickly sending out HTTP requests from a client.
+			 * 
+			 * @param type 
+			 *		One of the existing type constants except TYPE_SERVER
+			 * @param urlPath 
+			 *		The path of the URL specifically. No host, port, or arguments.
+			 * @param pairs 
+			 *		All of the data pairs to include in the header.
+			 * @return WebRequest& 
+			 */
+			static WebRequest createQuickWebRequest(unsigned int type, const std::string& urlPath, const SimpleHashMap<std::string, std::string>& pairs = {});
+
+			/**
+			 * @brief Forms a quick web request in one line. Useful for quickly sending out HTTP requests from a server.
+			 * 
+			 * @param statusCode 
+			 *		One of the many HTTP status codes.
+			 *			Due to the total number of them, these will not be included as constants but something you should provide yourself.
+			 *			A hashmap of existing known codes and their message is provided even if they may never be used.
+			 * @param pairs 
+			 *		All of the data pairs to include in the header.
+			 * @return WebRequest& 
+			 */
+			static WebRequest createQuickServerResponse(unsigned short statusCode, const SimpleHashMap<std::string, std::string>& pairs = {});
+
 			/**
 			 * @brief Reads values and sets up the web request.
 			 * 		Returns whether the web request properly ended.
@@ -144,7 +172,7 @@ namespace smpl
 			 * @param data 
 			 * @param includeHTTP 
 			 */
-			void setHeader(unsigned int type, const std::string& data, bool includeHTTP = true);
+			void setHeader(unsigned int type, const std::string& data);
 
 			/**
 			 * @brief Gets the full Header of the request/response
@@ -162,12 +190,21 @@ namespace smpl
 			unsigned int getType() const;
 
 			/**
+			 * @brief Gets the message status code if it exists.
+			 *		This is a value in [100, 599].
+			 *		If you get a value of 0, there is no status code or it just couldn't be parsed. Assume it doesn't exist
+			 * 
+			 * @return unsigned int 
+			 */
+			unsigned int getStatus() const;
+
+			/**
 			 * @brief Gets the url from the header of the request/response
 			 * 		Note that for responses, it will likely be empty.
 			 * 
 			 * @return std::string 
 			 */
-			std::string getUrl() const;
+			std::string getPathOrMessage() const;
 
 			/**
 			 * @brief Adds a key value pair to the web request.
@@ -194,6 +231,13 @@ namespace smpl
 			 * @return std::string 
 			 */
 			std::string getRequestAsString() const;
+
+			/**
+			 * @brief Sets all of the cookies for this web request. These may come from an existing web request or stored cookies in a file or something.
+			 * 
+			 * @param existingCookieMap 
+			 */
+			void setCookies(const CookieManager& existingCookieMap);
 
 			/**
 			 * @brief Gets all cookies for the request.
@@ -247,17 +291,21 @@ namespace smpl
 			 * @return false 
 			 */
 			static bool isValidCookieFormat(const std::string& v);
+
+			static std::string getStatusMessage(unsigned short statusCode);
 			
 		private:
 			void reset();
 			
 			unsigned int type;
+			unsigned int statusCode;
 			size_t bytesInHeader = 0;
 			std::string header;
-			std::string url;
+			std::string pathOrMessage;
 			SimpleHashMap<std::string, std::string> data;
 			
 			CookieManager cookieMap; //Should manage your own cookies
         	static const SimpleHashMap<std::string, std::string> mimeTypes;
+			static const SimpleHashMap<unsigned short, std::string> statusAndMessages;
 	};
 }

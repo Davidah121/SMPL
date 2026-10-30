@@ -11,7 +11,7 @@ namespace smpl
     {
 
     }
-    void GuiContent::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiContent::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiItem::loadDataFromXML(attribs, manager);
     }

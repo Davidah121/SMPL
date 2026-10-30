@@ -189,16 +189,16 @@ namespace smpl
 		for(int i=0; i<32; i++)
 		{
 			if((bitFieldsA >> i) & 0x01)
-				shiftAmountA = MathExt::min(shiftAmountA, i);
+				shiftAmountA = min(shiftAmountA, i);
 				
 			if((bitFieldsR >> i) & 0x01)
-				shiftAmountR = MathExt::min(shiftAmountR, i);
+				shiftAmountR = min(shiftAmountR, i);
 				
 			if((bitFieldsG >> i) & 0x01)
-				shiftAmountG = MathExt::min(shiftAmountG, i);
+				shiftAmountG = min(shiftAmountG, i);
 				
 			if((bitFieldsB >> i) & 0x01)
-				shiftAmountB = MathExt::min(shiftAmountB, i);
+				shiftAmountB = min(shiftAmountB, i);
 		}
 
 		//Load palette if it exists

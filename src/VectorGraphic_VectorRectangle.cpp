@@ -30,10 +30,10 @@ namespace smpl
 		//Same regardless of anti aliasing status.
 
 		//first, calc bounding box
-		int x1 = (int)MathExt::round(MathExt::min(x, x + width));
-		int x2 = (int)MathExt::round(MathExt::max(x, x + width));
-		int y1 = (int)MathExt::round(MathExt::min(y, y + height));
-		int y2 = (int)MathExt::round(MathExt::max(y, y + height));
+		int x1 = (int)MathExt::round(min(x, x + width));
+		int x2 = (int)MathExt::round(max(x, x + width));
+		int y1 = (int)MathExt::round(min(y, y + height));
+		int y2 = (int)MathExt::round(max(y, y + height));
 
 		x1 = MathExt::clamp(x1, 0, globalWidth);
 		y1 = MathExt::clamp(y1, 0, globalHeight);
@@ -99,6 +99,11 @@ namespace smpl
 			drawStrokeTransformed(buffer, globalWidth, globalHeight);
 			return;
 		}
+	}
+	
+	std::pair<Vec2f, Vec2f> VectorRectangle::getBoundingBox()
+	{
+		return {};
 	}
 
 	void VectorRectangle::setX(double x)

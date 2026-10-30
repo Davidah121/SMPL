@@ -11,11 +11,12 @@ set audioLibs=-l winmm
 set xinputLibs=-l XInput
 set dinputLibs=-l dinput8 -l dxguid
 set networkLibs=-l Ws2_32 -l Mswsock
+set pollLibs=-L C:/Libraries/wepoll-dist -lwepoll
 set windowLibs=-l Msimg32 -l Dwmapi
 set performanceLibs=-l Pdh -l Winmm
 set semlLibs=-L C:/Libraries/_MyLibraries/SEML -l SEML
 set serializationLibs=-L C:/Libraries/_MyLibraries/SimpleSerialization -l SimpleSerialization
-set linkOptions=%windowsSDKLibs% %sslLibs% %oglLibs%  %networkLibs% %windowLibs% %audioLibs% %xinputLibs% %dinputLibs% %performanceLibs% %semlLibs% %serializationLibs%
+set linkOptions=%windowsSDKLibs% %sslLibs% %oglLibs% %networkLibs% %pollLibs% %windowLibs% %audioLibs% %xinputLibs% %dinputLibs% %performanceLibs% %semlLibs% %serializationLibs%
 set extraOptions=-O3 -fopenmp
 set projectCommand=-shared -o ./DynamicLib/Release/SMPL.dll ./bin/Release/obj/*.o
 clang++ %debugOptions% %linkOptions% %extraOptions% %projectCommand%

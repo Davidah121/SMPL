@@ -7,30 +7,61 @@
 #include "GeneralExceptions.h"
 #include "Shape.h"
 #include "StringBridge.h"
+#include "SmartMemory.h"
 
 namespace smpl
 {
 
 	struct FontCharInfo
 	{
-		int unicodeValue = 0;
-		int x = 0;
-		int y = 0;
-		int width = 0;
-		int height = 0;
-		int horizAdv = 0;
-		int xOffset = 0;
-		int yOffset = 0;
+		uint32_t unicodeValue = 0; 	//The actual unicode value of interest
+		uint32_t x = 0;				//The x value in the image if it has an image associated with it. Will be zero otherwise
+		uint32_t y = 0; 			//The y value in the image if it has an image associated with it. Will be zero otherwise
+		uint32_t width = 0;			//The width of the glyph
+		uint32_t height = 0;		//The height of the glyph
+		int horizAdv = 0;			//The amount to move horizontally after inserting this character. Width is already included and should not be added with this.
+		int xOffset = 0;			//The x offset used to position the character when rendering
+		int yOffset = 0;			//The y offset used to position the character when rendering
+		size_t reserved = 0;		//A reserved value allowing for specific internal implementation.
 	};
 
 	struct FontCharBoxInfo
 	{
-		size_t charIndex;
-		int rowStartPosition;
-		Box2D boundingBox;
+		size_t charIndex;			//The index of the character in the string (redundant)
+		int rowStartPosition;		//The y value of the row its on. Offsets exist in the bounding box where applicable. This value does not have that. (A little redundant)
+		Box2D boundingBox;			//The actual bounding box of the character
+	};
+	
+	struct FontCharInfoHash
+	{
+		using is_transparent = void;
+		size_t operator()(const FontCharInfo& info) const
+		{
+			return rapidhash_wrapper(info.unicodeValue);
+		}
+		size_t operator()(const uint32_t& unicodeValue) const
+		{
+			return rapidhash_wrapper(unicodeValue);
+		}
+	};
+	struct FontCharInfoEquals
+	{
+		using is_transparent = void;
+		bool operator()(const FontCharInfo& info, const FontCharInfo& info2) const
+		{
+			return info.unicodeValue == info2.unicodeValue;
+		}
+		bool operator()(const FontCharInfo& info, const uint32_t& unicodeValue) const
+		{
+			return info.unicodeValue == unicodeValue;
+		}
+		bool operator()(const uint32_t& unicodeValue, const FontCharInfo& info) const
+		{
+			return info.unicodeValue == unicodeValue;
+		}
 	};
 
-	class DLL_OPTION Font : public SerializedObject
+	class DLL_OPTION Font
 	{
 	public:
 		static const char NO_WRAP = 0;
@@ -43,47 +74,30 @@ namespace smpl
 		 * 		It is designed to be an Abstract class that will be extended to other classes.
 		 */
 		Font();
+		Font(const Font& other) = default;
+		Font& operator=(const Font& other) = default;
+		Font(Font&& other) = default;
+		Font& operator=(Font&& other) = default;
+		
 
 		/**
 		 * @brief
 		 * 		Destroys a Font Object.
 		 */
 		virtual ~Font();
-
-		/**
-		 * @brief Copies all font information from another Font object.
-		 * 		Does not copy information specific to a particular implementation
-		 * 		of the Font class.
-		 * 
-		 * @param f 
-		 */
-		void copyFont(Font& f);
 		
 		/**
 		 * @brief Gets the character information for rendering.
 		 * 		The values are adjusted based on the current font size vs the original.
 		 * 		Assumes the image for each character, or a character sheet, is also scaled.
 		 * 		If index is invalid and USE_EXCEPTIONS is defined, throws an OutOfBoundsError
-		 * @param index
-		 * 		The index of the character in the array. Not necessarily in order.
-		 * 		The index of the character should be obtained from getCharIndex()
-		 * @return FontCharInfo
-		 * 		Returns a valid FontCharInfo struct if successful.
-		 * 		Otherwise, returns an empty structure where all values are 0.
-		 */
-		FontCharInfo getFontCharInfo(size_t index);
-
-		/**
-		 * @brief Gets the index of the desired character.
-		 * 		Takes O(N) time to find the character if the list is unsorted.
-		 * 		Takes O(LogN) time to find the character if the list is sorted.
 		 * @param c
-		 * 		The character to search for.
+		 * 		The character you are searching for.
 		 * @return FontCharInfo
 		 * 		Returns a valid FontCharInfo struct if successful.
 		 * 		Otherwise, returns an empty structure where all values are 0.
 		 */
-		size_t getCharIndex(int c);
+		FontCharInfo getFontCharInfo(uint32_t c);
 
 		/**
 		 * @brief A virtual function to return the image that contains the character glyph.
@@ -93,11 +107,15 @@ namespace smpl
 		 * @return Image*
 		 * 		Always returns a nullptr.
 		 */
-		virtual Image* getImage(size_t index);
+		virtual SmartMemory<Image> getImage(const FontCharInfo& fci);
 		
 		/**
 		 * @brief Sets the size of the font.
 		 * 		This is used for rendering.
+		 *		This value is with respect to px (pixels) and not pt or em or anything else.
+		 *			Note that while it varies from font to font, the final scaled amount may not result
+		 *			in any particular character at the set size though the assumption is that the height of box that surrounds
+		 *			all possible characters is adjusted down to the desired font size.
 		 * @param value
 		 * 		The value to set the fontSize to.
 		 */
@@ -137,7 +155,7 @@ namespace smpl
 		 * 		If the string exceeds the maximum height, it stops.
 		 * @return Box2D 
 		 */
-		Box2D getBoundingBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode);
+		Box2D getBoundingBox(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode);
 
 		/**
 		 * @brief Gets the bounding of the caret cursor box.
@@ -149,7 +167,7 @@ namespace smpl
 		 * @param index 
 		 * @return Box2D 
 		 */
-		Box2D getCaretBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t index);
+		Box2D getCaretBox(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t index);
 
 		/**
 		 * @brief Get the Select Index at the specified position.
@@ -163,7 +181,7 @@ namespace smpl
 		 * @param y 
 		 * @return size_t 
 		 */
-		size_t getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y);
+		size_t getSelectIndex(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, int x, int y);
 
 		/**
 		 * @brief Gets the selection index if the cursor were moved directly up.
@@ -175,7 +193,7 @@ namespace smpl
 		 * @param startSelectIndex 
 		 * @return size_t 
 		 */
-		size_t moveSelectionUp(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
+		size_t moveSelectionUp(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
 
 		/**
 		 * @brief Gets the selection index if the cursor were moved directly down.
@@ -187,15 +205,15 @@ namespace smpl
 		 * @param startSelectIndex 
 		 * @return size_t 
 		 */
-		size_t moveSelectionDown(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
+		size_t moveSelectionDown(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex);
 		
 		/**
 		 * @brief Returns the raw list of the font characters information.
 		 * 		It is not adjusted by the set font size. Each FontCharInfo must be adjusted
 		 * 		separately.
-		 * @return std::vector<FontCharInfo>&
+		 * @return SimpleHashSet<FontCharInfo, FontCharInfoHash, FontCharInfoEquals>&
 		 */
-		std::vector<FontCharInfo>& getListOfFontCharInfo();
+		SimpleHashSet<FontCharInfo, FontCharInfoHash, FontCharInfoEquals>& getListOfFontCharInfo();
 
 		/**
 		 * @brief Gets the bounding box for each character in the string. Useful for rendering purposes and selection purposes.
@@ -211,18 +229,16 @@ namespace smpl
 		 * @param wrapMode 
 		 * @return std::vector<Box2D> 
 		 */
-		std::vector<FontCharBoxInfo> getAllCharBoxes(StringBridge textBridge, unsigned int maxWidth, char wrapMode);
+		std::vector<FontCharBoxInfo> getAllCharBoxes(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode);
 		
-	protected:
-		std::vector<FontCharInfo> charInfoList = std::vector<FontCharInfo>();
-
 		/**
-		 * @brief Allows you to sort the list to maintain LogN search time.
-		 * @param insertionSort
-		 * 		Chooses whether to use insertion sort or merge sort for sorting.
-		 * 		Insertion Sort is best used when the list is mostly sorted.
+		 * @brief Converts font sizes in pt to px.
+		 *		It is calculated as 1.25 multiplier.
+		 * 
 		 */
-		void sortList(bool insertionSort);
+		static int ptToPx();
+	protected:
+		SimpleHashSet<FontCharInfo, FontCharInfoHash, FontCharInfoEquals> charInfoSet;
 
 		/**
 		 * @brief Adds character to the list.
@@ -231,7 +247,7 @@ namespace smpl
 		 * @param a
 		 * 		The information for the character.
 		 */
-		void addChar(FontCharInfo a);
+		void addChar(const FontCharInfo& a);
 
 		int maxHorizAdv = 0;
 		int ascent = 0;
@@ -243,8 +259,6 @@ namespace smpl
 
 	private:
 		bool sorted = false;
-
-	SERIALIZE_CLASS()
 	};
 
 }  //NAMESPACE smpl END

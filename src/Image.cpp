@@ -103,6 +103,8 @@ namespace smpl
 		
 		pixels = nullptr;
 		p.clearPalette();
+		width = 0;
+		height = 0;
 	}
 	
 	void Image::setSamplingMethod(int m)
@@ -135,7 +137,7 @@ namespace smpl
 		if(pixels == nullptr)
 			return Color();
 
-		if(edgeBehavior == NONE)
+		if(edgeBehavior == EDGE_NONE)
 		{
 			if (x < 0 || x >= width)
 				return Color();
@@ -143,7 +145,7 @@ namespace smpl
 				return Color();
 			return pixels[y * width + x];
 		}
-		else if(edgeBehavior == CLAMP)
+		else if(edgeBehavior == EDGE_CLAMP)
 		{
 			int tX, tY;
 			tX = MathExt::clamp(x, 0, width-1);
@@ -151,7 +153,7 @@ namespace smpl
 			
 			return pixels[tY * width + tX];
 		}
-		else if(edgeBehavior == REPEAT)
+		else if(edgeBehavior == EDGE_REPEAT)
 		{
 			int tX, tY;
 			tX = x % width;
@@ -165,15 +167,15 @@ namespace smpl
 
 	Color Image::getPixel(double x, double y, int edgeBehavior) const
 	{
-		if(samplingMethod == NEAREST)
+		if(samplingMethod == SAMPLING_NEAREST)
 		{
 			return getPixelNearestSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BILINEAR)
+		else if(samplingMethod == SAMPLING_BILINEAR)
 		{
 			return getPixelLinearSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BICUBIC)
+		else if(samplingMethod == SAMPLING_BICUBIC)
 		{
 			return getPixelCubicSampling(x, y, edgeBehavior);
 		}
@@ -277,15 +279,15 @@ namespace smpl
 	#ifdef __SSE4_2__
 	__m128i Image::getPixel(__m128 x, __m128 y, int edgeBehavior) const
 	{
-		if(samplingMethod == NEAREST)
+		if(samplingMethod == SAMPLING_NEAREST)
 		{
 			return getPixelNearestSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BILINEAR)
+		else if(samplingMethod == SAMPLING_BILINEAR)
 		{
 			return getPixelLinearSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BICUBIC)
+		else if(samplingMethod == SAMPLING_BICUBIC)
 		{
 			return getPixelCubicSampling(x, y, edgeBehavior);
 		}
@@ -344,15 +346,15 @@ namespace smpl
 	#ifdef __AVX2__
 	__m256i Image::getPixel(__m256 x, __m256 y, int edgeBehavior) const
 	{
-		if(samplingMethod == NEAREST)
+		if(samplingMethod == SAMPLING_NEAREST)
 		{
 			return getPixelNearestSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BILINEAR)
+		else if(samplingMethod == SAMPLING_BILINEAR)
 		{
 			return getPixelLinearSampling(x, y, edgeBehavior);
 		}
-		else if(samplingMethod == BICUBIC)
+		else if(samplingMethod == SAMPLING_BICUBIC)
 		{
 			return getPixelCubicSampling(x, y, edgeBehavior);
 		}

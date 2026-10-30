@@ -1,4 +1,5 @@
 #include "ext/SSLSingleton.h"
+#include "StringTools.h"
 
 #ifdef USE_OPENSSL
 
@@ -16,7 +17,6 @@ namespace smpl
     }
     SSL_Singleton::~SSL_Singleton()
     {
-
     }
 
     SSL_CTX* SSL_Singleton::getCTX()
@@ -26,6 +26,7 @@ namespace smpl
 
     SSL_Singleton& SSL_Singleton::getSingleton()
     {
+		static SSL_Singleton singleton;
         return singleton;
     }
 }

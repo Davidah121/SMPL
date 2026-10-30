@@ -31,21 +31,11 @@
 			 */
 			GLSprite(const Sprite& o);
 
-			/**
-			 * @brief Construct a new GLSprite object from another GLSprite object
-			 * 		Does not re-create the textures but instead just copies them.
-			 * 			Equivalent to a shallow copy.
-			 * 
-			 * @param o 
-			 */
-			GLSprite(const GLSprite& o);
-
-			/**
-			 * @brief Copies a GLSprite object
-			 * 
-			 * @param o 
-			 */
-			void operator=(const GLSprite& o);
+			GLSprite(const GLSprite& o) = default;
+			GLSprite& operator=(const GLSprite& o) = default;
+			
+			GLSprite(GLSprite&& o) = default;
+			GLSprite& operator=(GLSprite&& o) = default;
 
 			/**
 			 * @brief Copies a GLSprite object
@@ -53,7 +43,7 @@
 			 * 
 			 * @param o 
 			 */
-			void copy(const GLSprite& o);
+			void hardCopy(const GLSprite& o);
 
 			/**
 			 * @brief Destroy the GLSprite object
@@ -65,9 +55,9 @@
 			 * @brief Gets an texture from the sprite at the specified index.
 			 * 
 			 * @param index 
-			 * @return GLTexture* 
+			 * @return SmartMemory<GLTexture>
 			 */
-			GLTexture* getTexture(size_t index);
+			SmartMemory<GLTexture> getTexture(size_t index);
 
 			/**
 			 * @brief Gets the amount of images in the sprite.
@@ -77,11 +67,11 @@
 			size_t getSize();
 
 			/**
-			 * @brief Adds a new image to the sprite with a delay value.
+			 * @brief Adds a new image to the sprite with a default delay value of 0.
 			 * 
 			 * @param p 
 			 */
-			void addTexture(GLTexture* p);
+			void addTexture(const SmartMemory<GLTexture>& p);
 
 			/**
 			 * @brief Gets the Delay Time for the image.
@@ -112,7 +102,7 @@
 			 * 
 			 * @param file 
 			 */
-			void loadImage(File file, bool clear=false, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
+			bool loadImage(const File& file, bool clear=true, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
 			
 			/**
 			 * @brief Loads an image that contains a sprite sheet/atlas. These images contain smaller images separated
@@ -135,15 +125,15 @@
 			 * 		Clears the sprite when called
 			 * 		Default is true.
 			 */
-			void loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear=false, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
+			bool loadSpriteSheet(const File& file, int width, int height, int xStride, int yStride, int count, bool clear=true, bool includeAlpha=true, GLTextureParams params = {GLTexture::BEHAVIOR_CLAMP_TO_EDGE, GLTexture::FILTER_LINEAR});
 			
 
 			/**
-			 * @brief Deletes the images from the sprite. Any images added to the sprite, including those that were loaded,
-			 * 		will all be considered invalid.
+			 * @brief Deletes the images from the sprite. Works just like the software Sprite class where all smart pointers are cleared according to how they were created.
+			 *		All smart pointers created from class functions are the equivalent of shared_pointers
 			 * 
 			 */
-			void dispose();
+			void clear();
 
 			/**
 			 * @brief Returns if the animation for the sprite should loop.
@@ -162,7 +152,7 @@
 
 		private:
 			bool loops = true;
-			std::vector<GLTexture*> images = std::vector<GLTexture*>();
+			std::vector<SmartMemory<GLTexture>> images = std::vector<SmartMemory<GLTexture>>();
 			std::vector<int> delayTimeForFrame = std::vector<int>();
 
 		SERIALIZE_CLASS(loops, images, delayTimeForFrame)

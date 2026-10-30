@@ -73,8 +73,8 @@
             static void setClippingRectangle(int x, int y, int width, int height);
             static void resetClippingRectangle();
 
-            static void setFont(GLFont* font);
-            static GLFont* getFont();
+            static void setFont(const SmartMemory<GLFont>& font);
+            static SmartMemory<GLFont> getFont();
 
             static void drawSurface(float x1, float y1, float width, float height, GLSurface* s);
             static void drawTexture(float x1, float y1, float width, float height, GLTexture* tex);
@@ -85,10 +85,10 @@
             static void drawSprite(float x1, float y1, float width, float height, GLSprite* sprite, int index);
             static void drawSprite(float x, float y, GLSprite* sprite, int index);
 
-            static void drawText(StringBridge text, float x, float y, GLFont* fontPointer = nullptr);
-            static void drawTextHighlighted(StringBridge text, float x, float y, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
-            static void drawTextLimits(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode, GLFont* fontPointer = nullptr);
-            static void drawTextLimitsHighlighted(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor, GLFont* fontPointer = nullptr);
+            static void drawText(StringBridge text, float x, float y);
+            static void drawTextHighlighted(StringBridge text, float x, float y, int highlightStart, int highlightEnd, Vec4f highlightColor);
+            static void drawTextLimits(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode);
+            static void drawTextLimitsHighlighted(StringBridge text, float x, float y, float maxWidth, float maxHeight, char wrapMode, int highlightStart, int highlightEnd, Vec4f highlightColor);
 
 
             static void drawRectangle(float x1, float y1, float width, float height, bool outline);
@@ -131,14 +131,14 @@
 
             //Note that the following shaders will be implemented in the resource folder
             //This may change to being literal strings
-            static GLShader* textureShader;
-            static GLShader* circleShader;
-            static GLShader* ellipseShader;
-            static GLShader* rectangleShader;
-            static GLShader* textShader;
-            static GLFont* activeFont;
+            static SmartMemory<GLShader> textureShader;
+            static SmartMemory<GLShader> circleShader;
+            static SmartMemory<GLShader> ellipseShader;
+            static SmartMemory<GLShader> rectangleShader;
+            static SmartMemory<GLShader> textShader;
 
-            static GLFont* defaultFont;
+            static SmartMemory<GLFont> activeFont;
+            static SmartMemory<GLFont> defaultFont;
 
             static GLModel drawModel;
             static bool hasInit;

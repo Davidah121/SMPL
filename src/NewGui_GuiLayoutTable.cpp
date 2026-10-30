@@ -28,7 +28,7 @@ namespace smpl
         innerTablePadding = p;
     }
 
-    void GuiLayoutTable::render(SmartMemory<GuiManager> manager)
+    void GuiLayoutTable::render(const SmartMemory<GuiManager>& manager)
     {
         int tx = getTrueX();
         int ty = getTrueY();
@@ -541,7 +541,7 @@ namespace smpl
         // height = __min(height, actualMaxH);
     }
 
-    void GuiLayoutTable::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiLayoutTable::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayout::loadDataFromXML(attribs, manager);
         auto pair = attribs.find("inner-padding");
@@ -568,7 +568,7 @@ namespace smpl
         attribs.erase(pair);
     }
 
-    SmartMemory<GuiItem> GuiLayoutTable::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiLayoutTable::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutTable* ins = new GuiLayoutTable(1);
         ins->loadDataFromXML(attributes, manager);

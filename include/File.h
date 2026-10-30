@@ -148,7 +148,7 @@ namespace smpl
 		size_t getFileTime() const;
 
     private:
-        void init(std::string filename);
+        void init(const std::string& filename);
         
         std::string fullFileName;
         size_t locationOfExtension;

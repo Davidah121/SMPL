@@ -2,6 +2,7 @@
 
 namespace smpl
 {
+	GuiSelfRegisteringLoader<GuiLayoutFixed> GuiLayoutFixed::singleton("LayoutFixed");
     GuiLayoutFixed::GuiLayoutFixed() : GuiLayout()
     {
         setFocusable(false);
@@ -184,12 +185,12 @@ namespace smpl
         // height = __min(height, actualMaxH);
     }
 
-    void GuiLayoutFixed::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiLayoutFixed::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayout::loadDataFromXML(attribs, manager);
     }
 
-    SmartMemory<GuiItem> GuiLayoutFixed::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiLayoutFixed::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutFixed* ins = new GuiLayoutFixed();
         ins->loadDataFromXML(attributes, manager);

@@ -13,7 +13,6 @@ namespace smpl
 	std::vector<unsigned char> Compression::compressLZSS(unsigned char* data, size_t size)
 	{
 		BinarySet bin = BinarySet();
-		bin.setBitOrder(BinarySet::LMSB);
 
 		//unlike lz77, we need to deal with raw binary. We will use our BinarySet
 		//class since it provides an easy way to deal with binary and std::vector
@@ -88,7 +87,6 @@ namespace smpl
 	std::vector<unsigned char> Compression::decompressLZSS(unsigned char* data, size_t size, size_t bitSize, size_t expectedSize)
 	{
 		BinarySet bin = BinarySet();
-		bin.setBitOrder(BinarySet::LMSB);
 
 		std::vector<unsigned char> output = std::vector<unsigned char>();
 
@@ -118,15 +116,15 @@ namespace smpl
 			i++;
 			if(lit)
 			{
-				unsigned char literalValue = bin.getBits(i, i+8, false);
+				unsigned char literalValue = bin.getBitsReversed(i, i+8, BinarySet::LittleEndian);
 				i += 8;
 				output.push_back(literalValue);
 			}
 			else
 			{
-				int backwardsDis = bin.getBits(i, i+15, false);
+				int backwardsDis = bin.getBitsReversed(i, i+15, BinarySet::LittleEndian);
 				i += 15;
-				int copyLength = bin.getBits(i, i+8, false) + 3;
+				int copyLength = bin.getBitsReversed(i, i+8, BinarySet::LittleEndian) + 3;
 				i += 8;
 
 				int startLoc = output.size() - backwardsDis;

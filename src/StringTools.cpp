@@ -1009,7 +1009,6 @@ namespace smpl
 		char* binString = new char[bits+1];
 
 		BinarySet b = BinarySet();
-		b.setBitOrder(LMSB);
 		b.setValues(data, size);
 
 		for(size_t i=0; i<bits; i++)

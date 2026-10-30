@@ -28,7 +28,7 @@ namespace smpl
         height = __min(height, actualMaxH);
     }
 
-    void GuiClippingLayout::render(SmartMemory<GuiManager> manager)
+    void GuiClippingLayout::render(const SmartMemory<GuiManager>& manager)
     {
         //set clipping rectangle
         Box2D oldClipRect = smpl::GraphicsInterface::getClippingRect();
@@ -66,12 +66,12 @@ namespace smpl
         GraphicsInterface::setClippingRect(oldClipRect);
     }
 
-    void GuiClippingLayout::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiClippingLayout::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutFixed::loadDataFromXML(attribs, manager);
     }
 
-    SmartMemory<GuiItem> GuiClippingLayout::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiClippingLayout::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiClippingLayout* ins = new GuiClippingLayout();
         ins->loadDataFromXML(attributes, manager);

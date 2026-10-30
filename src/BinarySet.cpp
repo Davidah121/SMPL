@@ -1,4 +1,5 @@
 #include "BinarySet.h"
+#include "BitwiseTools.h"
 
 namespace smpl
 {
@@ -22,41 +23,40 @@ namespace smpl
 		}
 
 		this->set[byteLocation] += (v << (bitLocation));
-
 		bitNumber++;
 	}
 
-	void BinarySet::add(char* v, size_t size)
+	void BinarySet::add(char* v, size_t size, bool addBitOrder)
 	{
 		if(v != nullptr)
 		{
 			for (size_t i = 0; i < size; i++)
 			{
-				this->add(v[i]);
+				this->add(v[i], 8, 0, addBitOrder);
 			}
 		}
 	}
 
-	void BinarySet::add(unsigned char* v, size_t size)
+	void BinarySet::add(unsigned char* v, size_t size, bool addBitOrder)
 	{
 		if(v != nullptr)
 		{
 			for (size_t i = 0; i < size; i++)
 			{
-				this->add(v[i]);
+				this->add(v[i], 8, 0, addBitOrder);
 			}
 		}
 	}
 
-	void BinarySet::add(BinarySet& other)
+	void BinarySet::add(BinarySet& other, bool addBitOrder)
 	{
 		for(size_t i=0; i<other.size(); i++)
 		{
-			add( other.getBit(i) );
+			add( other.getBit(i), 1, 0, addBitOrder);
 		}
 	}
 
-	void BinarySet::setValues(char* v, size_t size)
+	void BinarySet::setValues(char* v, size_t size, bool addBitOrder)
 	{
 		if(v != nullptr)
 		{
@@ -68,9 +68,16 @@ namespace smpl
 			set.clear();
 			bitNumber = 0;
 		}
+		if(addBitOrder == RMSB)
+		{
+			for(unsigned char& c : set)
+			{
+				c = BitwiseTools::bitSwap(c);
+			}
+		}
 	}
 
-	void BinarySet::setValues(unsigned char* v, size_t size)
+	void BinarySet::setValues(unsigned char* v, size_t size, bool addBitOrder)
 	{
 		if(v != nullptr)
 		{
@@ -82,29 +89,23 @@ namespace smpl
 			set.clear();
 			bitNumber = 0;
 		}
+		if(addBitOrder == RMSB)
+		{
+			for(unsigned char& c : set)
+			{
+				c = BitwiseTools::bitSwap(c);
+			}
+		}
 	}
 
 	bool BinarySet::getBit(size_t index)
 	{
 		size_t byteLocation = index / 8;
 		size_t bitLocation = index % 8;
-
-		if (MSB == BinarySet::LMSB)
-		{
-			if (index < bitNumber)
-			{
-				return ((this->set[byteLocation] >> bitLocation) & 0x01)==1;
-			}
-		}
-		else
-		{
-			if (index < bitNumber)
-			{
-				return ((this->set[byteLocation] >> (7-bitLocation)) & 0x01)==1;
-			}
-		}
+		if (index < bitNumber)
+			return ((this->set[byteLocation] >> bitLocation) & 0x01);
 		
-		return false;
+		return false; //throw exception
 	}
 
 	unsigned char reverseBits(unsigned char b)
@@ -113,147 +114,54 @@ namespace smpl
 		return ret;
 	}
 
-	int BinarySet::getBits(size_t indexStart, size_t indexEnd, bool lmsb)
+	uint64_t BinarySet::getBitsReversed(size_t indexStart, size_t indexEnd, bool byteOrder)
 	{
-		int value = 0;
-		if(indexStart >= 0 && indexStart <= bitNumber)
+		//lazy way
+		uint64_t result = 0;
+		size_t totalBits = indexEnd-indexStart;
+
+		for(size_t i=0; i<totalBits; i++)
 		{
-			if(indexEnd >= 0 && indexEnd <= bitNumber)
+			result = result << 1 | getBit(indexStart+i);
+		}
+		if(byteOrder == BigEndian)
+		{
+			size_t bytesRequired = totalBits/8;
+			if(totalBits % 8 != 0)
+				bytesRequired++;
+
+			char* rawBytes = (char*)&result;
+			for(size_t i=0; i<bytesRequired/2; i++)
 			{
-				size_t totalSize = indexEnd-indexStart;
-				if(lmsb)
-				{
-					// for (size_t i = 0; i < totalSize; i++)
-					// {
-					// 	value += (int)getBit(indexStart + i) << (totalSize - i - 1);
-					// }
-					// return value;
-					size_t sByteLocation = indexStart / 8;
-					size_t sBitLocation = indexStart % 8;
-					
-					size_t eByteLocation = indexEnd / 8;
-					size_t eBitLocation = indexEnd % 8;
-
-					if(MSB == BinarySet::LMSB)
-					{
-						for (size_t i = indexStart; i < indexEnd; i++)
-						{
-							size_t byteLocation = i / 8;
-							size_t bitLocation = i % 8;
-							value = (value<<1) | ((set[byteLocation] >> bitLocation) & 0x01);
-						}
-						return value;
-						
-						// //case 2
-						// unsigned char revB1 = set[sByteLocation];
-						// value = revB1 & ((1<<(8-sBitLocation))-1);
-
-						// int startI = sByteLocation+1;
-						// int endI = eByteLocation-1;
-						// if(endI < startI)
-						// 	return value;
-						
-						// for(int i=startI; i<endI; i++)
-						// {
-						// 	value = (value << 8) | set[i];
-						// }
-						
-						// unsigned char revB2 = set[eByteLocation];
-						// value = (value<<eBitLocation) | ((revB2>>(8-eBitLocation)) & ((1<<eBitLocation)-1));
-					}
-					else
-					{
-						for (size_t i = indexStart; i < indexEnd; i++)
-						{
-							size_t byteLocation = i / 8;
-							size_t bitLocation = i % 8;
-							value = (value<<1) | ((set[byteLocation] >> (7-bitLocation)) & 0x01);
-						}
-						return value;
-
-					// 	//case 4
-					// 	unsigned char revB1 = reverseBits(set[sByteLocation]);
-					// 	value = revB1 & ((1<<(8-sBitLocation))-1);
-
-					// 	int startI = sByteLocation+1;
-					// 	int endI = eByteLocation-1;
-					// 	if(endI < startI)
-					// 		return value;
-						
-					// 	for(int i=startI; i<endI; i++)
-					// 	{
-					// 		value = (value << 8) | reverseBits(set[i]);
-					// 	}
-						
-					// 	unsigned char revB2 = reverseBits(set[eByteLocation]);
-					// 	value = (value<<eBitLocation) | ((revB2>>(8-eBitLocation)) & ((1<<eBitLocation)-1));
-					}
-					
-				}
-				else 
-				{
-					for (size_t i = 0; i < totalSize; i++)
-					{
-						value += (int)getBit(indexStart + i) << i;
-					}
-					return value;
-					
-					// int firstBitsToGrab = 8-(indexStart % 8);
-					// int firstByteLoc = indexStart / 8;
-					// int lastBitsToGrab = (indexEnd % 8);
-					// int lastByteLoc = indexEnd / 8;
-					
-					// int firstShiftAmount = (indexStart % 8);
-					// int firstBitAndAmount = ((1<<firstBitsToGrab)-1);
-					// int lastBitAndAmount = ((1<<lastBitsToGrab)-1);
-
-					// if(MSB == BinarySet::LMSB)
-					// {
-					// 	//case 1
-						
-					// 	//grab the bits from the first byte. May not be 8
-					// 	value = set[lastByteLoc] & lastBitAndAmount;
-						
-					// 	size_t startI = lastByteLoc-1;
-					// 	size_t endI = firstByteLoc;
-					// 	if(endI > startI)
-					// 		return value;
-						
-					// 	//grab the bytes between first and last byte. Always 8 bits
-					// 	for (size_t i=startI; i>endI; i--)
-					// 	{
-					// 		value = (value << 8) | set[i];
-					// 	}
-						
-					// 	//grab the last bits. May not be 8
-					// 	value = (value << firstBitsToGrab) | ((set[firstByteLoc]>>firstShiftAmount) & firstBitAndAmount);
-					// }
-					// else
-					// {
-					// 	//case 3
-
-					// 	//grab the bits from the first byte. May not be 8
-					// 	value = reverseBits(set[lastByteLoc]) & lastBitAndAmount;
-						
-					// 	size_t startI = lastByteLoc-1;
-					// 	size_t endI = firstByteLoc;
-					// 	if(endI > startI)
-					// 		return value;
-						
-					// 	//grab the bytes between first and last byte. Always 8 bits
-					// 	for (size_t i=startI; i>endI; i--)
-					// 	{
-					// 		value = (value << 8) | reverseBits(set[i]);
-					// 	}
-						
-					// 	//grab the last bits. May not be 8
-					// 	value = (value << firstBitsToGrab) | ((reverseBits(set[firstByteLoc])>>firstShiftAmount) & firstBitAndAmount);
-					// }
-				}
+				rawBytes[i] = rawBytes[bytesRequired-1-i];
 			}
 		}
+		return result;
+	}
+	uint64_t BinarySet::getBits(size_t indexStart, size_t indexEnd, bool byteOrder)
+	{
+		//lazy way
+		uint64_t result = 0;
+		size_t totalBits = indexEnd-indexStart;
 
-		return value;
+		for(size_t i=0; i<totalBits; i++)
+		{
+			result |= getBit(indexStart+i)<<i;
+		}
+
+		if(byteOrder == BigEndian)
+		{
+			size_t bytesRequired = totalBits/8;
+			if(totalBits % 8 != 0)
+				bytesRequired++;
+
+			char* rawBytes = (char*)&result;
+			for(size_t i=0; i<bytesRequired/2; i++)
+			{
+				rawBytes[i] = rawBytes[bytesRequired-1-i];
+			}
+		}
+		return result;
 	}
 
 	void BinarySet::setBit(bool value, size_t index)
@@ -311,16 +219,6 @@ namespace smpl
 	{
 		set.clear();
 		bitNumber = 0;
-	}
-
-	void BinarySet::setBitOrder(bool bitOrder)
-	{
-		MSB = bitOrder;
-	}
-
-	void BinarySet::setAddBitOrder(bool bitOrder)
-	{
-		addBitOrder = bitOrder;
 	}
 
 } //NAMESPACE glib END

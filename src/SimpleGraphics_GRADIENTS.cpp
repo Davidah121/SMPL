@@ -10,11 +10,11 @@ namespace smpl
 			if(!surf)
 				return;
 
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+			int minXBound = max(0, (int)clippingRect.getLeftBound());
+			int minYBound = max(0, (int)clippingRect.getTopBound());
 
-			int maxXBound = MathExt::min(surf->getWidth()-1, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(surf->getHeight()-1, (int)clippingRect.getBottomBound());
+			int maxXBound = min(surf->getWidth()-1, (int)clippingRect.getRightBound());
+			int maxYBound = min(surf->getHeight()-1, (int)clippingRect.getBottomBound());
 			
 			//vector projection
 			//Normalize dirVec to reduce needed work per pixel
@@ -58,11 +58,11 @@ namespace smpl
 			if(!surf)
 				return;
 			double rAbs = MathExt::abs(radius);
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+			int minXBound = max(0, (int)clippingRect.getLeftBound());
+			int minYBound = max(0, (int)clippingRect.getTopBound());
 
-			int maxXBound = MathExt::min(surf->getWidth()-1, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(surf->getHeight()-1, (int)clippingRect.getBottomBound());
+			int maxXBound = min(surf->getWidth()-1, (int)clippingRect.getRightBound());
+			int maxYBound = min(surf->getHeight()-1, (int)clippingRect.getBottomBound());
 			
 			//distance
 			for(int y=minYBound; y<maxYBound; y++)

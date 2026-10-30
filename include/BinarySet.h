@@ -31,11 +31,13 @@ namespace smpl
 
 		//CONSTANTS
 		
-		///LEFT MOST SIGNIFICANT BIT
-		static const bool LMSB = true;
+		///RIGHT MOST SIGNIFICANT BYTE
+		static const bool LittleEndian = true;
+		static const bool RMSB = true;
 		
-		///RIGHT MOST SIGNIFICANT BIT
-		static const bool RMSB = false;
+		///LEFT MOST SIGNIFICANT BYTE
+		static const bool BigEndian = false;
+		static const bool LMSB = false;
 
 		/**
 		 * @brief Adds a bit to the set.
@@ -54,17 +56,20 @@ namespace smpl
 		 * 		Can be less than the size of the data but not greater than that size.
 		 * @param offset
 		 * 		The offset from the start of the bits in the data to start adding from.
+		 * @param addBitOrder
+		 *		Controls the order that bits are added to the data. 
+		 *			In most cases, the left most bit in a byte is more significant as this is default.
+		 *			In some cases, it may be useful to swap the order for files.
 		 */
 		template<typename T>
-		void add(T v, int amountOfBits = 128, int offset = 0)
+		void add(const T& v, int amountOfBits = 128, int offset = 0, bool addBitOrder = LMSB)
 		{
 			int sizeInBits = sizeof(T) * 8;
 
 			int actualAmount = amountOfBits;
 			if (amountOfBits > sizeInBits)
-			{
 				actualAmount = sizeInBits;
-			}
+			
 
 			if(actualAmount < 0)
 				actualAmount = 0;
@@ -74,9 +79,7 @@ namespace smpl
 				offset = 0;
 			
 			if (offset + actualAmount < end)
-			{
 				end = offset+actualAmount;
-			}
 
 			for (int i = offset; i < end; i++)
 			{
@@ -98,7 +101,7 @@ namespace smpl
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void add(char* v, size_t size);
+		void add(char* v, size_t size, bool addBitOrder = LMSB);
 
 		/**
 		 * @brief Adds an array of unsigned char to the set.
@@ -108,7 +111,7 @@ namespace smpl
 		 * @param size
 		 * 		The amount of items in the array.
 		 */
-		void add(unsigned char* v, size_t size);
+		void add(unsigned char* v, size_t size, bool addBitOrder = LMSB);
 
 		/**
 		 * @brief Adds another BinarySet to the current set.
@@ -116,7 +119,7 @@ namespace smpl
 		 * @param other
 		 * 		The BinarySet object to add.
 		 */
-		void add(BinarySet& other);
+		void add(BinarySet& other, bool addBitOrder = LMSB);
 
 		/**
 		 * @brief Set an array of char values to used as the BinarySet data.
@@ -126,8 +129,12 @@ namespace smpl
 		 * 		The pointer to the array of char
 		 * @param size
 		 * 		The amount of items in the array.
+		 * @param addBitOrder
+		 *		Allows swapping of the order of the bits per each byte.
+		 *			Typically ordered as |7-6-5-4-3-2-1-0|
+		 *			Can be ordered as |0-1-2-3-4-5-6-7| which some compression methods utilize
 		 */
-		void setValues(char* v, size_t size);
+		void setValues(char* v, size_t size, bool addBitOrder = LMSB);
 
 		/**
 		 * @brief Set an array of unsigned char values to used as the BinarySet data.
@@ -137,8 +144,12 @@ namespace smpl
 		 * 		The pointer to the array of unsigned char
 		 * @param size
 		 * 		The amount of items in the array.
+		 * @param addBitOrder
+		 *		Allows swapping of the order of the bits per each byte.
+		 *			Typically ordered as |7-6-5-4-3-2-1-0|
+		 *			Can be ordered as |0-1-2-3-4-5-6-7| which some compression methods utilize
 		 */
-		void setValues(unsigned char* v, size_t size);
+		void setValues(unsigned char* v, size_t size, bool addBitOrder = LMSB);
 
 		/**
 		 * @brief Gets a bit from the set.
@@ -152,17 +163,35 @@ namespace smpl
 
 		/**
 		 * @brief Gets a collection of bits from the set.
+		 *		Reads in data such that the first bit read is the least significant bit.
+		 *		Note the final result is affected by the flags set for the function
+		 *		A maximum of 64 bits can be read at a time with this function.
+		 *		This value will need to be type-punned to the appropriate type desired most likely
 		 * 
 		 * @param indexStart
 		 * 		The start index of the bits to get.
 		 * @param indexEnd
 		 * 		The end index of the bits to get.
-		 * @param lmsb
-		 * 		Controls whether to set the bits in the number from LMSB or RMSB
-		 * @return int
+		 * @param byteOrder
+		 *		The stored order of the internal bytes. This determines which byte is more significant meaning are the bytes to the right or left more significant.
+		 *			LittleEndian starts reading from the right most byte as that is the 0th byte
+		 *			BigEndian starts reading from the left most byte as that is the 0th byte
+		 * @return uint64_t
 		 * 		Returns the value of the bits as a number.
 		 */
-		int getBits(size_t indexStart, size_t indexEnd, bool lmsb = false);
+		uint64_t getBits(size_t indexStart, size_t indexEnd, bool byteOrder);
+
+		/**
+		 * @brief Gets a collection of bits from the set and fills out the output value in reversed order.
+		 *		Reads in data such that the first bit read is the most significant bit.
+		 *		In some cases when reading binary data, binary data may be expected to be read in such that the first bit is the most significant instead of being the least significant.
+		 * 
+		 * @param indexStart 
+		 * @param indexEnd 
+		 * @param byteOrder 
+		 * @return uint64_t 
+		 */
+		uint64_t getBitsReversed(size_t indexStart, size_t indexEnd, bool byteOrder);
 
 		/**
 		 * @brief Sets a bit at the specified location
@@ -211,31 +240,12 @@ namespace smpl
 		 */
 		void setNumberOfBits(size_t n);
 
-		/**
-		 * @brief Sets the bit order to either LMSB or RMSB.
-		 * 		This adjusts how the function getBit will work but does not
-		 * 		change how the data is stored or how data is added to it.
-		 * @param bitOrder
-		 * 		LMSB or RMSB constants should be used.
-		 */
-		void setBitOrder(bool bitOrder);
-
-		/**
-		 * @brief Sets the add bit order to either LMSB or RMSB.
-		 * 		This adjusts how the function add will work but does not
-		 * 		change how the data is stored or how data is accessed.
-		 * @param bitOrder
-		 * 		LMSB or RMSB constants should be used.
-		 */
-		void setAddBitOrder(bool order);
-
 	private:
+	
 		std::vector<unsigned char> set = std::vector<unsigned char>();
-		bool MSB = true;
-		bool addBitOrder = LMSB;
 		size_t bitNumber = 0;
 
-	SERIALIZE_CLASS(MSB, addBitOrder, bitNumber, set)
+	SERIALIZE_CLASS(bitNumber, set)
 	};
 
 }  //NAMESPACE smpl END

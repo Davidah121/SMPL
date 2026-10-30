@@ -104,6 +104,12 @@ namespace smpl
 		}
 	}
 
+	
+	std::pair<Vec2f, Vec2f> VectorEllipse::getBoundingBox()
+	{
+		return {Vec2f(cx-rx, cy-ry), Vec2f(cx+rx, cy+ry)};
+	}
+
 	void VectorEllipse::setX(double x)
 	{
 		this->cx = x;

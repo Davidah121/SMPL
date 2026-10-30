@@ -217,9 +217,9 @@ namespace smpl
 				MathExt::FCT8x8(crMat, &q3, true);
 
 				int yRange = img->getHeight() - y;
-				yRange = MathExt::min(yRange, 8);
+				yRange = min(yRange, 8);
 				int xRange = img->getWidth() - x;
-				xRange = MathExt::min(xRange, 8);
+				xRange = min(xRange, 8);
 				
 				for(int y2=0; y2<yRange; y2++)
 				{
@@ -264,8 +264,7 @@ namespace smpl
 		int startY = 0;
 		BinarySet binSet = BinarySet();
 		int binNum = 0;
-		binSet.setBitOrder(BinarySet::RMSB);
-		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
+		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size(), BinarySet::RMSB);
 
 		bool dcMode = false;
 		if(selectionStart==0)
@@ -369,11 +368,11 @@ namespace smpl
 							if(binSet.getBit(binNum)==0)
 							{
 								//negative
-								dcValue = -((1<<category)-1) + binSet.getBits(binNum+1, binNum+category, true);
+								dcValue = -((1<<category)-1) + binSet.getBitsReversed(binNum+1, binNum+category, BinarySet::LittleEndian);
 							}
 							else
 							{
-								dcValue = binSet.getBits(binNum, binNum+category, true);
+								dcValue = binSet.getBitsReversed(binNum, binNum+category, BinarySet::LittleEndian);
 							}
 						}
 
@@ -474,7 +473,7 @@ namespace smpl
 								jpegData.eobRun = 1 << r;
 								if(r>0)
 								{
-									jpegData.eobRun += binSet.getBits(binNum, binNum+r, true);
+									jpegData.eobRun += binSet.getBitsReversed(binNum, binNum+r, BinarySet::LittleEndian);
 									binNum += r;
 								}
 							}
@@ -488,11 +487,11 @@ namespace smpl
 							if(binSet.getBit(binNum)==0)
 							{
 								//negative
-								acValue = -((1<<s)-1) + binSet.getBits(binNum+1, binNum+s, true);
+								acValue = -((1<<s)-1) + binSet.getBitsReversed(binNum+1, binNum+s, BinarySet::LittleEndian);
 							}
 							else
 							{
-								acValue = binSet.getBits(binNum, binNum+s, true);
+								acValue = binSet.getBitsReversed(binNum, binNum+s, BinarySet::LittleEndian);
 							}
 							binNum+=s;
 							
@@ -580,8 +579,7 @@ namespace smpl
 		int startY = 0;
 		BinarySet binSet = BinarySet();
 		int binNum = 0;
-		binSet.setBitOrder(BinarySet::RMSB);
-		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
+		binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size(), BinarySet::RMSB);
 
 		bool dcMode = false;
 		if(selectionStart==0)
@@ -739,7 +737,7 @@ namespace smpl
 										jpegData.eobRun = 1 << r;
 										if(r>0)
 										{
-											jpegData.eobRun += binSet.getBits(binNum, binNum+r, true);
+											jpegData.eobRun += binSet.getBitsReversed(binNum, binNum+r, BinarySet::LittleEndian);
 											binNum+=r;
 										}
 										break;
@@ -925,8 +923,7 @@ namespace smpl
 		{
 			//process image data
 			BinarySet binSet = BinarySet();
-			binSet.setBitOrder(BinarySet::RMSB);
-			binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size());
+			binSet.setValues(jpegData.compressedData.data(), jpegData.compressedData.size(), BinarySet::RMSB);
 
 			//grab a single grid and process that first
 			// int matFilled = 0; //Not used
@@ -1023,12 +1020,12 @@ namespace smpl
 								if(binSet.getBit(bitNum)==0)
 								{
 									//negative
-									dcValue = -( (1<<(category)) - 1) + binSet.getBits(bitNum+1, bitNum+category, true);
+									dcValue = -( (1<<(category)) - 1) + binSet.getBitsReversed(bitNum+1, bitNum+category, BinarySet::LittleEndian);
 								}
 								else
 								{
 									//positive
-									dcValue = binSet.getBits(bitNum, bitNum+category, true);
+									dcValue = binSet.getBitsReversed(bitNum, bitNum+category, BinarySet::LittleEndian);
 								}
 							}
 
@@ -1082,12 +1079,12 @@ namespace smpl
 								if(binSet.getBit(bitNum)==0)
 								{
 									//negative
-									acValue = -( (1<<(category)) - 1) + binSet.getBits(bitNum+1, bitNum+category, true);
+									acValue = -( (1<<(category)) - 1) + binSet.getBitsReversed(bitNum+1, bitNum+category, BinarySet::LittleEndian);
 								}
 								else
 								{
 									//positive
-									acValue = binSet.getBits(bitNum, bitNum+category, true);
+									acValue = binSet.getBitsReversed(bitNum, bitNum+category, BinarySet::LittleEndian);
 								}
 							}
 

@@ -3,7 +3,7 @@
 #include "SIMD.h"
 #include "Algorithms.h"
 #include "StringTools.h"
-#include "Vec2f.h"
+#include "Vec2.h"
 #include <vector>
 
 namespace smpl
@@ -400,5 +400,31 @@ namespace smpl
 			surfacePixels += SIMD_U32::SIZE;
 			xValues += SIMD_FP32::SIZE;
 		}
+	}
+	
+
+	TextureFillFunction::TextureFillFunction(Image* texture, int edgeBehavior, const Vec2f& topLeft, const Vec2f& bottomRight)
+	{
+		this->texture = texture;
+		this->edgeBehavior = edgeBehavior;
+		boxTopLeft = topLeft;
+		boxBottomRight = bottomRight;
+	}
+	TextureFillFunction::~TextureFillFunction()
+	{
+
+	}
+
+	Color TextureFillFunction::getColor(int x, int y)
+	{
+		if(this->texture != nullptr)
+			return texture->getPixel(x, y, edgeBehavior);
+		return {0, 0, 0, 0}; //should throw an exception honestly
+	}
+	void TextureFillFunction::fillBetween(int x1, int x2, int y)
+	{
+		//assume __m128 -> 4 floats
+		//grab 4 x values from x1 to x2
+		//convert to x to 0-1
 	}
 }

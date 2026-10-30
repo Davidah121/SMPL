@@ -15,12 +15,12 @@ namespace smpl
 
     }
 
-    void GuiSprite::setSprite(SmartMemory<SpriteInterface> spr)
+    void GuiSprite::setSprite(const SpriteInterface& spr)
     {
         this->spr = spr;
     }
 
-    void GuiSprite::setColor(Color c)
+    void GuiSprite::setColor(const Color& c)
     {
         imgColor = c;
     }
@@ -48,9 +48,9 @@ namespace smpl
     void GuiSprite::setSpriteIndex(int i)
     {
         spriteIndex = i;
-        if(spr.getPointer() != nullptr)
+        if(spr.getSprite().isValid())
         {
-            size_t maxSize = spr.getRawPointer()->getSize();
+            size_t maxSize = spr.getSize();
             if(spriteIndex > maxSize)
                 spriteIndex = maxSize;
         }
@@ -96,11 +96,11 @@ namespace smpl
         x = offX;
         y = offY;
 
-        if(spr.getPointer() != nullptr)
+        if(spr.getSprite().isValid())
         {
-            ImageInterface shallowCopy = spr.getRawPointer()->getImage(spriteIndex);
-            width = shallowCopy.getWidth();
-            height = shallowCopy.getHeight();
+            ImageInterface img = spr.getImage(spriteIndex);
+            width = img.getWidth();
+            height = img.getHeight();
 
             if(isScalable)
             {
@@ -118,7 +118,7 @@ namespace smpl
 
                 if(shouldMaintainAspectRatio)
                 {
-                    double scaleValue = MathExt::min(allowedMaxWidth / width, allowedMaxHeight / height);
+                    double scaleValue = min(allowedMaxWidth / width, allowedMaxHeight / height);
                     
                     scaledWidth = width*scaleValue;
                     scaledHeight = height*scaleValue;
@@ -143,16 +143,16 @@ namespace smpl
         }
     }
 
-    void GuiSprite::update(SmartMemory<GuiManager> manager)
+    void GuiSprite::update(const SmartMemory<GuiManager>& manager)
     {
-        if(spr.getPointer() != nullptr)
+        if(spr.getSprite().isValid())
         {
             if(autoAnimate)
             {
                 bool wentToNewFrame = false;
 
-                size_t maxSize = spr.getRawPointer()->getSize();
-                int waitTime = spr.getRawPointer()->getDelayTime(spriteIndex);
+                size_t maxSize = spr.getSize();
+                int waitTime = spr.getDelayTime(spriteIndex);
 
                 size_t currTime = System::getCurrentTimeMillis();
                 size_t timePassed = currTime - lastUpdateTime;
@@ -189,26 +189,26 @@ namespace smpl
         }
     }
 
-    void GuiSprite::render(SmartMemory<GuiManager> manager)
+    void GuiSprite::render(const SmartMemory<GuiManager>& manager)
     {
         //assume that trueX and trueY have been properly updated.
-        if(spr.getPointer() != nullptr)
+        if(spr.getSprite().isValid())
         {
             GraphicsInterface::setColor(imgColor);
-            ImageInterface shallowCopy = spr.getRawPointer()->getImage(spriteIndex);
+            ImageInterface shallowCopy = spr.getImage(spriteIndex);
 
             if(isScalable)
             {
-                GraphicsInterface::drawSprite(&shallowCopy, getTrueX(), getTrueY(), scaledWidth, scaledHeight);
+                GraphicsInterface::drawSprite(shallowCopy, getTrueX(), getTrueY(), scaledWidth, scaledHeight);
             }
             else
             {
-                GraphicsInterface::drawSprite(&shallowCopy, getTrueX(), getTrueY());
+                GraphicsInterface::drawSprite(shallowCopy, getTrueX(), getTrueY());
             }
         }
     }
 
-    void GuiSprite::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiSprite::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiContent::loadDataFromXML(attribs, manager);
         
@@ -277,7 +277,7 @@ namespace smpl
         
     }
 
-    SmartMemory<GuiItem> GuiSprite::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiSprite::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiSprite* ins = new GuiSprite();
         ins->loadDataFromXML(attributes, manager);

@@ -586,7 +586,7 @@ namespace smpl
 		}
 
 		tImg = new HiResImage(imgData->width, imgData->height);
-
+		
 		std::vector<unsigned char> decompressedData = Compression::decompressDeflate(&imgData->compressedData.data()[2], imgData->compressedData.size()-4);
 		//note that when reading different bit depths, they are packed into bytes
 		//instead of taking up an entire byte.
@@ -650,15 +650,12 @@ namespace smpl
 		int pass = 1;
 		int scanlinesDone = 0;
 		int yGridsNeeded = 0;
-		int scanLineBits = 0;
 		if(interlace)
 		{
 			xGrids = (int)MathExt::ceil((double)xGrids / 8.0);
 			yGrids = (int)MathExt::ceil((double)yGrids / 8.0);
 			
 			scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
-			scanLineBits = xGrids * bitDepth;
-
 			yGridsNeeded = yGrids;
 
 			//note that scanLineBytes was changed to a completely new value
@@ -701,31 +698,31 @@ namespace smpl
 					switch (pass)
 					{
 						case 1:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0));
 							yGridsNeeded = yGrids;
 							break;
 						case 2:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0));
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0));
 							yGridsNeeded = yGrids;
 							break;
 						case 3:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0) * 2);
 							yGridsNeeded = yGrids;
 							break;
 						case 4:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 2);
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0) * 2);
 							yGridsNeeded = yGrids*2;
 							break;
 						case 5:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0) * 4);
 							yGridsNeeded = yGrids*2;
 							break;
 						case 6:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 4);
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0) * 4);
 							yGridsNeeded = yGrids*4;
 							break;
 						case 7:
-							scanLineBytes = (int)MathExt::ceil(xGrids * (bitDepth/8.0) * 8);
+							scanLineBytes = (int)MathExt::ceil(xGrids * ((float)bitDepth/8.0) * 8);
 							yGridsNeeded = yGrids*4;
 							break;
 						default:
@@ -931,7 +928,6 @@ namespace smpl
 				default:
 					break;
 				}
-
 			}
 
 			if(colorType==0)
@@ -943,9 +939,8 @@ namespace smpl
 				if(bitDepth<8)
 				{
 					BinarySet pixelBits = BinarySet();
-					pixelBits.setValues(scanLine.data(), scanLineBytes);
-					pixelBits.setNumberOfBits(scanLineBits);
-					pixelBits.setBitOrder(BinarySet::RMSB);
+					//incoming complications. The data is stored as |0-1-2-3-4-5-6-7| in binary instead of the typical |7-6-5-4-3-2-1-0|
+					pixelBits.setValues(scanLine.data(), scanLineBytes, BinarySet::RMSB);
 					
 					//Increase Color Amount
 					double ICA = 1.0 / ((2<<(bitDepth-1)) - 1);
@@ -953,7 +948,8 @@ namespace smpl
 					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
 						Color4f c;
-						c.red = (ICA * pixelBits.getBits(i, i + bitDepth, true));
+						
+						c.red = (ICA * pixelBits.getBitsReversed(i, i + bitDepth, BinarySet::LittleEndian));
 						c.green = c.red;
 						c.blue = c.red;
 						c.alpha = 1.0;
@@ -977,8 +973,8 @@ namespace smpl
 					{
 						Color4f c;
 						c.red = (double)scanLine[i] / 255.0;
-						c.green = c.green;
-						c.blue = c.blue;
+						c.green = c.red;
+						c.blue = c.red;
 						c.alpha = 1.0;
 
 						if(!interlace)
@@ -1076,13 +1072,11 @@ namespace smpl
 				if(bitDepth<8)
 				{
 					BinarySet pixelBits = BinarySet();
-					pixelBits.setValues(scanLine.data(), scanLineBytes);
-					pixelBits.setNumberOfBits(scanLineBits);
-					pixelBits.setBitOrder(BinarySet::RMSB);
+					pixelBits.setValues(scanLine.data(), scanLineBytes, BinarySet::RMSB);
 					
 					for(size_t i = 0; i<pixelBits.size(); i+=bitDepth)
 					{
-						paletteIndex = pixelBits.getBits(i, i+bitDepth, true);
+						paletteIndex = pixelBits.getBitsReversed(i, i+bitDepth, BinarySet::LittleEndian);
 
 						Color pColor = p->getColor(paletteIndex);
 						Color4f c = pColor;

@@ -9,49 +9,48 @@
 
 		GLSprite::~GLSprite()
 		{
-			dispose();
 		}
 
-		GLSprite::GLSprite(const GLSprite& o)
-		{
-			copy(o);
-		}
-
-		void GLSprite::operator=(const GLSprite& o)
-		{
-			copy(o);
-		}
-
-		void GLSprite::copy(const GLSprite& o)
+		void GLSprite::hardCopy(const GLSprite& o)
 		{
 			delayTimeForFrame = o.delayTimeForFrame;
-			images = o.images;
+			loops = o.loops;
+			
+			//hard copy
+			for(size_t i=0; i<o.images.size(); i++)
+			{
+				LockingSmartMemory<GLTexture> lockedPointer = o.images[i].getLockingPointer();
+				if(lockedPointer == nullptr)
+				{
+					images.push_back(nullptr);
+				}
+				else
+				{
+					GLTexture* nImg = new GLTexture();
+					nImg->copyTexture(*lockedPointer.getRawPointer());
+					images.push_back( nImg );
+				}
+			}
+			// images = o.images;
 		}
 
 		GLSprite::GLSprite(const Sprite& o)
 		{
 			for(size_t i=0; i<o.getSize(); i++)
 			{
-				images.push_back( new GLTexture(o.getImage(i)) );
+				LockingSmartMemory<Image> img = o.getImage(i).getLockingPointer();
+				images.push_back( new GLTexture(img.getPointer()) );
 				delayTimeForFrame.push_back( o.getDelayTime(i) );
 			}
 		}
 
-		void GLSprite::dispose()
+		void GLSprite::clear()
 		{
-			for(size_t i=0; i<images.size(); i++)
-			{
-				if(images[i]!=nullptr)
-				{
-					delete images[i];
-				}
-			}
-
 			images.clear();
 			delayTimeForFrame.clear();
 		}
 
-		GLTexture* GLSprite::getTexture(size_t index)
+		SmartMemory<GLTexture> GLSprite::getTexture(size_t index)
 		{
 			if (images.size() > index)
 			{
@@ -77,7 +76,7 @@
 			return images.size();
 		}
 
-		void GLSprite::addTexture(GLTexture* p)
+		void GLSprite::addTexture(const SmartMemory<GLTexture>& p)
 		{
 			images.push_back(p);
 		}
@@ -86,7 +85,7 @@
 		{
 			if (index < images.size())
 			{
-				std::vector<GLTexture*> newImages = std::vector<GLTexture*>();
+				std::vector<SmartMemory<GLTexture>> newImages = std::vector<SmartMemory<GLTexture>>();
 				std::vector<int> nDelay = std::vector<int>();
 
 				for (size_t i = 0; i < images.size(); i++)
@@ -96,8 +95,6 @@
 						newImages.push_back(images[i]);
 						nDelay.push_back(delayTimeForFrame[i]);
 					}
-					else
-						delete images[i];
 				}
 
 				images = newImages;
@@ -105,35 +102,37 @@
 			}
 		}
 
-		void GLSprite::loadImage(File file, bool clear, bool includeAlpha, GLTextureParams params)
+		bool GLSprite::loadImage(const File& file, bool shouldClear, bool includeAlpha, GLTextureParams params)
 		{
-			if(clear)
-				dispose();
+			if(shouldClear)
+				clear();
 			
 			Sprite s;
-			s.loadImage(file);
+			bool fine = s.loadImage(file);
 			for (size_t i=0; i<s.getSize(); i++)
 			{
-				GLTexture* k = new GLTexture(s.getImage(i), includeAlpha, params);
+				SmartMemory<GLTexture> k = new GLTexture(s.getImage(i).getRawPointer(), includeAlpha, params);
 				addTexture(k);
 				delayTimeForFrame.push_back(s.getDelayTime(i));
 			}
+			return fine;
 		}
 
 		
-		void GLSprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear, bool includeAlpha, GLTextureParams params)
+		bool GLSprite::loadSpriteSheet(const File& file, int width, int height, int xStride, int yStride, int count, bool shouldClear, bool includeAlpha, GLTextureParams params)
 		{
-			if(clear)
-				dispose();
+			if(shouldClear)
+				clear();
 			
 			Sprite s;
-			s.loadSpriteSheet(file, width, height, xStride, yStride, count);
+			bool fine = s.loadSpriteSheet(file, width, height, xStride, yStride, count);
 			for (size_t i=0; i<s.getSize(); i++)
 			{
-				GLTexture* k = new GLTexture(s.getImage(i), includeAlpha, params);
+				GLTexture* k = new GLTexture(s.getImage(i).getRawPointer(), includeAlpha, params);
 				addTexture(k);
 				delayTimeForFrame.push_back(s.getDelayTime(i));
 			}
+			return fine;
 		}
 
 		bool GLSprite::shouldLoop()

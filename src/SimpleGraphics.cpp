@@ -9,19 +9,20 @@ namespace smpl
 	#pragma region DRAWING_FUNCTIONS
 
 	Color SimpleGraphics::activeColor = { 0, 0, 0, 255 };
-	Font* SimpleGraphics::activeFont = nullptr;
+	SmartMemory<Font> SimpleGraphics::activeFont = nullptr;
 	unsigned char SimpleGraphics::compositeRule = SimpleGraphics::COMPOSITE_SRC_OVER;
 	unsigned char SimpleGraphics::blendMode = SimpleGraphics::BLEND_NORMAL;
 	bool SimpleGraphics::fillRule = SimpleGraphics::FILL_EVEN_ODD;
 	bool SimpleGraphics::antiAliasing = false;
 
 	unsigned char SimpleGraphics::defaultFontValue = SimpleGraphics::NORMAL_FONT;
-	Font* SimpleGraphics::defaultFont = nullptr;
-	Font* SimpleGraphics::defaultFontMedium = nullptr;
-	Font* SimpleGraphics::defaultFontLarge = nullptr;
+	SmartMemory<Font> SimpleGraphics::defaultFont = nullptr;
+	SmartMemory<Font> SimpleGraphics::defaultFontMedium = nullptr;
+	SmartMemory<Font> SimpleGraphics::defaultFontLarge = nullptr;
 
 	
 	Image SimpleGraphics::maskImage = Image();
+	bool SimpleGraphics::useMask = false;
 	Box2D SimpleGraphics::clippingRect = Box2D(0, 0, 0xFFFF, 0xFFFF);
 
 	SimpleGraphics SimpleGraphics::g = SimpleGraphics();
@@ -39,29 +40,17 @@ namespace smpl
 	void SimpleGraphics::init()
 	{
 		if(defaultFont==nullptr)
-			SimpleGraphics::defaultFont = new BitmapFont("./Resources/DefaultFont.fnt");
+			SimpleGraphics::defaultFont = SmartMemory<Font>::createDeleteOnLast(new BitmapFont("./Resources/DefaultFont.fnt"));
 
 		if(defaultFontMedium==nullptr)
-			SimpleGraphics::defaultFontMedium = new BitmapFont("./Resources/DefaultFontMedium.fnt");
+			SimpleGraphics::defaultFontMedium = SmartMemory<Font>::createDeleteOnLast(new BitmapFont("./Resources/DefaultFontMedium.fnt"));
 
 		if(defaultFontLarge==nullptr)
-			SimpleGraphics::defaultFontLarge = new BitmapFont("./Resources/DefaultFontLarge.fnt");
+			SimpleGraphics::defaultFontLarge = SmartMemory<Font>::createDeleteOnLast(new BitmapFont("./Resources/DefaultFontLarge.fnt"));
 	}
 
 	void SimpleGraphics::dispose()
 	{
-		if(defaultFont!=nullptr)
-			delete defaultFont;
-
-		if(defaultFontMedium!=nullptr)
-			delete defaultFontMedium;
-
-		if(defaultFontLarge!=nullptr)
-			delete defaultFontLarge;
-		
-		defaultFont = nullptr;
-		defaultFontMedium = nullptr;
-		defaultFontLarge = nullptr;
 	}
 
 	void SimpleGraphics::clearImage(Image* surf)
@@ -150,22 +139,33 @@ namespace smpl
 
 	void SimpleGraphics::drawPixel(int x, int y, Color c, Image* surf)
 	{
-		Image* otherImg = surf;
-
-		if (otherImg == nullptr)
+		if (surf == nullptr)
 			return;
 
-		if(compositeRule == NO_COMPOSITE)
+		if(useMask)
 		{
-			Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
-			if(maskedColor.alpha != 0)
-				otherImg->setPixel(x, y, maskedColor);
+			if(compositeRule == NO_COMPOSITE)
+			{
+				Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
+				if(maskedColor.alpha != 0)
+					surf->setPixel(x, y, maskedColor);
+			}
+			else
+			{
+				Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
+				Color outputColor = blend(maskedColor, surf->getPixel(x,y));
+				surf->setPixel(x, y, outputColor);
+			}
 		}
 		else
 		{
-			Color maskedColor = SimpleGraphics::maskPixel(c, maskImage.getPixel(x, y));
-			Color outputColor = blend(maskedColor, otherImg->getPixel(x,y));
-			otherImg->setPixel(x, y, outputColor);
+			if(compositeRule == NO_COMPOSITE)
+				surf->setPixel(x, y, c);
+			else
+			{
+				Color outputColor = blend(c, surf->getPixel(x,y));
+				surf->setPixel(x, y, outputColor);
+			}
 		}
 	}
 
@@ -185,6 +185,32 @@ namespace smpl
 			Color4f maskedColor = SimpleGraphics::maskPixel(c, (Color4f)maskImage.getPixel(x, y));
 			Color4f outputColor = blend(maskedColor, surf->getPixel(x,y));
 			surf->setPixel(x, y, outputColor);
+		}
+
+		if(useMask)
+		{
+			if(compositeRule == NO_COMPOSITE)
+			{
+				Color4f maskedColor = SimpleGraphics::maskPixel(c, (Color4f)maskImage.getPixel(x, y));
+				if(maskedColor.alpha.a != 0)
+					surf->setPixel(x, y, maskedColor);
+			}
+			else
+			{
+				Color4f maskedColor = SimpleGraphics::maskPixel(c, (Color4f)maskImage.getPixel(x, y));
+				Color4f outputColor = blend(maskedColor, surf->getPixel(x,y));
+				surf->setPixel(x, y, outputColor);
+			}
+		}
+		else
+		{
+			if(compositeRule == NO_COMPOSITE)
+				surf->setPixel(x, y, c);
+			else
+			{
+				Color4f outputColor = blend(c, (Color4f)surf->getPixel(x,y));
+				surf->setPixel(x, y, outputColor);
+			}
 		}
 	}
 
@@ -207,34 +233,72 @@ namespace smpl
 		unsigned int* startOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x1 + y*surf->getWidth()];
 		unsigned int* endOfSrcPixelFillSpot = (unsigned int*)&srcPixels[x2 + y*surf->getWidth()];
 
-		if(maskImage.getWidth() < surf->getWidth() || maskImage.getHeight() < surf->getHeight())
+		if(useMask)
 		{
-			maskImage = Image(surf->getWidth(), surf->getHeight());
-			maskImage.setAllPixels({255, 255, 255, 255});
-		}
+			if(maskImage.getWidth() < surf->getWidth() || maskImage.getHeight() < surf->getHeight())
+			{
+				maskImage = Image(surf->getWidth(), surf->getHeight());
+				maskImage.setAllPixels({255, 255, 255, 255});
+			}
 
-		Color* maskImagePixels = maskImage.getPixels();
-		unsigned int* startOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x1 + y*maskImage.getWidth()];
-		unsigned int* endOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x2 + y*maskImage.getWidth()];
-		
-		for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
-		{
-			SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
-			SIMD_U32 maskValue = SIMD_U32::load(startOfMaskPixelFillSpot);
-			SIMD_U32 outputColor = SimpleGraphics::maskPixel(c.values, maskValue.values);
-			SIMD_U32 blendedColor = blend(outputColor.values, destColor.values);
+			Color* maskImagePixels = maskImage.getPixels();
+			unsigned int* startOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x1 + y*maskImage.getWidth()];
+			unsigned int* endOfMaskPixelFillSpot = (unsigned int*)&maskImagePixels[x2 + y*maskImage.getWidth()];
 			
-			blendedColor.store(startOfSrcPixelFillSpot);
-			startOfSrcPixelFillSpot += SIMD_U32::SIZE;
-			startOfMaskPixelFillSpot += SIMD_U32::SIZE;
-		}
+			for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
+			{
+				SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
+				SIMD_U32 maskValue = SIMD_U32::load(startOfMaskPixelFillSpot);
+				SIMD_U32 outputColor = SimpleGraphics::maskPixel(c.values, maskValue.values);
+				SIMD_U32 blendedColor = blend(outputColor.values, destColor.values);
+				
+				blendedColor.store(startOfSrcPixelFillSpot);
+				startOfSrcPixelFillSpot += SIMD_U32::SIZE;
+				startOfMaskPixelFillSpot += SIMD_U32::SIZE;
+			}
 
-		while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
+			while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
+			{
+				Color outputColor = SimpleGraphics::maskPixel(nonSSEColor, *(Color*)startOfMaskPixelFillSpot);
+				*((Color*)startOfSrcPixelFillSpot) = blend(outputColor, *((Color*)startOfSrcPixelFillSpot));
+				startOfSrcPixelFillSpot++;
+				startOfMaskPixelFillSpot++;
+			}
+		}
+		else
 		{
-			Color outputColor = SimpleGraphics::maskPixel(nonSSEColor, *(Color*)startOfMaskPixelFillSpot);
-			*((Color*)startOfSrcPixelFillSpot) = blend(outputColor, *((Color*)startOfSrcPixelFillSpot));
-			startOfSrcPixelFillSpot++;
-			startOfMaskPixelFillSpot++;
+			if(compositeRule == NO_COMPOSITE)
+			{
+				for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
+				{
+					c.store(startOfSrcPixelFillSpot);
+					startOfSrcPixelFillSpot += SIMD_U32::SIZE;
+				}
+
+				while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
+				{
+					*((Color*)startOfSrcPixelFillSpot) = nonSSEColor;
+					startOfSrcPixelFillSpot++;
+				}
+			}
+			else
+			{
+				for(int k=0; k<simdBound; k+=SIMD_U32::SIZE)
+				{
+					SIMD_U32 destColor = SIMD_U32::load(startOfSrcPixelFillSpot);
+					SIMD_U32 blendedColor = blend(c.values, destColor.values);
+					
+					blendedColor.store(startOfSrcPixelFillSpot);
+					startOfSrcPixelFillSpot += SIMD_U32::SIZE;
+				}
+
+				while(startOfSrcPixelFillSpot < endOfSrcPixelFillSpot)
+				{
+					*((Color*)startOfSrcPixelFillSpot) = blend(nonSSEColor, *((Color*)startOfSrcPixelFillSpot));
+					startOfSrcPixelFillSpot++;
+				}
+			}
+
 		}
 	}
 
@@ -486,8 +550,9 @@ namespace smpl
 		float tempSrcAlpha = src.w;
 		float tempDestAlpha = dest.w;
 		
-		src.w = 1;
-		dest.w = 1;
+		src.w = 1.0f;
+		dest.w = 1.0f;
+		
 		retValue = tempSrcAlpha*src*Fa + tempDestAlpha*dest*Fb;
 		return retValue;
 	}
@@ -557,6 +622,7 @@ namespace smpl
 		
 		src.alpha = 1.0f;
 		dest.alpha = 1.0f;
+
 		retValue = tempSrcAlpha*Fa*src + tempDestAlpha*Fb*dest;
 		return retValue;
 	}
@@ -627,7 +693,7 @@ namespace smpl
 		}
 	}
 
-	__m128i SimpleGraphics::blend(__m128i src, __m128i dest)
+	__m128i SimpleGraphics::blend(const __m128i& src, const __m128i& dest)
 	{
 		const __m128i aa = _mm_set_epi8(15,15,15,15, 11,11,11,11, 7,7,7,7, 3,3,3,3);
 		__m128i Fa, Fb;
@@ -736,7 +802,7 @@ namespace smpl
 		}
 	}
 
-	__m256i SimpleGraphics::blend(__m256i src, __m256i dest)
+	__m256i SimpleGraphics::blend(const __m256i& src, const __m256i& dest)
 	{
 		const __m256i aa = _mm256_set_epi8(31,31,31,31, 27,27,27,27, 23,23,23,23, 19,19,19,19, 15,15,15,15, 11,11,11,11, 7,7,7,7, 3,3,3,3);
 		__m256i Fa, Fb;
@@ -993,34 +1059,24 @@ namespace smpl
 
 		Color SimpleGraphics::maskPixel(Color src, Color maskValue)
 		{
-			return Color{
-				src.red,
-				src.green,
-				src.blue,
-				(unsigned char)quickDiv255((uint16_t)src.alpha * maskValue.alpha)
-			};
+			uint32_t output = src.toUInt() & maskValue.toUInt();
+			return *(Color*)&output;
 		}
 		Color4f SimpleGraphics::maskPixel(Color4f src, Color4f maskValue)
 		{
-			return Color4f{
-				src.red,
-				src.green,
-				src.blue,
-				src.alpha * maskValue.alpha
-			};
+			uint64_t output = src.toULong() & maskValue.toULong();
+			return *(Color4f*)&output;
 		}
 		Vec4f SimpleGraphics::maskPixel(Vec4f src, Vec4f maskValue)
 		{
-			return Vec4f(
-				src.x, 
-				src.y, 
-				src.z, 
-				src.w*maskValue.w
-			);
+			if(maskValue.w >= 1.0)
+				return src;
+			else
+			 	return Vec4f(0, 0, 0, 0);
 		}
 		uint32_t SimpleGraphics::maskPixel(uint32_t src, uint32_t maskValue)
 		{
-			return maskPixel(*(Color*)&src, *(Color*)&maskValue).toUInt();
+			return src & maskValue;
 		}
 		#ifdef __SSE4_2__
 			__m128i SimpleGraphics::maskPixel(__m128i src, __m128i maskValue)
@@ -1028,14 +1084,14 @@ namespace smpl
 				//src is 4 individual pixels (16 bytes)
 				//mask needs to be 255,255,255,mask1 | 255,255,255,mask2 | 255,255,255,mask3 | 255,255,255,mask4
 				//This makes the math easy
-				return multColor(src, maskValue); //lazy
+				return _mm_and_si128(src, maskValue);
 			}
 		#endif
 
 		#ifdef __AVX2__
 			__m256i SimpleGraphics::maskPixel(__m256i src, __m256i maskValue)
 			{
-				return multColor(src, maskValue); //lazy
+				return _mm256_and_si256(src, maskValue);
 			}
 		#endif
 
@@ -1067,12 +1123,12 @@ namespace smpl
 		return activeColor;
 	}
 
-	void SimpleGraphics::setFont(Font* f)
+	void SimpleGraphics::setFont(const SmartMemory<Font>& f)
 	{
 		activeFont = f;
 	}
 
-	Font* SimpleGraphics::getFont()
+	SmartMemory<Font> SimpleGraphics::getFont()
 	{
 		if(activeFont!=nullptr)
 			return activeFont;
@@ -1087,7 +1143,7 @@ namespace smpl
 		defaultFontValue = MathExt::clamp(byte, (unsigned char)0, (unsigned char)2);
 	}
 
-	Font* SimpleGraphics::getDefaultFont(unsigned char byte)
+	SmartMemory<Font> SimpleGraphics::getDefaultFont(unsigned char byte)
 	{
 		switch (byte)
 		{
@@ -1146,9 +1202,13 @@ namespace smpl
 		return antiAliasing;
 	}
 
-	void SimpleGraphics::setMask(Image img)
+	void SimpleGraphics::setMask(const Image& img)
 	{
 		maskImage = img;
+	}
+	void SimpleGraphics::enableMask(bool v)
+	{
+		useMask = v;
 	}
 	Image& SimpleGraphics::getMask()
 	{

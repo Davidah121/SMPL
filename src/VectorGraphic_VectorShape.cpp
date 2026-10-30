@@ -103,6 +103,29 @@ namespace smpl
 	{
 	}
 
+	std::pair<Vec2f, Vec2f> VectorShape::getBoundingBox()
+	{
+		return {};
+	}
+	
+	VectorShape* VectorShape::createNewFromVectorShape(const VectorShape& shape)
+	{
+		if(shape.getClass() == TypeInfo::get<VectorRectangle>())
+			return new VectorRectangle((VectorRectangle&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorCircle>())
+			return new VectorCircle((VectorCircle&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorLine>())
+			return new VectorLine((VectorLine&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorEllipse>())
+			return new VectorEllipse((VectorEllipse&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorPolygon>())
+			return new VectorPolygon((VectorPolygon&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorPolyline>())
+			return new VectorPolyline((VectorPolyline&)shape);
+		else if(shape.getClass() == TypeInfo::get<VectorPath>())
+			return new VectorPath((VectorPath&)shape);
+		return nullptr;
+	}
 	#pragma endregion
 
 } //NAMESPACE glib END

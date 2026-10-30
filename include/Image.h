@@ -15,13 +15,13 @@ namespace smpl
 	class DLL_OPTION Image : public SerializedObject
 	{
 	public:
-		const static int NONE = 0;
-		const static int CLAMP = 1;
-		const static int REPEAT = 2;
+		const static int EDGE_NONE = 0;
+		const static int EDGE_CLAMP = 1;
+		const static int EDGE_REPEAT = 2;
 
-		const static int NEAREST = 0;
-		const static int BILINEAR = 1;
-		const static int BICUBIC = 2;
+		const static int SAMPLING_NEAREST = 0;
+		const static int SAMPLING_BILINEAR = 1;
+		const static int SAMPLING_BICUBIC = 2;
 
 		/**
 		 * @brief Construct a new Image object.
@@ -138,7 +138,7 @@ namespace smpl
 		 * @return Color 
 		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
 		 */
-		Color getPixel(int x, int y, int edgeBehavior = NONE) const;
+		Color getPixel(int x, int y, int edgeBehavior = EDGE_NONE) const;
 
 		/**
 		 * @brief Gets a pixel in the image.
@@ -151,7 +151,7 @@ namespace smpl
 		 * @return Color 
 		 * 		If unsuccessful, the default Color is return with the value RGBA(0,0,0,0)
 		 */
-		Color getPixel(double x, double y, int edgeBehavior = NONE) const;
+		Color getPixel(double x, double y, int edgeBehavior = EDGE_NONE) const;
 
 		/**
 		 * @brief Gets a Pixel using Nearest Neighbor Sampling
@@ -196,7 +196,7 @@ namespace smpl
 		 * @param edgeBehavior 
 		 * @return __m128i 
 		 */
-		__m128i getPixel(__m128 x, __m128 y, int edgeBehavior = Image::NONE) const;
+		__m128i getPixel(__m128 x, __m128 y, int edgeBehavior = Image::EDGE_NONE) const;
 		__m128i getPixelNearestSampling(__m128 x, __m128 y, int edgeBehavior) const;
 		__m128i getPixelLinearSampling(__m128 x, __m128 y, int edgeBehavior) const;
 		__m128i getPixelCubicSampling(__m128 x, __m128 y, int edgeBehavior) const;
@@ -212,7 +212,7 @@ namespace smpl
 		 * @param edgeBehavior 
 		 * @return __m256i 
 		 */
-		__m256i getPixel(__m256 x, __m256 y, int edgeBehavior = Image::NONE) const;
+		__m256i getPixel(__m256 x, __m256 y, int edgeBehavior = Image::EDGE_NONE) const;
 		__m256i getPixelNearestSampling(__m256 x, __m256 y, int edgeBehavior) const;
 		__m256i getPixelLinearSampling(__m256 x, __m256 y, int edgeBehavior) const;
 		__m256i getPixelCubicSampling(__m256 x, __m256 y, int edgeBehavior) const;
@@ -419,7 +419,7 @@ namespace smpl
 	private:
 		int width = 0;
 		int height = 0;
-		int samplingMethod = NEAREST;
+		int samplingMethod = SAMPLING_NEAREST;
 		ColorPalette p = ColorPalette();
 		Color* pixels = nullptr;
 
@@ -430,13 +430,13 @@ namespace smpl
 	class DLL_OPTION HiResImage : public SerializedObject
 	{
 	public:
-		const static int NONE = 0;
-		const static int CLAMP = 1;
-		const static int REPEAT = 2;
+		const static int EDGE_NONE = 0;
+		const static int EDGE_CLAMP = 1;
+		const static int EDGE_REPEAT = 2;
 
-		const static int NEAREST = 0;
-		const static int BILINEAR = 1;
-		const static int BICUBIC = 2;
+		const static int SAMPLING_NEAREST = 0;
+		const static int SAMPLING_BILINEAR = 1;
+		const static int SAMPLING_BICUBIC = 2;
 
 		/**
 		 * @brief Construct a new HiResImage object.
@@ -538,7 +538,7 @@ namespace smpl
 		 * @return Vec4f 
 		 * 		If unsuccessful, the default Color4f is return with the value RGBA(0,0,0,0)
 		 */
-		Color4f getPixel(int x, int y, int edgeBehavior = NONE) const;
+		Color4f getPixel(int x, int y, int edgeBehavior = EDGE_NONE) const;
 
 		/**
 		 * @brief Geta pixel in the image.
@@ -551,7 +551,7 @@ namespace smpl
 		 * @return Color4f 
 		 * 		If unsuccessful, the default Color4f is return with the value RGBA(0,0,0,0)
 		 */
-		Color4f getPixel(double x, double y, int edgeBehavior = NONE) const;
+		Color4f getPixel(double x, double y, int edgeBehavior = EDGE_NONE) const;
 
 		/**
 		 * @brief Set the Pixel at the specified location
@@ -746,7 +746,7 @@ namespace smpl
 	private:
 		int width = 0;
 		int height = 0;
-		int samplingMethod = NEAREST;
+		int samplingMethod = SAMPLING_NEAREST;
 
 		Color4f* pixels = nullptr;
 		ColorPalette p;

@@ -1,7 +1,7 @@
 #pragma once
 #include "BuildOptions.h"
 #include "StandardTypes.h"
-#include "Vec2f.h"
+#include "Vec2.h"
 #include "SimpleSerialization.h"
 
 namespace smpl
@@ -15,17 +15,6 @@ namespace smpl
 		 * 		Useful for different math operations.
 		 */
 		Line();
-
-		/**
-		 * @brief Construct a new Line object
-		 * 		Useful for different math operations.
-		 * 
-		 * @param x1 
-		 * @param y1 
-		 * @param x2 
-		 * @param y2 
-		 */
-		Line(int x1, int y1, int x2, int y2);
 
 		/**
 		 * @brief Construct a new Line object

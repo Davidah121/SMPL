@@ -87,6 +87,14 @@ namespace smpl
 		y2 = preY2;
 	}
 
+	std::pair<Vec2f, Vec2f> VectorLine::getBoundingBox()
+	{
+		Vec2f minV = Vec2f(__min(x1, x2), __min(y1, y2));
+		Vec2f maxV = Vec2f(__max(x1, x2), __max(y1, y2));
+		
+		return {minV, maxV};
+	}
+
 	void VectorLine::setX1(double x)
 	{
 		this->x1 = x;

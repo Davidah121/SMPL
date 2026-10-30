@@ -9,74 +9,76 @@
 namespace smpl
 {
 
-    class DLL_OPTION VectorFont : public Font
-    {
-    public:
-        /**
-         * @brief Construct a new VectorFont object
-         *      A vector font uses vector graphics to display fonts.
-         *      This allows for accurate rendering regardless of rotation, scaling, and other transforms.
-         * 
-         *      (NOTE, NOT COMPLETE)
-         * 
-         */
-        VectorFont();
+	class DLL_OPTION VectorFont : public Font
+	{
+	public:
+		/**
+		* @brief Construct a new VectorFont object
+		*      A vector font uses vector graphics to display fonts.
+		*      This allows for accurate rendering regardless of rotation, scaling, and other transforms.
+		* 
+		*      (NOTE, NOT COMPLETE)
+		* 
+		*/
+		VectorFont();
+		VectorFont(const VectorFont& other) = default;
+		VectorFont& operator=(const VectorFont& other) = default;
+		VectorFont(VectorFont&& other) = default;
+		VectorFont& operator=(VectorFont&& other) = default;
 
-        /**
-         * @brief Destroy the VectorFont object
-         * 
-         */
-        ~VectorFont();
+		/**
+		* @brief Destroy the VectorFont object
+		* 
+		*/
+		~VectorFont();
 
-        /**
-         * @brief Loads a vector font from a valid file
-         *      Valid formats: .svg | .ttf | .otf
-         * 
-         * @param file 
-         * @return true 
-         * @return false 
-         */
-        bool load(File file);
+		/**
+		* @brief Loads a vector font from a valid file
+		*      Valid formats: .svg | .ttf | .otf
+		* 
+		* @param file 
+		* @return true 
+		* @return false 
+		*/
+		bool load(File file);
 
-        /**
-         * @brief Gets a VectorGraphic at the specified index.
-         * 
-         * @param index 
-         * @return VectorGraphic* 
-         */
-        VectorGraphic* getGraphic(int index);
+		/**
+		* @brief Gets a VectorGraphic at the specified index.
+		* 
+		* @param index 
+		* @return VectorGraphic* 
+		*/
+		VectorGraphic* getGraphic(size_t index);
 
-        /**
-         * @brief Get the VectorSprite used to manage the VectorGraphics.
-         * 
-         * @return VectorSprite* 
-         */
-        VectorSprite* getVectorSprite();
+		/**
+		* @brief Get the VectorSprite used to manage the VectorGraphics.
+		* 
+		* @return VectorSprite* 
+		*/
+		VectorSprite& getVectorSprite();
 
-        /**
-         * @brief Gets the image of the font character at the specified index.
-         *      The image pointer should not be deleted after use as the class will delete it when no longer needed.
-         *      A new cached image may be redrawn when this method is called.
-         * 
-         * @param index 
-         * @return Image* 
-         */
-        Image* getImage(size_t index);
-    private:
+		/**
+		* @brief Gets the image of the font character at the specified index.
+		*      The image pointer should not be deleted after use as the class will delete it when no longer needed.
+		*      A new cached image may be redrawn when this method is called.
+		* 
+		* @param index 
+		* @return SmartMemory<Image> 
+		*/
+		SmartMemory<Image> getImage(const FontCharInfo& fci);
+	private:
 
-        bool loadSVGFont(File file); //TODO: Re-Write this
-        bool loadOTFFont(File file); //TODO: Fix
+		bool loadSVGFont(File file); //TODO: Re-Write this
+		bool loadOTFFont(File file); //TODO: Fix
 
-        //FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
-        //saving the sprite index information and stuff.
-        VectorSprite fontSprite = VectorSprite();
-        CachedDataList<Image> cachedGlyphs = CachedDataList<Image>(256);
-        int baseHorizontalAdvance = 0;
-        int baseWidth = 0;
-        int baseHeight = 0;
-        
-        SERIALIZE_SUPER_CLASS(Font)
-        SERIALIZE_CLASS()
-    };
+		//FontCharInfo should have a direct 1-to-1 mapping to fontSprite to avoid
+		//saving the sprite index information and stuff.
+		VectorSprite fontSprite = VectorSprite();
+		CachedDataList<size_t, Image> cachedGlyphs = CachedDataList<size_t, Image>(256);
+		int baseHorizontalAdvance = 0;
+		int baseWidth = 0;
+		int baseHeight = 0;
+		
+	};
 
 } //NAMESPACE glib END

@@ -37,28 +37,28 @@ namespace smpl
 		/**
 		 * @brief Get the image where the desired character is stored.
 		 * 		The image can contain other characters than just the desired character.
-		 * 		If the index is out of range and USE_EXCEPTIONS is defined, an OutOfBounds Error is thrown.
-		 * 		If not, a nullptr is returned.
-		 * @param index
+		 * 		If the font character does not exist, it is out of range and USE_EXCEPTIONS is defined, an OutOfBounds Error is thrown.
+		 * 			If not, a nullptr is returned.
+		 * @param fci
 		 * 		The desired character.
-		 * @return Image*
-		 * 		A nullptr is returned if no image was found. Otherwise, a valid Image* is returned.
+		 * @return SmartMemory<Image>
+		 * 		A nullptr is returned if no image was found. Otherwise, a valid SmartMemory<Image> is returned.
 		 */
-		Image* getImage(size_t index);
+		SmartMemory<Image> getImage(const FontCharInfo& fci);
 		
 		/**
 		 * @brief Gets the internal Sprite used to store the image data for the characters.
 		 * 
-		 * @return Sprite* 
+		 * @return Sprite&
 		 */
-		Sprite* getSprite();
+		Sprite& getSprite();
 		
 		/**
 		 * @brief Gets the internal data specifying what image in the sprite a character is located in.
 		 * 
-		 * @return std::vector<size_t> 
+		 * @return std::vector<size_t>& 
 		 */
-		std::vector<size_t> getImagePages();
+		std::vector<size_t>& getImagePages();
 
 	private:
 		void loadFT(File file);
@@ -68,9 +68,6 @@ namespace smpl
 		Sprite img = Sprite();
 
 		std::vector<size_t> imgPage = std::vector<size_t>();
-
-		SERIALIZE_SUPER_CLASS(Font)
-		SERIALIZE_CLASS()
 	};
 
 }  //NAMESPACE smpl END

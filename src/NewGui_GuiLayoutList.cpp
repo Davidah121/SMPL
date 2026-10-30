@@ -269,7 +269,7 @@ namespace smpl
         if(direction == DIRECTION_HORIZONTAL)
         {
             int totalChildWidth = maxXOffsetSeen;
-            int totalChildHeight = MathExt::max(height, maxYOffsetSeen);
+            int totalChildHeight = max(height, maxYOffsetSeen);
 
             if(indexOfLastWrap != children.size()-1 || children.size() == 1)
             {
@@ -322,7 +322,7 @@ namespace smpl
         }
         else
         {
-            int totalChildWidth = MathExt::max(width, maxXOffsetSeen);
+            int totalChildWidth = max(width, maxXOffsetSeen);
             int totalChildHeight = maxYOffsetSeen;
             if(indexOfLastWrap != children.size()-1 || children.size() == 1)
             {
@@ -457,7 +457,7 @@ namespace smpl
         }
     }
 
-    void GuiLayoutList::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiLayoutList::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayout::loadDataFromXML(attribs, manager);
         auto pair = attribs.find("direction");
@@ -481,7 +481,7 @@ namespace smpl
         attribs.erase(pair);
     }
 
-    SmartMemory<GuiItem> GuiLayoutList::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiLayoutList::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutList* ins = new GuiLayoutList();
         ins->loadDataFromXML(attributes, manager);

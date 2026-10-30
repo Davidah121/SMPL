@@ -21,18 +21,18 @@ namespace smpl
 			int tempWidth = surf->getWidth();
 			int tempHeight = surf->getHeight();
 
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+			int minXBound = max(0, (int)clippingRect.getLeftBound());
+			int minYBound = max(0, (int)clippingRect.getTopBound());
 			
-			int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+			int maxXBound = min(tempWidth-1, (int)clippingRect.getRightBound());
+			int maxYBound = min(tempHeight-1, (int)clippingRect.getBottomBound());
 			
 			
-			int minX = MathExt::min(x1,x2);
-			int maxX = MathExt::max(x1,x2);
+			int minX = min(x1,x2);
+			int maxX = max(x1,x2);
 			
-			int minY = MathExt::min(y1,y2);
-			int maxY = MathExt::max(y1,y2);
+			int minY = min(y1,y2);
+			int maxY = max(y1,y2);
 			
 			if(maxX < minXBound || minX > maxXBound)
 			{

@@ -21,17 +21,17 @@ namespace smpl
 		int tempWidth = surf->getWidth();
 		int tempHeight = surf->getHeight();
 
-		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+		int minXBound = max(0, (int)clippingRect.getLeftBound());
+		int minYBound = max(0, (int)clippingRect.getTopBound());
 
-		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+		int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
 		int minX = MathExt::clamp(x, minXBound, maxXBound);
 		int minY = MathExt::clamp(y, minYBound, maxYBound);
 
-		int startImgY = MathExt::max(minY - y, 0);
-		int startImgX = MathExt::max(minX - x, 0);
+		int startImgY = max(minY - y, 0);
+		int startImgX = max(minX - x, 0);
 
 		int imgDrawWidth = img->getWidth() - startImgX;
 		int imgDrawHeight = img->getHeight() - startImgY;
@@ -52,7 +52,7 @@ namespace smpl
 		Color4f* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 
 		int imgY = startImgY;
-		LARGE_ENOUGH_CLAUSE(approxArea)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
 		#pragma omp parallel for
 		for(int tY=minY; tY<maxY; tY++)
 		{
@@ -86,17 +86,17 @@ namespace smpl
 		int tempWidth = surf->getWidth();
 		int tempHeight = surf->getHeight();
 
-		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+		int minXBound = max(0, (int)clippingRect.getLeftBound());
+		int minYBound = max(0, (int)clippingRect.getTopBound());
 
-		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+		int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
 		int minX = MathExt::clamp(x, minXBound, maxXBound);
 		int minY = MathExt::clamp(y, minYBound, maxYBound);
 
-		int startImgY = MathExt::max(minY - y, 0);
-		int startImgX = MathExt::max(minX - x, 0);
+		int startImgY = max(minY - y, 0);
+		int startImgX = max(minX - x, 0);
 
 		int imgDrawWidth = img->getWidth() - startImgX;
 		int imgDrawHeight = img->getHeight() - startImgY;
@@ -116,8 +116,8 @@ namespace smpl
 		Color* surfPixels = surf->getPixels();
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 		
-		LARGE_ENOUGH_CLAUSE(approxArea)
-		#pragma omp parallel for
+		// SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
+		// #pragma omp parallel for
 		for(int tY=minY; tY<maxY; tY++)
 		{
 			int imgY = startImgY + (tY-minY);
@@ -136,12 +136,15 @@ namespace smpl
 			}
 			while(tX < maxX)
 			{
-				drawPixel(tX, tY, drawImgPixels[imgX + imgY*img->getWidth()], surf);
+				Color src = drawImgPixels[imgX + imgY*img->getWidth()];
+				Color dest = surfPixels[tX + tY*tempWidth];
+				Color blendV = blend(src, dest);
+				surfPixels[tX + tY*tempWidth] = blendV;
 				imgX++;
 				tX++;
 			}
 		}
-		RESET_LARGE_ENOUGH_CLAUSE()
+		// RESET_LARGE_ENOUGH_CLAUSE()
 	}
 
 	void SimpleGraphics::drawSprite(Image* img, int x, int y, Image* surf)
@@ -163,17 +166,17 @@ namespace smpl
 		int tempWidth = surf->getWidth();
 		int tempHeight = surf->getHeight();
 
-		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+		int minXBound = max(0, (int)clippingRect.getLeftBound());
+		int minYBound = max(0, (int)clippingRect.getTopBound());
 
-		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+		int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
 		int minX = MathExt::clamp(x, minXBound, maxXBound);
 		int minY = MathExt::clamp(y, minYBound, maxYBound);
 
-		int startImgY = MathExt::max(minY - y, 0);
-		int startImgX = MathExt::max(minX - x, 0);
+		int startImgY = max(minY - y, 0);
+		int startImgX = max(minX - x, 0);
 
 		int imgDrawWidth = img->getWidth() - startImgX;
 		int imgDrawHeight = img->getHeight() - startImgY;
@@ -194,7 +197,8 @@ namespace smpl
 		Color* drawImgPixels = img->getPixels(); //Not using any pixel filtering and no edge conditions
 
 		SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
-		LARGE_ENOUGH_CLAUSE(approxArea)
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
 		#pragma omp parallel for
 		for(int tY=minY; tY<maxY; tY++)
 		{
@@ -268,11 +272,11 @@ namespace smpl
 		int tempWidth = surf->getWidth();
 		int tempHeight = surf->getHeight();
 
-		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+		int minXBound = max(0, (int)clippingRect.getLeftBound());
+		int minYBound = max(0, (int)clippingRect.getTopBound());
 
-		int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-		int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+		int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+		int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
 		int minX = MathExt::clamp(x1, minXBound, maxXBound);
 		int minY = MathExt::clamp(y1, minYBound, maxYBound);
@@ -280,8 +284,8 @@ namespace smpl
 		int maxX = MathExt::clamp(x2, minXBound, maxXBound);
 		int maxY = MathExt::clamp(y2, minYBound, maxYBound);
 
-		int startImgY = MathExt::max(minY - y1, 0);
-		int startImgX = MathExt::max(minX - x1, 0);
+		int startImgY = max(minY - y1, 0);
+		int startImgX = max(minX - x1, 0);
 
 		int imgDrawWidth = img->getWidth();
 		int imgDrawHeight = img->getHeight();
@@ -335,9 +339,9 @@ namespace smpl
 				SIMD_FP32 u = floatXIndexValues / widthOfDesiredArea;
 				
 				#if (OPTI==0)
-				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::CLAMP).toUInt();
+				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::EDGE_CLAMP).toUInt();
 				#else
-				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::CLAMP);
+				SIMD_U32 src = img->getPixel(u.values, vAsSIMD.values, Image::EDGE_CLAMP);
 				#endif
 				
 				SIMD_U32 dest = SIMD_U32::load((unsigned int*)&surfPixels[tX + tY*tempWidth]);
@@ -349,7 +353,7 @@ namespace smpl
 			for(; tX < maxX; tX++)
 			{
 				double u = imgDrawWidth * ((float)tX / (x2-x1));
-				Color c = img->getPixel(u, v, Image::CLAMP);
+				Color c = img->getPixel(u, v, Image::EDGE_CLAMP);
 				c.red = (unsigned char)MathExt::clamp<float>(c.red * colorMult.x, 0.0, 255.0);
 				c.green = (unsigned char)MathExt::clamp<float>(c.green * colorMult.y, 0.0, 255.0);
 				c.blue = (unsigned char)MathExt::clamp<float>(c.blue * colorMult.z, 0.0, 255.0);
@@ -374,17 +378,17 @@ namespace smpl
 		int tempWidth = surf->getWidth();
 		int tempHeight = surf->getHeight();
 
-		int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-		int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+		int minXBound = max(0, (int)clippingRect.getLeftBound());
+		int minYBound = max(0, (int)clippingRect.getTopBound());
 
-		int maxXBound = MathExt::min(tempWidth-1, (int)clippingRect.getRightBound());
-		int maxYBound = MathExt::min(tempHeight-1, (int)clippingRect.getBottomBound());
+		int maxXBound = min(tempWidth-1, (int)clippingRect.getRightBound());
+		int maxYBound = min(tempHeight-1, (int)clippingRect.getBottomBound());
 
 		int minX = MathExt::clamp(x, minXBound, maxXBound);
 		int minY = MathExt::clamp(y, minYBound, maxYBound);
 
-		int startImgY = imgY + MathExt::max(minY - y, 0);
-		int startImgX = imgX + MathExt::max(minX - x, 0);
+		int startImgY = imgY + max(minY - y, 0);
+		int startImgX = imgX + max(minX - x, 0);
 		int nImgW = imgW - (startImgX - imgX);
 		int nImgH = imgH - (startImgY - imgY);
 
@@ -410,7 +414,7 @@ namespace smpl
 
 		// Vec4f colorMult = Vec4f((double)SimpleGraphics::activeColor.red / 255.0, (double)SimpleGraphics::activeColor.green / 255.0, (double)SimpleGraphics::activeColor.blue / 255.0, (double)SimpleGraphics::activeColor.alpha / 255.0);
 		
-		LARGE_ENOUGH_CLAUSE(approxArea)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
 		#pragma omp parallel for
 		for(int tY=minY; tY<=maxY; tY++)
 		{

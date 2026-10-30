@@ -13,14 +13,12 @@ TEST_CASE("Testing of the BinarySet class", "[BinarySet]")
 	SECTION("SET BYTES AND COPY")
 	{
 		smpl::BinarySet bSet;
-		bSet.setBitOrder(smpl::BinarySet::LMSB);
-		bSet.setAddBitOrder(smpl::BinarySet::LMSB);
 		bSet.setValues(bytes.data(), bytes.size());
 		
 		REQUIRE(bSet.size() == bits.size());
 		for(int i=0; i<bytes.size(); i++)
 		{
-			int x = bSet.getBits(i*8, (i*8)+8);
+			int x = bSet.getBits(i*8, (i*8)+8, smpl::BinarySet::LittleEndian);
 			REQUIRE(x == (int)bytes[i]);
 		}
 
@@ -35,8 +33,6 @@ TEST_CASE("Testing of the BinarySet class", "[BinarySet]")
 	SECTION("ADD & SET BITS")
 	{
 		smpl::BinarySet bSet;
-		bSet.setBitOrder(smpl::BinarySet::LMSB);
-		bSet.setAddBitOrder(smpl::BinarySet::LMSB);
 		bSet.setValues(bytes.data(), bytes.size());
 		
 		bSet.add(true);

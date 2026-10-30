@@ -19,7 +19,8 @@ namespace smpl
 		jobThreads = std::vector<std::thread>(threads);
 		postponedJobs = SimpleHashSet<JobTask, RapidHash<JobTask>, CompareJobTask>(); //no task in progress at the start.
 		jobsBeingRun = SimpleHashSet<size_t>();
-		
+		jobsForThreads = std::vector<std::deque<std::function<void()>>>(threads);
+
 		for(int i=0; i<jobThreads.size(); i++)
 		{
 			jobThreads[i] = std::thread(&SimpleJobQueue::threadRun, this, i);
@@ -46,6 +47,7 @@ namespace smpl
 		postponedJobs.clear();
 		jobsBeingRun.clear();
 		jobThreads.clear();
+		jobsForThreads.clear();
 		jobs.clear();
 		jobID = 0;
 	}
@@ -77,21 +79,24 @@ namespace smpl
 		jobQueueMutex.unlock();
 
 		knownJobCount+=jobList.size();
-		// if(jobList.size() >= jobThreads.size())
-		// 	cv.notify_all();
-		// else
-		// {
-		// 	for(size_t i=0; i<jobList.size(); i++)
-		// 	{
-		// 		cv.notify_one();
-		// 	}
-		// }
-		cv.notify_one();
+		if(jobList.size() >= jobThreads.size())
+			cv.notify_all();
+		else
+		{
+			for(size_t i=0; i<jobList.size(); i++)
+			{
+				cv.notify_one();
+			}
+		}
+		// cv.notify_one();
 		return startID;
 	}
 
 	void SimpleJobQueue::parallelize(const std::function<void(size_t, size_t, size_t)>& func, size_t start, size_t end, size_t incr, size_t threadsWanted)
 	{
+		//This exists to determine if this is being run inside of an existing parallelize mode
+		bool alreadyInParallelMode = inParallelizeMode;
+
 		if(threadsWanted < 1)
 			threadsWanted = jobThreads.size();
 		if(threadsWanted == 1)
@@ -99,8 +104,7 @@ namespace smpl
 			func(start, end, incr);
 			return;
 		}
-
-		std::vector<std::function<void()>> jobsToAdd;
+		
 		size_t max = end;
 		size_t indexIncr = (end-start)/threadsWanted;
 		indexIncr -= indexIncr % incr;
@@ -113,22 +117,34 @@ namespace smpl
 		
 		size_t tStart = start;
 		size_t tEnd = start+indexIncr;
+		std::atomic_uint32_t jobFinishCounter = 0;
 		for(size_t i=0; i<threadsWanted-1; i++)
 		{
-			addJob([func, tStart, tEnd, incr]() ->void{
+			jobsForThreads[i].push_back([func, tStart, tEnd, incr, &jobFinishCounter]() ->void{
 				func(tStart, tEnd, incr);
+				jobFinishCounter++;
 			});
 			
 			tStart += indexIncr;
 			tEnd += indexIncr;
 		}
-
 		tEnd = end;
+
 		
-		addJob([func, tStart, tEnd, incr]() ->void{
-			func(tStart, tEnd, incr);
-		});
-		waitForAllJobs(); //should actually use a different approach
+		inParallelizeMode = true;
+		cv.notify_all();
+
+		//busy wait
+		func(tStart, tEnd, incr);
+		jobFinishCounter++;
+
+		while(jobFinishCounter < threadsWanted)
+		{
+			std::this_thread::yield();
+		}
+
+		// if(!alreadyInParallelMode)
+			inParallelizeMode = false;
 	}
 
 	void SimpleJobQueue::removeJob(size_t ID)
@@ -143,7 +159,7 @@ namespace smpl
 	bool SimpleJobQueue::jobDone(size_t ID)
 	{
 		bool found = false;
-		std::lock_guard<std::mutex> lock(jobQueueMutex);
+		std::lock_guard<HybridSpinLock> lock(jobQueueMutex);
 
 		//check if its in the list of suspended jobs
 		if(postponedJobs.find(ID) != postponedJobs.end())
@@ -198,6 +214,16 @@ namespace smpl
 		{
 			size_t jobID = -1;
 			FiberTask* taskPtr = nullptr;
+
+			//special case
+			if(inParallelizeMode)
+			{
+				if(jobsForThreads[id].size() > 0)
+				{
+					jobsForThreads[id].front()();
+					jobsForThreads[id].pop_front();
+				}
+			}
 			
 			//try to get a job from the queue
 			if(knownJobCount > 0)
@@ -207,6 +233,9 @@ namespace smpl
 					//Wait to be notified of a job completion
 					std::unique_lock<std::mutex> temporaryLock(haltMutex);
 					cv.wait_for(temporaryLock, std::chrono::milliseconds(1));
+					if(inParallelizeMode)
+						continue;
+
 					jobQueueMutex.lock();
 				}
 			}
@@ -216,6 +245,9 @@ namespace smpl
 				std::unique_lock<std::mutex> temporaryLock(haltMutex);
 				cv.wait_for(temporaryLock, std::chrono::milliseconds(1)); //may result in more fighting over the mutex but the mutex itself still results in a sleep if failed
 				// cv.wait(temporaryLock);
+				if(inParallelizeMode)
+					continue;
+
 				jobQueueMutex.lock();
 			}
 			auto taskIterator = postponedJobs.end();
@@ -273,10 +305,11 @@ namespace smpl
 				}
 				jobsBeingRun.erase(jobID);
 				jobQueueMutex.unlock();
-				cv.notify_one();
 				
 				if(knownJobCount == 0)
 					jobWaitCV.notify_one();
+
+				cv.notify_one();
 			}
 			
 			//ensure fairness by allowing swaping priority of task execution (existing or new task first)

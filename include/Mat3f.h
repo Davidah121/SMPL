@@ -2,7 +2,7 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include "Matrix.h"
-#include "Vec3f.h"
+#include "Vec3.h"
 
 namespace smpl
 {

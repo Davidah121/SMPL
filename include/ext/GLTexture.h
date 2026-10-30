@@ -27,12 +27,28 @@
             static const int FILTER_NEAREST = GL_NEAREST;
             static const int FILTER_LINEAR = GL_LINEAR;
             
-            GLTexture(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+			GLTexture();
+
+            GLTexture(const File& f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
             GLTexture(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
-            GLTexture(const GLTexture& o);
+
+            GLTexture(const GLTexture& o) = default;
+			GLTexture& operator=(const GLTexture& o) = default;
+
+            GLTexture(GLTexture&& o) = default;
+			GLTexture& operator=(GLTexture&& o) = default;
+			
             ~GLTexture();
 
-            void loadImage(File f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
+			/**
+			 * @brief Creates a brand new texture utilizing an existing texture.
+			 *		This will create a new textureID but contain the same information as the original texture.
+			 * 
+			 * @param o 
+			 */
+			void copyTexture(const GLTexture& o);
+
+            void loadImage(const File& f, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
             void setImage(Image* img, bool includeAlpha=true, GLTextureParams params = {BEHAVIOR_CLAMP_TO_EDGE, FILTER_LINEAR});
 
             /**
@@ -52,6 +68,7 @@
         private:
             int edgeBehavior = GL_CLAMP_TO_EDGE;
             int filterType = GL_LINEAR;
+			bool includesAlpha = true;
 
             unsigned int textureID = 0;
             bool textureType = TEXTURE2D;

@@ -9,20 +9,10 @@ namespace smpl
 
 	Sprite::~Sprite()
 	{
-		dispose();
 	}
 
-	Sprite::Sprite(const Sprite& o)
-	{
-		copy(o);
-	}
 
-	void Sprite::operator=(const Sprite& o)
-	{
-		copy(o);
-	}
-
-	void Sprite::copy(const Sprite& o)
+	void Sprite::hardCopy(const Sprite& o)
 	{
 		delayTimeForFrame = o.delayTimeForFrame;
 		loops = o.loops;
@@ -30,32 +20,31 @@ namespace smpl
 		//hard copy
 		for(size_t i=0; i<o.images.size(); i++)
 		{
-			Image* nImg = new Image();
-			nImg->copyImage(o.images[i]);
-			images.push_back( nImg );
+			LockingSmartMemory<Image> lockedPointer = o.images[i].getLockingPointer();
+			if(lockedPointer == nullptr)
+			{
+				images.push_back(nullptr);
+			}
+			else
+			{
+				Image* nImg = new Image();
+				nImg->copyImage(lockedPointer.getRawPointer());
+				images.push_back( nImg );
+			}
 		}
 	}
 
-	void Sprite::dispose()
+	void Sprite::clear()
 	{
-		for(size_t i=0; i<images.size(); i++)
-		{
-			if(images[i]!=nullptr)
-			{
-				delete images[i];
-			}
-		}
-		
 		images.clear();
 		delayTimeForFrame.clear();
 	}
 
-	Image* Sprite::getImage(size_t index) const
+	SmartMemory<Image> Sprite::getImage(size_t index) const
 	{
 		if (index < images.size())
-		{
 			return images[index];
-		}
+		
 		return nullptr;
 	}
 
@@ -76,7 +65,7 @@ namespace smpl
 		return images.size();
 	}
 
-	void Sprite::addImage(Image* p)
+	void Sprite::addImage(const SmartMemory<Image>& p)
 	{
 		images.push_back(p);
 	}
@@ -85,7 +74,7 @@ namespace smpl
 	{
 		if (index < images.size())
 		{
-			std::vector<Image*> newImages = std::vector<Image*>();
+			std::vector<SmartMemory<Image>> newImages = std::vector<SmartMemory<Image>>();
 			std::vector<int> nDelay = std::vector<int>();
 
 			for (size_t i = 0; i < images.size(); i++)
@@ -95,8 +84,6 @@ namespace smpl
 					newImages.push_back(images[i]);
 					nDelay.push_back(delayTimeForFrame[i]);
 				}
-				else
-					delete images[i];
 			}
 
 			images = newImages;
@@ -104,10 +91,10 @@ namespace smpl
 		}
 	}
 
-	void Sprite::loadImage(File file, bool clear)
+	bool Sprite::loadImage(const File& file, bool shouldClear)
 	{
-		if(clear)
-			dispose();
+		if(shouldClear)
+			clear();
 
 		int amountOfImages = 0;
 
@@ -115,7 +102,7 @@ namespace smpl
 		Image** imgs = Image::loadImage(file, &amountOfImages, &extraData);
 		
 		if(imgs == nullptr)
-			return;
+			return false;
 		
 		if(extraData.size()>=1)
 		{
@@ -132,19 +119,21 @@ namespace smpl
 		}
 		if(imgs != nullptr)
 			delete[] imgs;
+
+		return true;
 	}
 
 	
-	void Sprite::loadSpriteSheet(File file, int width, int height, int xStride, int yStride, int count, bool clear)
+	bool Sprite::loadSpriteSheet(const File& file, int width, int height, int xStride, int yStride, int count, bool shouldClear)
 	{
-		if(clear)
-			dispose();
+		if(shouldClear)
+			clear();
 
 		int amountOfImages = 0;
 		Image** imgs = Image::loadImage(file, &amountOfImages);
 		
 		if(imgs == nullptr)
-			return;
+			return false;
 		
 		for (int i = 0; i < amountOfImages; i++)
 		{
@@ -189,14 +178,16 @@ namespace smpl
 				delete imgs[i];
 			delete[] imgs;
 		}
+		
+		return true;
 	}
 
-	bool Sprite::saveAGIF(File f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold) const
+	bool Sprite::saveAGIF(const File& f, int paletteSize, bool dither, bool saveAlpha, unsigned char alphaThreshold) const
 	{
 		return Image::saveAGIF(f, (const Image**)images.data(), images.size(), delayTimeForFrame.data(), loops, paletteSize, dither, saveAlpha, alphaThreshold);
 	}
 
-	bool Sprite::saveAPNG(File f, bool saveAlpha, bool greyscale, bool strongCompression) const
+	bool Sprite::saveAPNG(const File& f, bool saveAlpha, bool greyscale, bool strongCompression) const
 	{
 		return Image::saveAPNG(f, (const Image**)images.data(), images.size(), delayTimeForFrame.data(), loops, saveAlpha, greyscale, strongCompression);
 	}

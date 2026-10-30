@@ -6,7 +6,7 @@
 namespace smpl
 {
     #pragma region GUI_MANAGER
-	SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> > GuiManager::elementLoadingFunctions;
+	SimpleHashMap<std::string, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, const SmartMemory<GuiManager>&)> > GuiManager::elementLoadingFunctions;
 	
 	void GuiManager::initDefaultLoadFunctions()
 	{
@@ -31,12 +31,12 @@ namespace smpl
 		// GuiDatePicker::registerLoadFunction();
 	}
 
-	void GuiManager::registerLoadFunction(std::string className, std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, SmartMemory<GuiManager>)> func)
+	void GuiManager::registerLoadFunction(const std::string& className, const std::function<SmartMemory<GuiItem>(SimpleHashMap<std::string, std::string>&, const SmartMemory<GuiManager>&)>& func)
 	{
 		elementLoadingFunctions[ StringTools::toLowercase(className) ] = func;
 	}
 
-	bool GuiManager::loadElement(XmlNode* node, SmartMemory<GuiItem> parent)
+	bool GuiManager::loadElement(XmlNode* node, const SmartMemory<GuiItem>& parent)
 	{
 		if(node == nullptr)
 			return false;
@@ -130,13 +130,13 @@ namespace smpl
 		
 	}
 
-	void GuiManager::loadElementsFromFile(File f)
+	void GuiManager::loadElementsFromFile(const File& f)
 	{
 		SimpleXml xmlFile = SimpleXml(f);
 		loadElementsFromXML(xmlFile);
 	}
 
-	void GuiManager::loadElementsFromXML(SimpleXml& xmlFile)
+	void GuiManager::loadElementsFromXML(const SimpleXml& xmlFile)
 	{
 		//Everything must be encapsulated in the tag <SimpleGUI> or something
 		XmlNode* parentNode = nullptr;
@@ -181,13 +181,13 @@ namespace smpl
 		}
 	}
 	
-	GuiLayoutFixed* GuiManager::createFromTemplate(File f)
+	GuiLayoutFixed* GuiManager::createFromTemplate(const File& f)
 	{
 		SimpleXml xmlFile = SimpleXml(f);
 		return createFromTemplate(xmlFile);
 	}
 	
-	GuiLayoutFixed* GuiManager::createFromTemplate(SimpleXml& xmlFile)
+	GuiLayoutFixed* GuiManager::createFromTemplate(const SimpleXml& xmlFile)
 	{
 		GuiLayoutFixed* tempRootLayout = new GuiLayoutFixed();
 		XmlNode* parentNode = nullptr;
@@ -243,10 +243,6 @@ namespace smpl
 	GuiManager::~GuiManager()
 	{
 		clear();
-
-		if(surf != nullptr)
-			delete surf;
-		surf = nullptr;
 	}
 
 	void GuiManager::clear()
@@ -262,7 +258,7 @@ namespace smpl
 		shouldDelete.clear();
 	}
 
-	void GuiManager::addElement(SmartMemory<GuiItem> k)
+	void GuiManager::addElement(const SmartMemory<GuiItem>& k)
 	{
 		if(k.getPointer() != nullptr)
 		{
@@ -270,7 +266,7 @@ namespace smpl
 		}
 	}
 	
-	void GuiManager::removeElement(SmartMemory<GuiItem> k)
+	void GuiManager::removeElement(const SmartMemory<GuiItem>& k)
 	{
 		if(k.getPointer() != nullptr)
 		{
@@ -313,22 +309,22 @@ namespace smpl
 		renderCounter++;
 	}
 
-	void GuiManager::addNewDrawnArea(GRect r)
+	void GuiManager::addNewDrawnArea(const GRect& r)
 	{
 		newRectsDrawn.push_back(r);
-		newDrawnArea.left = MathExt::min(newDrawnArea.left, r.left);
-		newDrawnArea.right = MathExt::max(newDrawnArea.right, r.right);
-		newDrawnArea.top = MathExt::min(newDrawnArea.top, r.top);
-		newDrawnArea.bottom = MathExt::max(newDrawnArea.bottom, r.bottom);
+		newDrawnArea.left = min(newDrawnArea.left, r.left);
+		newDrawnArea.right = max(newDrawnArea.right, r.right);
+		newDrawnArea.top = min(newDrawnArea.top, r.top);
+		newDrawnArea.bottom = max(newDrawnArea.bottom, r.bottom);
 	}
 
-	void GuiManager::addOldDrawnArea(GRect r)
+	void GuiManager::addOldDrawnArea(const GRect& r)
 	{
 		oldRectsDrawn.push_back(r);
-		oldDrawnArea.left = MathExt::min(oldDrawnArea.left, r.left);
-		oldDrawnArea.right = MathExt::max(oldDrawnArea.right, r.right);
-		oldDrawnArea.top = MathExt::min(oldDrawnArea.top, r.top);
-		oldDrawnArea.bottom = MathExt::max(oldDrawnArea.bottom, r.bottom);
+		oldDrawnArea.left = min(oldDrawnArea.left, r.left);
+		oldDrawnArea.right = max(oldDrawnArea.right, r.right);
+		oldDrawnArea.top = min(oldDrawnArea.top, r.top);
+		oldDrawnArea.bottom = max(oldDrawnArea.bottom, r.bottom);
 	}
 	
 	GRect GuiManager::getNewDrawnArea()
@@ -355,7 +351,7 @@ namespace smpl
 	{
 		//Assume that pollInput() was already called
 		//update root elements
-		rootLayout.doLayoutUpdate(0, 0, surf->getWidth(), surf->getHeight());
+		rootLayout.doLayoutUpdate(0, 0, surf.getWidth(), surf.getHeight());
 		rootLayout.doPreUpdate();
 		rootLayout.doUpdate( SmartMemory<GuiManager>::createNoDelete(this) );
 	}
@@ -383,8 +379,8 @@ namespace smpl
 		
 		resetRenderValues();
 
-		int width = surf->getWidth();
-		int height = surf->getHeight();
+		int width = surf.getWidth();
+		int height = surf.getHeight();
 		
 		// GraphicsInterface::setOrthoProjection(width, height);
 		GraphicsInterface::setBoundSurface(surf);
@@ -408,10 +404,10 @@ namespace smpl
 		}
 		
 		//combine clause. If the sum of both areas is greater than if we just combined them into 1 giant box, make 1 giant box
-		int minLeftCombined = MathExt::min(oldDrawnArea.left, newDrawnArea.left);
-		int minTopCombined = MathExt::min(oldDrawnArea.top, newDrawnArea.top);
-		int maxRightCombined = MathExt::max(oldDrawnArea.right, newDrawnArea.right);
-		int maxBottomCombined = MathExt::max(oldDrawnArea.bottom, newDrawnArea.bottom);
+		int minLeftCombined = min(oldDrawnArea.left, newDrawnArea.left);
+		int minTopCombined = min(oldDrawnArea.top, newDrawnArea.top);
+		int maxRightCombined = max(oldDrawnArea.right, newDrawnArea.right);
+		int maxBottomCombined = max(oldDrawnArea.bottom, newDrawnArea.bottom);
 		
 		int combinedArea = (maxRightCombined - minLeftCombined) * (maxBottomCombined - minTopCombined);
 		int addedSeparateArea = (oldDrawnArea.right - oldDrawnArea.left)*(oldDrawnArea.bottom - oldDrawnArea.top);
@@ -459,7 +455,7 @@ namespace smpl
 		return rootLayout;
 	}
 	
-	SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator GuiManager::getItemsByName(std::string name)
+	SimpleHashMultiMap<std::string, SmartMemory<GuiItem>>::Iterator GuiManager::getItemsByName(const std::string& name)
 	{
 		return objectsByName.find(name);
 	}
@@ -470,20 +466,19 @@ namespace smpl
 		return objectsByName;
 	}
 
-	SurfaceInterface* GuiManager::getSurface()
+	SurfaceInterface GuiManager::getSurface()
 	{
 		return surf;
 	}
 
-	void GuiManager::resizeImage(int width, int height)
+	void GuiManager::resizeImage(unsigned int width, unsigned int height)
 	{
 		bool wasBound = (surf == GraphicsInterface::getBoundSurface());
 		
-		if(surf != nullptr)
+		if(surf.getSurface().isValid())
 		{
-			if(surf->getWidth() != width || surf->getHeight() != height)
+			if(surf.getWidth() != width || surf.getHeight() != height)
 			{
-				delete surf;
 				surf = GraphicsInterface::createSurface(width, height);
 				forceRedraw();
 			}
@@ -558,7 +553,7 @@ namespace smpl
 		return graphicsInterfaceMode;
 	}
 
-	void GuiManager::setID(SmartMemory<GuiItem> k, const std::string& s)
+	void GuiManager::setID(const SmartMemory<GuiItem>& k, const std::string& s)
 	{
 		if(k->getNameID().empty())
 			objectsByName.insert({s, k});
@@ -580,7 +575,7 @@ namespace smpl
 		k->nameID = s;
 	}
 
-	void GuiManager::addToDisposeList(SmartMemory<GuiItem> k)
+	void GuiManager::addToDisposeList(const SmartMemory<GuiItem>& k)
 	{
 		LockingSmartMemory lockedMem = k.getLockingPointer();
 		if(lockedMem == nullptr)
@@ -595,12 +590,12 @@ namespace smpl
 		}
 	}
 
-	void GuiManager::setObjectInFocus(SmartMemory<GuiItem> k)
+	void GuiManager::setObjectInFocus(const SmartMemory<GuiItem>& k)
 	{
 		objectInFocus = k;
 	}
 
-	bool GuiManager::getObjectInFocus(SmartMemory<GuiItem> k)
+	bool GuiManager::getObjectInFocus(const SmartMemory<GuiItem>& k)
 	{
 		return objectInFocus.getPointer() == k.getPointer();
 	}
@@ -610,7 +605,7 @@ namespace smpl
 		return objectInFocus;
 	}
 	
-    void GuiManager::setBackgroundColor(Color c)
+    void GuiManager::setBackgroundColor(const Color& c)
 	{
 		backgroundColor = c;
 	}

@@ -66,7 +66,7 @@ namespace smpl
             resetPosition();
     }
     
-    void GuiItem::doUpdate(SmartMemory<GuiManager> manager)
+    void GuiItem::doUpdate(const SmartMemory<GuiManager>& manager)
     {
         int mouseX = 0;
         int mouseY = 0;
@@ -108,7 +108,7 @@ namespace smpl
     }
 
     
-    void GuiItem::doPreRender(SmartMemory<GuiManager> manager)
+    void GuiItem::doPreRender(const SmartMemory<GuiManager>& manager)
     {
         // if(!getVisible())
         //     return;
@@ -119,7 +119,7 @@ namespace smpl
         clearShouldRender();
     }
 
-    void GuiItem::doRender(SmartMemory<GuiManager> manager)
+    void GuiItem::doRender(const SmartMemory<GuiManager>& manager)
     {
         if(!getVisible())
             return;
@@ -153,7 +153,7 @@ namespace smpl
         }
     }
 
-    void GuiItem::doPreRenderOperationsForChildren(SmartMemory<GuiManager> manager)
+    void GuiItem::doPreRenderOperationsForChildren(const SmartMemory<GuiManager>& manager)
     {
         if(this->type == TYPE_LAYOUT)
         {
@@ -174,7 +174,7 @@ namespace smpl
         }
     }
 
-    void GuiItem::doPreRenderOperations(SmartMemory<GuiManager> manager)
+    void GuiItem::doPreRenderOperations(const SmartMemory<GuiManager>& manager)
     {
         // if(!getVisible())
         //     return;
@@ -207,7 +207,7 @@ namespace smpl
         lastKnownRenderRect = currRect;
     }
 
-    void GuiItem::updateManagerRenderCounter(SmartMemory<GuiManager> manager)
+    void GuiItem::updateManagerRenderCounter(const SmartMemory<GuiManager>& manager)
     {
         LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
         if(getVisible() && lockedManager != nullptr)
@@ -219,7 +219,7 @@ namespace smpl
         }
     }
 
-    void GuiItem::updateManagerRenderCounterForChildren(SmartMemory<GuiManager> manager)
+    void GuiItem::updateManagerRenderCounterForChildren(const SmartMemory<GuiManager>& manager)
     {
         if(this->type == TYPE_LAYOUT)
         {
@@ -256,7 +256,7 @@ namespace smpl
         return type;
     }
 
-    void GuiItem::setParent(SmartMemory<GuiItem> p)
+    void GuiItem::setParent(const SmartMemory<GuiItem>& p)
     {
         LockingSmartMemory<GuiItem> lockedParent = p.getLockingPointer();
         if(lockedParent != nullptr)
@@ -271,17 +271,17 @@ namespace smpl
         return parent;
     }
 
-    void GuiItem::onChildRemoved(SmartMemory<GuiItem> removedChild)
+    void GuiItem::onChildRemoved(const SmartMemory<GuiItem>& removedChild)
     {
         //nothing
     }
 
-    void GuiItem::onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo)
+    void GuiItem::onFocusChanged(const SmartMemory<GuiManager>& manager, bool changedTo)
     {
         //nothing
     }
 
-    bool GuiItem::getFocused(SmartMemory<GuiManager> manager)
+    bool GuiItem::getFocused(const SmartMemory<GuiManager>& manager)
     {
         LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
         if(lockedManager != nullptr)
@@ -291,7 +291,7 @@ namespace smpl
         return false;
     }
 
-    void GuiItem::setFocused(SmartMemory<GuiManager> manager, bool f)
+    void GuiItem::setFocused(const SmartMemory<GuiManager>& manager, bool f)
     {
         LockingSmartMemory<GuiManager> lockedManager = manager.getLockingPointer();
         if(lockedManager != nullptr)
@@ -361,7 +361,7 @@ namespace smpl
         return currentLayoutMaxHeight;
     }
 
-    void GuiItem::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiItem::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         auto pair = attribs.find("id");
         if(pair != attribs.end())

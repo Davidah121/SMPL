@@ -8,6 +8,7 @@
 #include "BezierCurve.h"
 #include "SIMD.h"
 #include "Concurrency.h"
+#include "SmartMemory.h"
 
 namespace smpl
 {
@@ -87,13 +88,16 @@ namespace smpl
 	class DLL_OPTION TextureFillFunction
 	{
 	public:
-		TextureFillFunction(Image* texture);
+		TextureFillFunction(Image* texture, int edgeBehavior, const Vec2f& topLeft, const Vec2f& bottomRight);
 		virtual ~TextureFillFunction();
 
 		virtual Color getColor(int x, int y);
 		virtual void fillBetween(int x1, int x2, int y);
 	private:
 		Image* texture = nullptr;
+		int edgeBehavior = Image::EDGE_NONE;
+		Vec2f boxTopLeft;
+		Vec2f boxBottomRight;
 	};
 
 	class DLL_OPTION SimpleGraphics
@@ -213,11 +217,11 @@ namespace smpl
 		static uint32_t blend(uint32_t src, uint32_t dest); //Same as blend(Color, Color) but just needs to recast
 
 		#ifdef __SSE4_2__
-			static __m128i blend(__m128i src, __m128i dest);
+			static __m128i blend(const __m128i& src, const __m128i& dest);
 		#endif
 
 		#ifdef __AVX2__
-			static __m256i blend(__m256i src, __m256i dest);
+			static __m256i blend(const __m256i& src, const __m256i& dest);
 		#endif
 
 		/**
@@ -613,7 +617,20 @@ namespace smpl
 		 * @param surf
 		 * 		The image to draw onto.
 		 */
-		static void drawPolygon(Vec2f* points, int size, Image* surf);
+		static void drawPolygon(const Vec2f* points, size_t size, Image* surf);
+		static void drawPolygonOld(const Vec2f* points, size_t size, Image* surf);
+
+		/**
+		 * @brief Draws a polygon with a set of potentially inner polygons, intersecting polygons, or disconnected polygons.
+		 *		They are affected by the current fill rule and allow for more freedom in drawing shapes.
+		 * 
+		 * @param polygons 
+		 *		A set of polygons defined by their points
+		 * @param sizeOfEachGon 
+		 * @param surf 
+		 */
+		static void drawPolygon(const std::vector<const Vec2f*>& polygons, const std::vector<size_t>& sizeOfEachGon, Image* surf);
+		static void drawPolygon(const std::vector<std::vector<Vec2f>>& polygons, Image* surf);
 		
 		/**
 		 * @brief Draws a model using the active draw color or texture.
@@ -679,7 +696,14 @@ namespace smpl
 		 * 
 		 * @param img 
 		 */
-		static void setMask(Image img);
+		static void setMask(const Image& img);
+		
+		/**
+		 * @brief Sets whether to utilize the masking image if it is set for the functions drawPixel() and fillBetween()
+		 * 
+		 * @param v 
+		 */
+		static void enableMask(bool v);
 
 		/**
 		 * @brief Gets the mask image that drawing utilizes. This is so you may modify that mask directly and so that you may also utilize it in
@@ -735,14 +759,14 @@ namespace smpl
 		 * @param f
 		 * 		Can be nullptr. If nullptr, one of the default fonts will be used.
 		 */
-		static void setFont(Font* f);
+		static void setFont(const SmartMemory<Font>& f);
 
 		/**
 		 * @brief Returns the currently active Font.
-		 * @return Font*
+		 * @return SmartMemory<Font>
 		 * 		If the active font is nullptr, the currently active default font is returned.
 		 */
-		static Font* getFont();
+		static SmartMemory<Font> getFont();
 		
 		/**
 		 * @brief Sets the default font to one of the 3 types of default fonts available.
@@ -766,7 +790,7 @@ namespace smpl
 		 * @return Font*
 		 * 		May return nullptr if the font was not loaded.
 		 */
-		static Font* getDefaultFont(unsigned char type);
+		static SmartMemory<Font> getDefaultFont(unsigned char type);
 
 		/**
 		 * @brief Sets the Porter Duff rule to use for color and alpha blending.
@@ -1016,16 +1040,17 @@ namespace smpl
 		static Image* scaleBicubic(Image* img, double xScale, double yScale);
 		
 		static Image maskImage;
+		static bool useMask;
 
 		static unsigned char defaultFontValue;
 
-		static Font* defaultFont;
-		static Font* defaultFontMedium;
-		static Font* defaultFontLarge;
+		static SmartMemory<Font> defaultFont;
+		static SmartMemory<Font> defaultFontMedium;
+		static SmartMemory<Font> defaultFontLarge;
 		
 		static Box2D clippingRect;
 		
-		static Font* activeFont;
+		static SmartMemory<Font> activeFont;
 		static Color activeColor;
 		static unsigned char compositeRule;
 		static unsigned char blendMode;

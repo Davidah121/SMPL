@@ -11,8 +11,25 @@ namespace smpl
 
 	struct PathCriticalPoint
 	{
-		double xValue;
-		Vec2f direction;
+		//need current x value, need information about the points around it. Specifically, need the slope of the point and points near it
+		//that ends up being 4 values but in practice, you can turn this into 4 doubles and not 1 double and 4 vectors
+		//horizontal lines are a pain though (can mark which side is horizontal with 2 booleans)
+		float xValue;
+
+		//true = positive, false = negative / horizontal
+		bool ySlopeDirection; 
+		
+		//Notes whether this critical point is on a vertex exactly. If so, separate handling is required unlike the other scenarios.
+		bool onVertex;
+
+		//notes what side the next point and previous point are on.
+		//For a bezier curve, its about the points in the near vicinity not necessarily the defined vertex values (though in practice, its probably fine to do that too)
+		//		Note that it can be completely ignored as well as its not on a vertex
+		//The next and previous curve/line is necessary to know to solve this.
+		bool v1Above;
+		bool v2Above;
+
+		bool horizontalConnects;
 	};
 
 	struct PathScanLineInfo
@@ -20,7 +37,7 @@ namespace smpl
 		PathScanLineInfo(int size)
 		{
 			scanLines = std::vector<std::vector<PathCriticalPoint>>(size);
-			horizontalLines = std::vector<std::vector<std::pair<double, double>>>(size);
+			horizontalLines = std::vector<std::vector<std::pair<float, float>>>(size);
 			strokeScanLines = std::vector<std::vector<int>>(size);
 		}
 		~PathScanLineInfo()
@@ -28,7 +45,7 @@ namespace smpl
 
 		}
 		std::vector<std::vector<PathCriticalPoint>> scanLines;
-		std::vector<std::vector<std::pair<double, double>>> horizontalLines;
+		std::vector<std::vector<std::pair<float, float>>> horizontalLines;
 		std::vector<std::vector<int>> strokeScanLines;
 	};
 
@@ -96,7 +113,11 @@ namespace smpl
 		 * 
 		 */
 		VectorShape();
-
+		VectorShape(const VectorShape& other) = default;
+		VectorShape& operator=(const VectorShape& other) = default;
+		VectorShape(VectorShape&& other) = default;
+		VectorShape& operator=(VectorShape&& other) = default;
+		
 		/**
 		 * @brief Destroy the VectorShape object
 		 * 
@@ -129,6 +150,15 @@ namespace smpl
 		 * 		The maximum height allowed. This may be less than the image's height.
 		 */
 		virtual void drawStroke(Image* buffer, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		virtual std::pair<Vec2f, Vec2f> getBoundingBox();
 
 		/**
 		 * @brief Sets the Fill Method for the graphic
@@ -234,6 +264,15 @@ namespace smpl
 		 */
 		Mat3f getTransform();
 		
+		/**
+		 * @brief Creates a new VectorShape by properly copying the underlying VectorShape. 
+		 *		This method utilizes the reflection properties of each vector shape class.
+		 *		This method also requires that memory be properly deleted as this pointer is not managed in any way.
+		 * 
+		 * @param shape 
+		 * @return VectorShape* 
+		 */
+		static VectorShape* createNewFromVectorShape(const VectorShape& shape);
 	protected:
 		/**
 		 * @brief A function useful for subclasses. May be removed.
@@ -279,6 +318,10 @@ namespace smpl
 		 * 
 		 */
 		VectorRectangle();
+		VectorRectangle(const VectorRectangle& other) = default;
+		VectorRectangle& operator=(const VectorRectangle& other) = default;
+		VectorRectangle(VectorRectangle&& other) = default;
+		VectorRectangle& operator=(VectorRectangle&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorRectangle object
@@ -309,6 +352,15 @@ namespace smpl
 		 * 		The maximum height allowed. This may be less than the image's height.
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
 
 		/**
 		 * @brief Sets the x value of the VectorRectangle
@@ -437,6 +489,10 @@ namespace smpl
 		 * 
 		 */
 		VectorCircle();
+		VectorCircle(const VectorCircle& other) = default;
+		VectorCircle& operator=(const VectorCircle& other) = default;
+		VectorCircle(VectorCircle&& other) = default;
+		VectorCircle& operator=(VectorCircle&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorCircle object
@@ -467,6 +523,15 @@ namespace smpl
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
+
 		/**
 		 * @brief Sets the x value of the center of the VectorCircle
 		 * 
@@ -548,6 +613,10 @@ namespace smpl
 		 * 
 		 */
 		VectorEllipse();
+		VectorEllipse(const VectorEllipse& other) = default;
+		VectorEllipse& operator=(const VectorEllipse& other) = default;
+		VectorEllipse(VectorEllipse&& other) = default;
+		VectorEllipse& operator=(VectorEllipse&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorEllipse object
@@ -577,6 +646,15 @@ namespace smpl
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
+
 		/**
 		 * @brief Sets the x value of the center of the Ellipse
 		 * 
@@ -672,6 +750,10 @@ namespace smpl
 		 * 
 		 */
 		VectorLine();
+		VectorLine(const VectorLine& other) = default;
+		VectorLine& operator=(const VectorLine& other) = default;
+		VectorLine(VectorLine&& other) = default;
+		VectorLine& operator=(VectorLine&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorLine object
@@ -703,6 +785,15 @@ namespace smpl
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
+
 		/**
 		 * @brief Sets the start x value for the line.
 		 * 
@@ -802,6 +893,10 @@ namespace smpl
 		 * 
 		 */
 		VectorPolyline();
+		VectorPolyline(const VectorPolyline& other) = default;
+		VectorPolyline& operator=(const VectorPolyline& other) = default;
+		VectorPolyline(VectorPolyline&& other) = default;
+		VectorPolyline& operator=(VectorPolyline&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorPolyline object
@@ -832,6 +927,15 @@ namespace smpl
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
+
 		/**
 		 * @brief Adds a new point to the VectorPolyline
 		 * 
@@ -921,6 +1025,10 @@ namespace smpl
 		 * 		Follows the SVG format for a polygon
 		 */
 		VectorPolygon();
+		VectorPolygon(const VectorPolygon& other) = default;
+		VectorPolygon& operator=(const VectorPolygon& other) = default;
+		VectorPolygon(VectorPolygon&& other) = default;
+		VectorPolygon& operator=(VectorPolygon&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorPolygon object
@@ -950,6 +1058,15 @@ namespace smpl
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
 		
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
+
 		/**
 		 * @brief Adds a new point to the VectorPolygon
 		 * 
@@ -1084,20 +1201,11 @@ namespace smpl
 		 * 
 		 */
 		VectorPath();
-
-		/**
-		 * @brief Construct a new VectorPath object from another VectorPath
-		 * 
-		 * @param other 
-		 */
-		VectorPath(const VectorPath& other);
-
-		/**
-		 * @brief Copies a VectorPath object
-		 * 
-		 * @param other 
-		 */
-		void operator=(VectorPath& other);
+		
+		VectorPath(const VectorPath& other) = default;
+		VectorPath& operator=(const VectorPath& other) = default;
+		VectorPath(VectorPath&& other) = default;
+		VectorPath& operator=(VectorPath&& other) = default;
 
 		/**
 		 * @brief Destroy the VectorPath object
@@ -1126,6 +1234,15 @@ namespace smpl
 		 * 		The maximum height allowed. This may be less than the image's height.
 		 */
 		void drawStroke(Image* buffer, int globalWidth, int globalHeight);
+
+		/**
+		 * @brief Get the Bounding Box for the vector shape. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
 
 		/**
 		 * @brief Adds a move to command.
@@ -1454,12 +1571,21 @@ namespace smpl
 		 */
 		int size();
 
+		/**
+		 * @brief Converts the path to a polygon. Does not properly handle bezier curves. 
+		 * 
+		 * @return std::vector<Vec2f> 
+		 */
+		std::vector<std::vector<Vec2f>> toPolygon();
+
 		static bool oldMethod;
 	protected:
 		void applyTransform();
 		
 	private:
 		std::vector<PathCommand> commands = std::vector<PathCommand>();
+		std::vector<PathCommand> transformedCommands = std::vector<PathCommand>();
+		
 		std::vector<Vec2f> getArcStuff(Vec2f radi, double angle, Vec2f p1, Vec2f p2);
 		
 		void drawLineTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
@@ -1472,8 +1598,6 @@ namespace smpl
 		
 		void drawArcTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative);
 		void drawCloseTo(Vec2f currentPos, Vec2f closePoint, int minY, int maxY, PathScanLineInfo& scanLineInfo);
-		
-		void copy(VectorPath& other);
 		
 	SERIALIZE_SUPER_CLASS(VectorShape)
 	SERIALIZE_CLASS(commands)
@@ -1532,19 +1656,10 @@ namespace smpl
 		 */
 		VectorGraphic(int width=0, int height=0);
 
-		/**
-		 * @brief Construct a new VectorGraphic object from another VectorGraphic object.
-		 * 
-		 * @param other 
-		 */
 		VectorGraphic(const VectorGraphic& other);
-
-		/**
-		 * @brief Copies a VectorGraphic
-		 * 
-		 * @param other 
-		 */
-		void operator=(const VectorGraphic& other);
+		VectorGraphic& operator=(const VectorGraphic& other);
+		VectorGraphic(VectorGraphic&& other) noexcept;
+		VectorGraphic& operator=(VectorGraphic&& other) noexcept;
 
 		/**
 		 * @brief Destroy the VectorGraphic object
@@ -1554,6 +1669,7 @@ namespace smpl
 
 		/**
 		 * @brief Adds a VectorShape to the VectorGraphic
+		 *		Object takes ownership of the pointer
 		 * 
 		 * @param k 
 		 */
@@ -1580,6 +1696,15 @@ namespace smpl
 		 * @return size_t 
 		 */
 		size_t size();
+
+		/**
+		 * @brief Get the Bounding Box for the Vector Graphic. It is the total area taken up by the drawing after transformations
+		 *		Note that it is axis aligned.
+		 *		Returns 2 vectors where the first is the top-left of the box and the second is the bottom-right
+		 * 
+		 * @return std::pair<Vec2f, Vec2f> 
+		 */
+		std::pair<Vec2f, Vec2f> getBoundingBox();
 
 		/**
 		 * @brief Draws the VectorGraphic on an image.
@@ -1619,16 +1744,20 @@ namespace smpl
 		/**
 		 * @brief Gets the Width of the VectorGraphic
 		 * 
-		 * @return int 
+		 * @return uint32_t 
 		 */
-		int getWidth();
+		uint32_t getWidth();
+
+		void setWidth(uint32_t width);
 
 		/**
 		 * @brief Gets the Height of the VectorGraphic
 		 * 
-		 * @return int 
+		 * @return uint32_t 
 		 */
-		int getHeight();
+		uint32_t getHeight();
+		
+		void setHeight(uint32_t height);
 
 		//save and load with Xml File
 
@@ -1689,8 +1818,6 @@ namespace smpl
 	private:
 		std::vector<VectorShape*> shapes = std::vector<VectorShape*>();
 
-		void copy(const VectorGraphic& other);
-
 		void loadNode(XmlNode* parentNode, VectorShape* groupPointer = nullptr);
 
 		void loadTransforms(XmlNode* node, VectorShape* shape, VectorShape* groupPointer = nullptr);
@@ -1702,8 +1829,8 @@ namespace smpl
 		void loadPolyline(XmlNode* node, VectorPolyline* shape);
 		void loadPath(XmlNode* node, VectorPath* shape);
 		
-		int width = 0;
-		int height = 0;
+		uint32_t width = 0;
+		uint32_t height = 0;
 
 		//transforms
 		Mat3f transform = Mat3f::getIdentity();

@@ -227,7 +227,7 @@ namespace smpl
 			SSL* conn = SSL_new(sslSingleton.getCTX());
 			SSL_set_fd(conn, mainSocketInfo.socket);
 			sslConnectionMapping.insert({mainSocketInfo.socket, conn});
-
+			
 			if(config.type == Network::TYPE_SERVER)
 			{
 				int err = SSL_CTX_use_certificate_file(sslSingleton.getCTX(), certificateFile.c_str(), SSL_FILETYPE_PEM);
@@ -512,18 +512,29 @@ namespace smpl
 			return 1;
 		else
 		{
+			
+			//this was from the main socket. DO NOT RE ADD ANYTHING.
+			//IT WILL BREAK (ask me how I know)
+			//This depends on ssl being initialized for the main socket during the sslInit() function which makes sense for the server.
+			//  Can't accept new connections till you do this.
+			//For client code, this is a bit weird at first. It'd make sense to do so in this function but that causes issues.
+			//	This is really a naming issue. sslInit() doesn't even do all of the things for initializing ssl. Its because of some singleton nonsense
+			//	and being retroactively fitted onto existing socket code trying to avoid making a ton of changes.
+
 			#ifdef USE_OPENSSL
-			//new connection, add to mapping and call SSL_connect
-			SSL* conn = SSL_new(SSL_Singleton::getSingleton().getCTX());
-			SSL_set_fd(conn, sock);
-			sslConnectionMapping.insert({sock, conn});
+			auto it = sslConnectionMapping.find(sock);
+			if(it == sslConnectionMapping.end())
+			{
+				StringTools::println("SERIOUS ERROR WITH SSL OCCURED. NO SSL* PREVIOUSLY CREATED BEFOREHAND");
+				return -1;
+			}
 
-			SSL_set_tlsext_host_name(conn, this->mainSocketInfo.ip.c_str());
+			SSL_set_tlsext_host_name(it->second, this->mainSocketInfo.ip.c_str());
 
-			int err = SSL_connect(conn);
+			int err = SSL_connect(it->second);
 			if(err <= 0)
 			{
-				int err2 = SSL_get_error(conn, err);
+				int err2 = SSL_get_error(it->second, err);
 				if(err2 == SSL_ERROR_WANT_CONNECT)
 					err = 0;
 				else
@@ -737,6 +748,7 @@ namespace smpl
 
 			int lastError = crossPlatformGetLastError();
 			wouldConnect = (lastError == crossPlatform_ConnectError || lastError == crossPlatform_NoError);
+
 
 			while(true)
 			{

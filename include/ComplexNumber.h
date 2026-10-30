@@ -2,8 +2,9 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include "SimpleSerialization.h"
-#include "Vec2f.h"
+#include "Vec2.h"
 #include "SIMD_Template.h"
+#include "Matrix.h"
 
 namespace smpl
 {

@@ -371,7 +371,7 @@
 			copySounds.clear();
 
 			audioMutex.lock();
-			size_t maxSize = MathExt::min((size_t)amtOfSoundsAllowed, sounds.size());
+			size_t maxSize = min((size_t)amtOfSoundsAllowed, sounds.size());
 			for(size_t i=0; i<sounds.size(); i++)
 			{
 				if(sounds[i]->getPlaying())

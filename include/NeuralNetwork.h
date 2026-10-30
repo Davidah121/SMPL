@@ -65,6 +65,7 @@ namespace smpl
     {
     public:
         InputLayer(const MatrixF& trainingData);
+		InputLayer(SerializedStreamable&, DataFormatter&);
         ~InputLayer();
         
         MatrixF solve(const MatrixF& input);
@@ -82,6 +83,7 @@ namespace smpl
     {
     public:
         FullyConnectedLayer(size_t inputNeurons, size_t outputNeurons);
+		FullyConnectedLayer(SerializedStreamable&, DataFormatter&);
         ~FullyConnectedLayer();
         MatrixF solve(const MatrixF& input);
         MatrixF derivative(const MatrixF& input);
