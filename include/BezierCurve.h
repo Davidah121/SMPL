@@ -2,9 +2,10 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include <vector>
-#include "Vec2f.h"
+#include "Vec2.h"
 #include "SimpleSerialization.h"
 #include "GeneralExceptions.h"
+#include "Line.h"
 
 namespace smpl
 {
@@ -149,6 +150,18 @@ namespace smpl
 		 * @return std::vector<BezierCurve> 
 		 */
 		std::pair<BezierCurve, BezierCurve> subdivide(double t) const;
+		
+		/**
+		 * @brief Subdivides the current bezier curve such that each segment is very line like for simpler calculations.
+		 *		Tolerance is used to determine when a particular curve is flat enough. 
+		 *		Tolerance, in this case, refers to the distance along the shortest axis that the oriented bounding box forms
+		 *			The assumption is that the longest axis is the line and the 2ndary axis is what gives it extra depth.
+		 *			The goal being to reduce that 2ndary axis such that it is as line like as possible.
+		 * 
+		 * @param tolerance 
+		 * @return std::vector<BezierCurve> 
+		 */
+		std::vector<BezierCurve> subdivideTillNearlyFlat(double tolerance = 1.0) const;
 
 		/**
 		 * @brief Extracts the segment from [a, b] as a new Bezier Curve.
@@ -421,6 +434,8 @@ namespace smpl
 		bool checkForPotentialSelfIntersection() const;
 		void subdivideTillNoIntersection(BezierCurve c, double t1, double t2, std::vector<BezierCurve>& outputCurves, std::vector<std::pair<double, double>>& outputTimes) const;
 	
+		
+		void subdivideTillNearlyFlatRecursive(const Line& l, std::vector<BezierCurve>& output, double tolerance = 1.0) const;
 
 		std::vector<Vec2f> points = std::vector<Vec2f>();
 		SERIALIZE_CLASS(points)

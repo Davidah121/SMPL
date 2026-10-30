@@ -25,11 +25,11 @@ namespace smpl
 			int tempWidth = otherImg->getWidth();
 			int tempHeight = otherImg->getHeight();
 			
-			int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-			int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+			int minXBound = max(0, (int)clippingRect.getLeftBound());
+			int minYBound = max(0, (int)clippingRect.getTopBound());
 
-			int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-			int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+			int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+			int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
 			int minX = MathExt::clamp(x-absXRad, minXBound, maxXBound);
 			int maxX = MathExt::clamp(x+absXRad, minXBound, maxXBound);

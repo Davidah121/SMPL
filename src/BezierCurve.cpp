@@ -234,6 +234,44 @@ namespace smpl
 		return {b1, b2};
 	}
 
+	std::vector<BezierCurve> BezierCurve::subdivideTillNearlyFlat(double tolerance) const
+	{
+		//distance from each point to the line that is formed by P0 and Pn-1
+		if(size() <= 2)
+			return {*this};
+
+		Line l = Line(points.front(), points.back());
+		std::vector<BezierCurve> output;
+
+		subdivideTillNearlyFlatRecursive(l, output, tolerance);
+		return output;
+	}
+	
+	void BezierCurve::subdivideTillNearlyFlatRecursive(const Line& l, std::vector<BezierCurve>& output, double tolerance) const
+	{
+		bool isOkay = true;
+		for(size_t i=1; i<size()-1; i++)
+		{
+			//measure distance to line
+			Vec2f nP = l.projectOntoLine(points[i]);
+			double dis = MathExt::distanceTo(points[i], nP);
+			if(dis > tolerance)
+			{
+				isOkay = false;
+				break;
+			}
+		}
+
+		if(isOkay)
+			output.push_back(*this);
+		else
+		{
+			auto newCurves = subdivide(0.5);
+			newCurves.first.subdivideTillNearlyFlatRecursive(l, output, tolerance);
+			newCurves.second.subdivideTillNearlyFlatRecursive(l, output, tolerance);
+		}
+	}
+
 	BezierCurve BezierCurve::extract(double a, double b) const
 	{
 		if(a < 0 || a > 1 || b < 0 || b > 1)
@@ -264,11 +302,11 @@ namespace smpl
 
 			for(const Vec2f& v : points)
 			{
-				minPoint.x = MathExt::min(v.x, minPoint.x);
-				maxPoint.x = MathExt::max(v.x, maxPoint.x);
+				minPoint.x = min(v.x, minPoint.x);
+				maxPoint.x = max(v.x, maxPoint.x);
 
-				minPoint.y = MathExt::min(v.y, minPoint.y);
-				maxPoint.y = MathExt::max(v.y, maxPoint.y);
+				minPoint.y = min(v.y, minPoint.y);
+				maxPoint.y = max(v.y, maxPoint.y);
 			}
 
 			return {minPoint, maxPoint};
@@ -440,8 +478,7 @@ namespace smpl
 		double du;
 		double preTime = 0;
 		
-		GeneralMathFunction f = GeneralMathFunction();
-		f.setFunction( [this, Y](double t) -> double{
+		GeneralMathFunction f = GeneralMathFunction([this, Y](double t) -> double{
 			return this->getFunctionAt(t).y - Y;
 		});
 
@@ -538,8 +575,7 @@ namespace smpl
 		double du;
 		double preTime = 0;
 		
-		GeneralMathFunction f = GeneralMathFunction();
-		f.setFunction( [this, X](double t) -> double{
+		GeneralMathFunction f = GeneralMathFunction([this, X](double t) -> double{
 			return this->getFunctionAt(t).x - X;
 		});
 

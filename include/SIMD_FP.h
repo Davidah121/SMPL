@@ -33,6 +33,7 @@ namespace smpl
 
 		SIMD_SSE(){}
 		SIMD_SSE(float byte){values = _mm_set1_ps(byte);}
+		SIMD_SSE(float v1, float v2, float v3, float v4){values = _mm_set_ps(v4, v3, v2, v1);}
 		SIMD_SSE(__m128 byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<float>& other) {values = other.values;}
@@ -143,6 +144,17 @@ namespace smpl
 	inline const int SIMD_SSE<float>::SIZE_FP16 = 8;
 
 	template<>
+	inline SIMD_SSE<float> min(const SIMD_SSE<float>& a, const SIMD_SSE<float>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<float> max(const SIMD_SSE<float>& a, const SIMD_SSE<float>& b)
+	{
+		return a.max(b);
+	}
+
+	template<>
 	class SIMD_SSE<double>
 	{
 	public:
@@ -151,6 +163,7 @@ namespace smpl
 
 		SIMD_SSE(){}
 		SIMD_SSE(double byte){values = _mm_set1_pd(byte);}
+		SIMD_SSE(double v1, double v2){values = _mm_set_pd(v2, v1);}
 		SIMD_SSE(__m128d byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<double>& other) {values = other.values;}
@@ -238,6 +251,17 @@ namespace smpl
 	};
 	inline const int SIMD_SSE<double>::SIZE = 2;
 
+	template<>
+	inline SIMD_SSE<double> min(const SIMD_SSE<double>& a, const SIMD_SSE<double>& b)
+	{
+		return a.min(b);
+	}
+	
+	template<>
+	inline SIMD_SSE<double> max(const SIMD_SSE<double>& a, const SIMD_SSE<double>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 
 
@@ -261,6 +285,7 @@ namespace smpl
 
 		SIMD_AVX(){}
 		SIMD_AVX(float byte){values = _mm256_set1_ps(byte);}
+		SIMD_AVX(float v1, float v2, float v3, float v4, float v5, float v6, float v7, float v8){values = _mm256_set_ps(v8, v7, v6, v5,v4, v3, v2, v1);}
 		SIMD_AVX(__m256 byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<float>& other) {values = other.values;}
@@ -362,6 +387,16 @@ namespace smpl
 	
 	inline const int SIMD_AVX<float>::SIZE = 8;
 	inline const int SIMD_AVX<float>::SIZE_FP16 = 16;
+	template<>
+	inline SIMD_AVX<float> min(const SIMD_AVX<float>& a, const SIMD_AVX<float>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<float> max(const SIMD_AVX<float>& a, const SIMD_AVX<float>& b)
+	{
+		return a.max(b);
+	}
 
 	template<>
 	class SIMD_AVX<double>
@@ -372,6 +407,7 @@ namespace smpl
 
 		SIMD_AVX(){}
 		SIMD_AVX(double byte){values = _mm256_set1_pd(byte);}
+		SIMD_AVX(double v1, double v2, double v3, double v4){values = _mm256_set_pd(v4, v3, v2, v1);}
 		SIMD_AVX(__m256d byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<double>& other) {values = other.values;}
@@ -459,5 +495,16 @@ namespace smpl
 		__m256d values;
 	};
 	inline const int SIMD_AVX<double>::SIZE = 4;
+
+	template<>
+	inline SIMD_AVX<double> min(const SIMD_AVX<double>& a, const SIMD_AVX<double>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<double> max(const SIMD_AVX<double>& a, const SIMD_AVX<double>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 }

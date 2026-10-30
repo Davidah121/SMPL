@@ -10,6 +10,11 @@ namespace smpl
     class SSL_Singleton
     {
     public:
+		SSL_Singleton(const SSL_Singleton& other) = default;
+		SSL_Singleton& operator=(const SSL_Singleton& other) = default;
+
+		SSL_Singleton(SSL_Singleton&& other) = delete;
+		SSL_Singleton& operator=(SSL_Singleton&& other) = delete;
         ~SSL_Singleton();
         SSL_CTX* getCTX();
         static SSL_Singleton& getSingleton();
@@ -18,10 +23,10 @@ namespace smpl
         SSL_CTX* ssl_ctx = nullptr;
         SSL_Singleton();
 
-        static SSL_Singleton singleton;
+        // static SSL_Singleton singleton;
     };
 
-    inline SSL_Singleton SSL_Singleton::singleton = SSL_Singleton();
+    // inline SSL_Singleton SSL_Singleton::singleton;
 }
 
 #endif

@@ -20,6 +20,7 @@ namespace smpl
 
 		SIMD_SSE(){}
 		SIMD_SSE(int byte){values = _mm_set1_epi32(byte);}
+		SIMD_SSE(int v1, int v2, int v3, int v4){values = _mm_set_epi32(v4, v3, v2, v1);}
 		SIMD_SSE(__m128i byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<int>& other) {values = other.values;}
@@ -135,29 +136,41 @@ namespace smpl
 			return _mm_min_epi32(_mm_max_epi32(values, min.values), max.values);
 		}
 
-		operator SIMD_SSE<unsigned int>() const;
+		operator SIMD_SSE<uint32_t>() const;
 		operator SIMD_SSE<float>() const;
 		__m128i values;
 	};
 	inline const int SIMD_SSE<int>::SIZE = 4;
+	
+	template<>
+	inline SIMD_SSE<int> min(const SIMD_SSE<int>& a, const SIMD_SSE<int>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<int> max(const SIMD_SSE<int>& a, const SIMD_SSE<int>& b)
+	{
+		return a.max(b);
+	}
 
 	template<>
-	class SIMD_SSE<unsigned int> : public SIMD_SSE<int>
+	class SIMD_SSE<uint32_t> : public SIMD_SSE<int>
 	{
 	public:
 		SIMD_SSE(){}
-		SIMD_SSE(unsigned int byte){values = _mm_set1_epi32(byte);}
+		SIMD_SSE(uint32_t byte){values = _mm_set1_epi32(byte);}
+		SIMD_SSE(uint32_t v1, uint32_t v2, uint32_t v3, uint32_t v4){values = _mm_set_epi32(v4, v3, v2, v1);}
 		SIMD_SSE(__m128i byte){values = byte;}
 		
-		SIMD_SSE(const SIMD_SSE<unsigned int>& other) {values = other.values;}
-		void operator=(const SIMD_SSE<unsigned int>& other) {values = other.values;}
+		SIMD_SSE(const SIMD_SSE<uint32_t>& other) {values = other.values;}
+		void operator=(const SIMD_SSE<uint32_t>& other) {values = other.values;}
 		
-		SIMD_SSE(const SIMD_SSE<unsigned int>&& other) noexcept {values = other.values;}
-		void operator=(const SIMD_SSE<unsigned int>&& other) noexcept {values = other.values;}
+		SIMD_SSE(const SIMD_SSE<uint32_t>&& other) noexcept {values = other.values;}
+		void operator=(const SIMD_SSE<uint32_t>&& other) noexcept {values = other.values;}
 		
 		~SIMD_SSE(){}
 
-		SIMD_SSE<unsigned int> operator/(const SIMD_SSE<unsigned int>& other) const
+		SIMD_SSE<uint32_t> operator/(const SIMD_SSE<uint32_t>& other) const
 		{
 			//To utilize the entire range and do it in a small number of instructions, use 64 bit (yes its probably faster)
 			__m128d A1 = SEML::fastInt64ToDouble(_mm_cvtepu32_epi64(values));
@@ -176,27 +189,27 @@ namespace smpl
 			return _mm_castps_si128(result);
 		}
 		
-		SIMD_SSE<unsigned int> operator>(const SIMD_SSE<unsigned int>& other) const
+		SIMD_SSE<uint32_t> operator>(const SIMD_SSE<uint32_t>& other) const
 		{
 			return _mm_cmpeq_epi32(_mm_max_epu32(values, other.values), values);
 		}
-		SIMD_SSE<unsigned int> operator>=(const SIMD_SSE<unsigned int>& other) const 
+		SIMD_SSE<uint32_t> operator>=(const SIMD_SSE<uint32_t>& other) const 
 		{
 			__m128i temp = operator<(other).values;
 			return _mm_andnot_si128(temp, temp);
 		}
 		
-		SIMD_SSE<unsigned int> operator<(const SIMD_SSE<unsigned int>& other) const
+		SIMD_SSE<uint32_t> operator<(const SIMD_SSE<uint32_t>& other) const
 		{
 			return _mm_cmpeq_epi32(_mm_min_epu32(values, other.values), values);
 		}
-		SIMD_SSE<unsigned int> operator<=(const SIMD_SSE<unsigned int>& other) const 
+		SIMD_SSE<uint32_t> operator<=(const SIMD_SSE<uint32_t>& other) const 
 		{
 			__m128i temp = operator>(other).values;
 			return _mm_andnot_si128(temp, temp);
 		}
 
-		SIMD_SSE<unsigned int> blend(const SIMD_SSE<unsigned int>& other, const SIMD_SSE<unsigned int>& blendFactor) const
+		SIMD_SSE<uint32_t> blend(const SIMD_SSE<uint32_t>& other, const SIMD_SSE<uint32_t>& blendFactor) const
 		{
 			return _mm_castps_si128(_mm_blendv_ps(_mm_castsi128_ps(values), _mm_castsi128_ps(other.values), _mm_castsi128_ps(blendFactor.values)));
 		}
@@ -216,26 +229,26 @@ namespace smpl
 		}
 
 		//load / store
-		static SIMD_SSE<unsigned int> load(const unsigned int* pointer){return _mm_loadu_si128((__m128i*)pointer);}
-		static SIMD_SSE<unsigned int> gather(const unsigned int* pointer, const int* indices)
+		static SIMD_SSE<uint32_t> load(const uint32_t* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		static SIMD_SSE<uint32_t> gather(const uint32_t* pointer, const int* indices)
 		{
 			__m128i indicesSSE = _mm_loadu_si128((__m128i*)indices);
 			return gatherSSE(pointer, indicesSSE);
 		}
-		static SIMD_SSE<unsigned int> gather(const unsigned int* pointer, const __m128i& indices){return gatherSSE(pointer, indices);}
+		static SIMD_SSE<uint32_t> gather(const uint32_t* pointer, const __m128i& indices){return gatherSSE(pointer, indices);}
 
-		void store(unsigned int* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
+		void store(uint32_t* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
 		
 		//additional arithmetic functions
-		SIMD_SSE<unsigned int> max(const SIMD_SSE<unsigned int>& other) const
+		SIMD_SSE<uint32_t> max(const SIMD_SSE<uint32_t>& other) const
 		{
 			return _mm_max_epu32(values, other.values);
 		}
-		SIMD_SSE<unsigned int> min(const SIMD_SSE<unsigned int>& other) const
+		SIMD_SSE<uint32_t> min(const SIMD_SSE<uint32_t>& other) const
 		{
 			return _mm_min_epu32(values, other.values);
 		}
-		SIMD_SSE<unsigned int> clamp(const SIMD_SSE<unsigned int>& min, const SIMD_SSE<unsigned int>& max) const
+		SIMD_SSE<uint32_t> clamp(const SIMD_SSE<uint32_t>& min, const SIMD_SSE<uint32_t>& max) const
 		{
 			return _mm_min_epu32(_mm_max_epu32(values, min.values), max.values);
 		}
@@ -243,6 +256,16 @@ namespace smpl
 		operator SIMD_SSE<float>() const;
 	};
 
+	template<>
+	inline SIMD_SSE<uint32_t> min(const SIMD_SSE<uint32_t>& a, const SIMD_SSE<uint32_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<uint32_t> max(const SIMD_SSE<uint32_t>& a, const SIMD_SSE<uint32_t>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 
 
@@ -256,6 +279,7 @@ namespace smpl
 
 		SIMD_AVX(){}
 		SIMD_AVX(int byte){values = _mm256_set1_epi32(byte);}
+		SIMD_AVX(int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8){values = _mm256_set_epi32(v8, v7, v6, v5, v4, v3, v2, v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<int>& other) {values = other.values;}
@@ -375,7 +399,7 @@ namespace smpl
 			return _mm256_min_epi32(_mm256_max_epi32(values, min.values), max.values);
 		}
 
-		operator SIMD_AVX<unsigned int>() const;
+		operator SIMD_AVX<uint32_t>() const;
 		operator SIMD_AVX<float>() const;
 		__m256i values;
 
@@ -384,22 +408,34 @@ namespace smpl
 	inline const int SIMD_AVX<int>::SIZE = 8;
 
 	template<>
-	class SIMD_AVX<unsigned int> : public SIMD_AVX<int>
+	inline SIMD_AVX<int> min(const SIMD_AVX<int>& a, const SIMD_AVX<int>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<int> max(const SIMD_AVX<int>& a, const SIMD_AVX<int>& b)
+	{
+		return a.max(b);
+	}
+
+	template<>
+	class SIMD_AVX<uint32_t> : public SIMD_AVX<int>
 	{
 	public:
 		SIMD_AVX(){}
-		SIMD_AVX(unsigned int byte){values = _mm256_set1_epi32(byte);}
+		SIMD_AVX(uint32_t byte){values = _mm256_set1_epi32(byte);}
+		SIMD_AVX(uint32_t v1, uint32_t v2, uint32_t v3, uint32_t v4, uint32_t v5, uint32_t v6, uint32_t v7, uint32_t v8){values = _mm256_set_epi32(v8, v7, v6, v5, v4, v3, v2, v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
-		SIMD_AVX(const SIMD_AVX<unsigned int>& other) {values = other.values;}
-		void operator=(const SIMD_AVX<unsigned int>& other) {values = other.values;}
+		SIMD_AVX(const SIMD_AVX<uint32_t>& other) {values = other.values;}
+		void operator=(const SIMD_AVX<uint32_t>& other) {values = other.values;}
 		
-		SIMD_AVX(const SIMD_AVX<unsigned int>&& other) noexcept {values = other.values;}
-		void operator=(const SIMD_AVX<unsigned int>&& other) noexcept {values = other.values;}
+		SIMD_AVX(const SIMD_AVX<uint32_t>&& other) noexcept {values = other.values;}
+		void operator=(const SIMD_AVX<uint32_t>&& other) noexcept {values = other.values;}
 		
 		~SIMD_AVX(){}
 
-		SIMD_AVX<unsigned int> operator/(const SIMD_AVX<unsigned int>& other) const
+		SIMD_AVX<uint32_t> operator/(const SIMD_AVX<uint32_t>& other) const
 		{
 			__m256 A = SEML::uint32ToFloat(values);
 			__m256 B = SEML::uint32ToFloat(other.values);
@@ -408,27 +444,27 @@ namespace smpl
 			return SEML::floatToUInt32(res1);
 		}
 		
-		SIMD_AVX<unsigned int> operator>(const SIMD_AVX<unsigned int>& other) const
+		SIMD_AVX<uint32_t> operator>(const SIMD_AVX<uint32_t>& other) const
 		{
 			return _mm256_cmpeq_epi32(_mm256_max_epu32(values, other.values), values);
 		}
-		SIMD_AVX<unsigned int> operator>=(const SIMD_AVX<unsigned int>& other) const 
+		SIMD_AVX<uint32_t> operator>=(const SIMD_AVX<uint32_t>& other) const 
 		{
 			__m256i temp = operator<(other).values;
 			return _mm256_andnot_si256(temp, temp);
 		}
 		
-		SIMD_AVX<unsigned int> operator<(const SIMD_AVX<unsigned int>& other) const
+		SIMD_AVX<uint32_t> operator<(const SIMD_AVX<uint32_t>& other) const
 		{
 			return _mm256_cmpeq_epi32(_mm256_min_epu32(values, other.values), values);
 		}
-		SIMD_AVX<unsigned int> operator<=(const SIMD_AVX<unsigned int>& other) const 
+		SIMD_AVX<uint32_t> operator<=(const SIMD_AVX<uint32_t>& other) const 
 		{
 			__m256i temp = operator>(other).values;
 			return _mm256_andnot_si256(temp, temp);
 		}
 
-		SIMD_AVX<unsigned int> blend(const SIMD_AVX<unsigned int>& other, const SIMD_AVX<unsigned int>& blendFactor) const
+		SIMD_AVX<uint32_t> blend(const SIMD_AVX<uint32_t>& other, const SIMD_AVX<uint32_t>& blendFactor) const
 		{
 			return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(values), _mm256_castsi256_ps(other.values), _mm256_castsi256_ps(blendFactor.values)));
 		}
@@ -453,30 +489,41 @@ namespace smpl
 		}
 		
 		//additional arithmetic functions
-		SIMD_AVX<unsigned int> max(const SIMD_AVX<unsigned int>& other) const
+		SIMD_AVX<uint32_t> max(const SIMD_AVX<uint32_t>& other) const
 		{
 			return _mm256_max_epu32(values, other.values);
 		}
-		SIMD_AVX<unsigned int> min(const SIMD_AVX<unsigned int>& other) const
+		SIMD_AVX<uint32_t> min(const SIMD_AVX<uint32_t>& other) const
 		{
 			return _mm256_min_epu32(values, other.values);
 		}
-		SIMD_AVX<unsigned int> clamp(const SIMD_AVX<unsigned int>& min, const SIMD_AVX<unsigned int>& max) const
+		SIMD_AVX<uint32_t> clamp(const SIMD_AVX<uint32_t>& min, const SIMD_AVX<uint32_t>& max) const
 		{
 			return _mm256_min_epu32(_mm256_max_epu32(values, min.values), max.values);
 		}
 
 		//load / store
-		static SIMD_AVX<unsigned int> load(const unsigned int* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
-		static SIMD_AVX<unsigned int> gather(const unsigned int* pointer, const int* indices)
+		static SIMD_AVX<uint32_t> load(const uint32_t* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		static SIMD_AVX<uint32_t> gather(const uint32_t* pointer, const int* indices)
 		{
 			__m256i indicesSSE = _mm256_loadu_si256((__m256i*)indices);
 			return gatherAVX(pointer, indicesSSE);
 		}
-		static SIMD_AVX<unsigned int> gather(const unsigned int* pointer, const __m256i& indices){return gatherAVX(pointer, indices);}
-		void store(unsigned int* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
+		static SIMD_AVX<uint32_t> gather(const uint32_t* pointer, const __m256i& indices){return gatherAVX(pointer, indices);}
+		void store(uint32_t* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
 		
 		operator SIMD_AVX<float>() const;
 	};
+	
+	template<>
+	inline SIMD_AVX<uint32_t> min(const SIMD_AVX<uint32_t>& a, const SIMD_AVX<uint32_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<uint32_t> max(const SIMD_AVX<uint32_t>& a, const SIMD_AVX<uint32_t>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 }

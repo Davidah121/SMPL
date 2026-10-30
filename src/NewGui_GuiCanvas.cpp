@@ -9,7 +9,7 @@ namespace smpl
     
     GuiCanvas::GuiCanvas(int width, int height, int graphicsInterfaceMode) : GuiLayoutFixed()
     {
-        surf = SmartMemory<SurfaceInterface>(GraphicsInterface::createSurface(width, height), false, true, false);
+        surf = GraphicsInterface::createSurface(width, height);
     }
 
     GuiCanvas::~GuiCanvas()
@@ -17,7 +17,7 @@ namespace smpl
 
     }
 
-    void GuiCanvas::addChild(SmartMemory<GuiItem> child)
+    void GuiCanvas::addChild(const SmartMemory<GuiItem>& child)
     {
         //can only have one child.
         //More efficient than GuiLayoutList::removeChild() since we are removing all.
@@ -35,23 +35,22 @@ namespace smpl
         GuiLayoutFixed::addChild(child);
     }
 
-    void GuiCanvas::update(SmartMemory<GuiManager> manager)
+    void GuiCanvas::update(const SmartMemory<GuiManager>& manager)
     {
         //update the children
         GuiLayout::update(manager);
     }
 
-    void GuiCanvas::render(SmartMemory<GuiManager> manager)
+    void GuiCanvas::render(const SmartMemory<GuiManager>& manager)
     {
-        SurfaceInterface* mySurf = surf.getPointer();
-        if(mySurf != nullptr)
+        if(surf.getSurface().isValid())
         {
             //set the surface
-            SurfaceInterface* oldSurface = GraphicsInterface::getBoundSurface();
+            SurfaceInterface oldSurface = GraphicsInterface::getBoundSurface();
             Box2D oldClipRect = GraphicsInterface::getClippingRect();
             Vec2f oldTranslationFactor = GraphicsInterface::getTranslationFactor();
             
-            GraphicsInterface::setBoundSurface(mySurf);
+            GraphicsInterface::setBoundSurface(surf);
             GraphicsInterface::setColor(clearColor);
             GraphicsInterface::clear();
             GraphicsInterface::resetClippingPlane(); //lazy approach
@@ -66,11 +65,11 @@ namespace smpl
             GraphicsInterface::setClippingRect(oldClipRect);
             GraphicsInterface::setTranslationFactor(oldTranslationFactor);
             GraphicsInterface::setColor(drawColor);
-            GraphicsInterface::drawSurface(mySurf, x, y);
+            GraphicsInterface::drawSurface(surf, x, y);
         }
     }
 
-    void GuiCanvas::setSurfaceInterface(SmartMemory<SurfaceInterface> s)
+    void GuiCanvas::setSurfaceInterface(const SurfaceInterface& s)
     {
         surf = s;
     }
@@ -85,21 +84,21 @@ namespace smpl
         return drawColor;
     }
     
-    void GuiCanvas::setClearColor(Color c)
+    void GuiCanvas::setClearColor(const Color& c)
     {
         clearColor = c;
     }
 
-    void GuiCanvas::setDrawColor(Color c)
+    void GuiCanvas::setDrawColor(const Color& c)
     {
         drawColor = c;
     }
     
-    void GuiCanvas::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiCanvas::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         
     }
-    SmartMemory<GuiItem> GuiCanvas::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiCanvas::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         return nullptr;
     }

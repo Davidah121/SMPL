@@ -35,18 +35,18 @@ namespace smpl
 	{
 	}
 
-	Image* BitmapFont::getImage(size_t index)
+	SmartMemory<Image> BitmapFont::getImage(const FontCharInfo& fci)
 	{
-		if(index>=0 && index<imgPage.size())
+		if(fci.reserved < imgPage.size())
 		{
 			if(fontSize == originalFontSize)
 			{
-				return img.getImage( imgPage[index] );
+				return img.getImage( imgPage[fci.reserved] );
 			}
 			else
 			{
-				double scale = fontSize / originalFontSize;
-				return SimpleGraphics::scaleImage( img.getImage( imgPage[index] ), scale, scale, SimpleGraphics::NEAREST_NEIGHBOR_FILTER);
+				double scale = (double)fontSize / originalFontSize;
+				return SimpleGraphics::scaleImage( img.getImage( imgPage[fci.reserved] ).getRawPointer(), scale, scale, SimpleGraphics::NEAREST_NEIGHBOR_FILTER);
 			}
 		}
 		else
@@ -59,12 +59,12 @@ namespace smpl
 		return nullptr;
 	}
 
-	Sprite* BitmapFont::getSprite()
+	Sprite& BitmapFont::getSprite()
 	{
-		return &img;
+		return img;
 	}
 
-	std::vector<size_t> BitmapFont::getImagePages()
+	std::vector<size_t>& BitmapFont::getImagePages()
 	{
 		return imgPage;
 	}
@@ -114,7 +114,7 @@ namespace smpl
 			Image** tempImgPointer = Image::loadImage(imageFile, &amountOfImages);
 			if(amountOfImages>0)
 			{
-				img.dispose();
+				img.clear();
 				img.addImage(tempImgPointer[0]);
 			}
 			else
@@ -148,6 +148,7 @@ namespace smpl
 						fc.horizAdv = fc.width-1;
 						fc.xOffset = 0;
 						fc.yOffset = 0;
+						fc.reserved = imgPage.size();
 
 						this->addChar(fc);
 						imgPage.push_back(0);
@@ -165,14 +166,12 @@ namespace smpl
 				startIndex++;
 			}
 
-			this->sortList(false);
-
 			//pngs have explicit alpha, gifs have 1 alpha value
 			//and bmp will not have alpha. Treat the intensity as the alpha.
 			//should change the format to YCaCb to do this later so colors still work.
 			if ( imageFile.substr(imageFile.size() - 3, 3) != "png" && imageFile.substr(imageFile.size() - 3, 3) != "gif")
 			{
-				Image* tImg = img.getImage(0);
+				Image* tImg = img.getImage(0).getRawPointer();
 				Color* imgPixels = tImg->getPixels();
 				Color* endPixels = tImg->getPixels() + tImg->getWidth() * tImg->getHeight();
 
@@ -312,13 +311,12 @@ namespace smpl
 						if(attrib != n2->getRawAttributes().end())
 							fci.yOffset = StringTools::toInt(attrib->second);
 
+						fci.reserved = page;
 						this->addChar(fci);
 						imgPage.push_back(page);
 					}
 				}
 			}
-
-			this->sortList(false);
 		}
 		else
 		{

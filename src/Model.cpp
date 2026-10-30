@@ -6,13 +6,10 @@
 
 namespace smpl
 {
-	Model::Model()
+	
+	Model::Model(const File& f)
 	{
-	}
-
-	Model::~Model()
-	{
-		clear();
+		loadModel(f);
 	}
 
 	void Model::addVertexFormatInfo(unsigned char type, unsigned char usage)
@@ -108,7 +105,7 @@ namespace smpl
 		}
 	}
 
-	std::vector<int> Model::getVertex(size_t i)
+	std::vector<int> Model::getVertex(size_t i) const
 	{
 		std::vector<int> rValues;
 
@@ -147,7 +144,7 @@ namespace smpl
 		return rValues;
 	}
 
-	int Model::getInt(size_t index, size_t list)
+	int Model::getInt(size_t index, size_t list) const
 	{
 		if(list < vertexData.size())
 		{
@@ -167,7 +164,7 @@ namespace smpl
 		return 0;
 	
 	}
-	float Model::getFloat(size_t index, size_t list)
+	float Model::getFloat(size_t index, size_t list) const
 	{
 		if(list < vertexData.size())
 		{
@@ -186,7 +183,7 @@ namespace smpl
 		return NAN;
 	}
 
-	Vec2f Model::getVec2f(size_t index, size_t list)
+	Vec2f Model::getVec2f(size_t index, size_t list) const
 	{
 		if(list < vertexData.size())
 		{
@@ -208,7 +205,7 @@ namespace smpl
 		return Vec2f();
 	}
 
-	Vec3f Model::getVec3f(size_t index, size_t list)
+	Vec3f Model::getVec3f(size_t index, size_t list) const
 	{
 		if(list < vertexData.size())
 		{
@@ -231,7 +228,7 @@ namespace smpl
 		return Vec3f();
 	}
 
-	Vec4f Model::getVec4f(size_t index, size_t list)
+	Vec4f Model::getVec4f(size_t index, size_t list) const
 	{
 		if(list < vertexData.size())
 		{
@@ -255,7 +252,7 @@ namespace smpl
 		return Vec4f();
 	}
 
-	std::vector<VertexFormat> Model::getVertexFormatInfomation()
+	std::vector<VertexFormat> Model::getVertexFormatInfomation() const
 	{
 		return formatInfo;
 	}
@@ -274,12 +271,12 @@ namespace smpl
 		modelFormat = MathExt::clamp<int>(format, POINTS, QUAD_STRIP);
 	}
 
-	unsigned char Model::getModelFormat()
+	unsigned char Model::getModelFormat() const
 	{
 		return modelFormat;
 	}
 
-	size_t Model::size()
+	size_t Model::size() const
 	{
 		if(indexed)
 			return vertexIndexInfo.size();
@@ -292,7 +289,7 @@ namespace smpl
 		return 0;
 	}
 
-	size_t Model::sizeOfList(size_t index)
+	size_t Model::sizeOfList(size_t index) const
 	{
 		if(index < vertexData.size())
 		{
@@ -301,7 +298,7 @@ namespace smpl
 		return 0;
 	}
 
-	size_t Model::getSizeOfVertex()
+	size_t Model::getSizeOfVertex() const
 	{
 		size_t sum=0;
 		for(size_t i=0; i<formatInfo.size(); i++)
@@ -327,12 +324,12 @@ namespace smpl
 		indexed = v;
 	}
 
-	bool Model::getIndexed()
+	bool Model::getIndexed() const
 	{
 		return indexed;
 	}
 
-	Triangle2DModel Model::convertTo2DTriModel()
+	Triangle2DModel Model::convertTo2DTriModel() const
 	{
 		Triangle2DModel mod;
 
@@ -514,7 +511,7 @@ namespace smpl
 		return mod;
 	}
 
-	Triangle3DModel Model::convertTo3DTriModel()
+	Triangle3DModel Model::convertTo3DTriModel() const
 	{
 		Triangle3DModel mod;
 
@@ -696,7 +693,7 @@ namespace smpl
 		return mod;
 	}
 
-	void Model::saveModel(File file, unsigned char type)
+	void Model::saveModel(const File& file, unsigned char type) const
 	{
 		if(type == MODEL_TYPE_STL)
 			saveSTL(file);
@@ -704,7 +701,7 @@ namespace smpl
 		//     saveOBJ(file);
 	}
 
-	void Model::loadModel(File file)
+	void Model::loadModel(const File& file)
 	{
 		std::string ext = file.getExtension();
 
@@ -726,7 +723,7 @@ namespace smpl
 		}
 	}
 
-	void Model::loadOBJ(File file)
+	void Model::loadOBJ(const File& file)
 	{
 		clear();
 		SimpleFile s = SimpleFile(file, SimpleFile::READ);
@@ -904,7 +901,7 @@ namespace smpl
 	}
 
 	
-	void Model::loadSTL(File file)
+	void Model::loadSTL(const File& file)
 	{
 		clear();
 		SimpleFile s = SimpleFile(file, SimpleFile::READ | SimpleFile::ASCII);
@@ -1044,7 +1041,7 @@ namespace smpl
 	}
 
 	//TODO - Rewrite
-	void Model::loadCollada(File file)
+	void Model::loadCollada(const File& file)
 	{
 		return;
 
@@ -1268,7 +1265,7 @@ namespace smpl
 		// }
 	}
 
-	void Model::saveSTL(File file)
+	void Model::saveSTL(const File& file) const
 	{
 		//must be a valid format type. So triangles or quads
 		if(modelFormat <= LINE_LOOP)
@@ -1344,7 +1341,7 @@ namespace smpl
 					Vec3f v2 = tri.getVertex2();
 					Vec3f v3 = tri.getVertex3();
 					
-					Vec3f normal = v1.crossProduct(v2);
+					Vec3f normal = v1.cross(v2);
 
 					saveSTLVec3f(outputFile, normal);
 					saveSTLVec3f(outputFile, v1);
@@ -1360,13 +1357,13 @@ namespace smpl
 		outputFile.close();
 	}
 
-	void Model::saveSTLVec3f(SimpleFile& file, Vec3f v)
+	void Model::saveSTLVec3f(SimpleFile& file, Vec3f v) const
 	{
 		saveSTLFloat(file, v.x);
 		saveSTLFloat(file, v.y);
 		saveSTLFloat(file, v.z);
 	}
-	void Model::saveSTLFloat(SimpleFile& file, float v)
+	void Model::saveSTLFloat(SimpleFile& file, float v) const
 	{
 		file.writeBytes((unsigned char*)&v, 4);
 	}

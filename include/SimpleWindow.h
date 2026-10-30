@@ -662,6 +662,16 @@
 				*/
 			void hideDisplayContent(int v);
 
+			/**
+			 * @brief Gets the time taken from the last paint call.
+			 *		Measures the time between 2 paint calls. Note that this value may be inflated if the paint call is ignored to reduce CPU/GPU cost.
+			 *			These are cases where nothing needs to be drawn as nothing changed from the previous paint call.
+			 *		Due to this, this should not be used to measure frame rate or frame time directly without careful consideration
+			 * 
+			 * @return size_t 
+			 */
+			size_t getTimeFromLastPaint();
+
 		protected:
 			
 			/**
@@ -744,9 +754,13 @@
 			bool shouldRepaint = false;
 			bool autoRepaint = true;
 			bool redrawGui = false;
-			size_t sleepTimeMillis = 33;
-			size_t sleepTimeMicros = 0;
+			std::atomic_size_t sleepTimeMillis = {33};
+			std::atomic_size_t sleepTimeMicros = {0};
+			// size_t sleepTimeMillis = 33;
+			// size_t sleepTimeMicros = 0;
 
+			size_t lastRenderTime = {0};
+			std::atomic_size_t timeFromLastPaint = {0};
 			
 			void threadUpdate();
 			void threadGuiUpdate();

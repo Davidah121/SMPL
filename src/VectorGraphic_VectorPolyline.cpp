@@ -69,6 +69,11 @@ namespace smpl
 		
 	}
 
+	std::pair<Vec2f, Vec2f> VectorPolyline::getBoundingBox()
+	{
+		return {};
+	}
+	
 	void VectorPolyline::addPoint(double x, double y)
 	{
 		points.push_back(Vec2f(x,y));

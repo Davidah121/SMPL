@@ -1,6 +1,7 @@
 #include "NewGui.h"
 namespace smpl
 {
+	GuiSelfRegisteringLoader<GuiEmpty> GuiEmpty::singleton("Empty");
     GuiEmpty::GuiEmpty() : GuiItem()
     {
 
@@ -15,23 +16,23 @@ namespace smpl
         
     }
 
-    void GuiEmpty::update(SmartMemory<GuiManager> manager)
+    void GuiEmpty::update(const SmartMemory<GuiManager>& manager)
     {
 
     }
 
-    void GuiEmpty::render(SmartMemory<GuiManager> manager)
+    void GuiEmpty::render(const SmartMemory<GuiManager>& manager)
     {
 
     }
 
-    void GuiEmpty::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiEmpty::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         //just call parent load data function. Empty element with no traits
         GuiItem::loadDataFromXML(attribs, manager);
     }
 
-    SmartMemory<GuiItem> GuiEmpty::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiEmpty::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiEmpty* ins = new GuiEmpty();
         ins->loadDataFromXML(attributes, manager);

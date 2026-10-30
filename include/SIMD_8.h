@@ -21,6 +21,9 @@ namespace smpl
 
 		SIMD_SSE(){}
 		SIMD_SSE(char byte){values = _mm_set1_epi8(byte);}
+		SIMD_SSE(char v1, char v2, char v3, char v4, char v5, char v6, char v7, char v8,
+				char v9, char v10, char v11, char v12, char v13, char v14, char v15, char v16){values = _mm_set_epi8(v16,v15,v14,v13,v12,v11,v10,v9,v8, v7, v6, v5, v4, v3, v2, v1);}
+
 		SIMD_SSE(__m128i byte){values = byte;}
 		
 		SIMD_SSE(const SIMD_SSE<char>& other) {values = other.values;}
@@ -188,27 +191,40 @@ namespace smpl
 			return _mm_min_epi8(_mm_max_epi8(values, min.values), max.values);
 		}
 
-		operator SIMD_SSE<unsigned char>() const;
+		operator SIMD_SSE<uint8_t>() const;
 		__m128i values;
 	};
 
 	template<>
-	class SIMD_SSE<unsigned char> : public SIMD_SSE<char>
+	inline SIMD_SSE<char> min(const SIMD_SSE<char>& a, const SIMD_SSE<char>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<char> max(const SIMD_SSE<char>& a, const SIMD_SSE<char>& b)
+	{
+		return a.max(b);
+	}
+
+	template<>
+	class SIMD_SSE<uint8_t> : public SIMD_SSE<char>
 	{
 	public:
 		SIMD_SSE(){}
-		SIMD_SSE(unsigned char byte){values = _mm_set1_epi8(byte);}
+		SIMD_SSE(uint8_t byte){values = _mm_set1_epi8(byte);}
+		SIMD_SSE(uint8_t v1, uint8_t v2, uint8_t v3, uint8_t v4, uint8_t v5, uint8_t v6, uint8_t v7, uint8_t v8,
+				uint8_t v9, uint8_t v10, uint8_t v11, uint8_t v12, uint8_t v13, uint8_t v14, uint8_t v15, uint8_t v16){values = _mm_set_epi8(v16,v15,v14,v13,v12,v11,v10,v9,v8, v7, v6, v5, v4, v3, v2, v1);}
 		SIMD_SSE(__m128i byte){values = byte;}
 		
-		SIMD_SSE(const SIMD_SSE<unsigned char>& other) {values = other.values;}
-		void operator=(const SIMD_SSE<unsigned char>& other) {values = other.values;}
+		SIMD_SSE(const SIMD_SSE<uint8_t>& other) {values = other.values;}
+		void operator=(const SIMD_SSE<uint8_t>& other) {values = other.values;}
 		
-		SIMD_SSE(const SIMD_SSE<unsigned char>&& other) noexcept {values = other.values;}
-		void operator=(const SIMD_SSE<unsigned char>&& other) noexcept {values = other.values;}
+		SIMD_SSE(const SIMD_SSE<uint8_t>&& other) noexcept {values = other.values;}
+		void operator=(const SIMD_SSE<uint8_t>&& other) noexcept {values = other.values;}
 		
 		~SIMD_SSE(){}
 
-		SIMD_SSE<unsigned char> operator*(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator*(const SIMD_SSE<uint8_t>& other) const
 		{
 			//convert to shorts -> multiply -> convert back
 			__m128i lowShortsA = _mm_cvtepu8_epi16(values);
@@ -221,7 +237,7 @@ namespace smpl
 			
 			return _mm_packus_epi16(lowShortMult, highShortMult);
 		}
-		SIMD_SSE<unsigned char> operator/(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator/(const SIMD_SSE<uint8_t>& other) const
 		{
 			//doesn't really exist here. Potential operations require AVX or casting to a higher datatype.
 			//Just cast to float -> divide -> cast back
@@ -253,7 +269,7 @@ namespace smpl
 			return _mm_packus_epi16(pack16Low, pack16High);
 		}
 
-		SIMD_SSE<unsigned char> operator>>(const int shift) const 
+		SIMD_SSE<uint8_t> operator>>(const int shift) const 
 		{
 			__m128i low = _mm_cvtepu8_epi16(values);
 			__m128i high = _mm_cvtepu8_epi16(_mm_srli_si128(values, 8));
@@ -262,7 +278,7 @@ namespace smpl
 			
 			return _mm_packus_epi16(low, high);
 		}
-		SIMD_SSE<unsigned char> operator<<(const int shift) const
+		SIMD_SSE<uint8_t> operator<<(const int shift) const
 		{
 			__m128i low = _mm_cvtepu8_epi16(values);
 			__m128i high = _mm_cvtepu8_epi16(_mm_srli_si128(values, 8));
@@ -272,27 +288,27 @@ namespace smpl
 			return _mm_packus_epi16(low, high);
 		}
 		
-		SIMD_SSE<unsigned char> operator>(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator>(const SIMD_SSE<uint8_t>& other) const
 		{
 			return _mm_cmpeq_epi8(_mm_max_epu8(values, other.values), values);
 		}
-		SIMD_SSE<unsigned char> operator>=(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator>=(const SIMD_SSE<uint8_t>& other) const
 		{
 			__m128i temp = operator<(other).values;
 			return _mm_andnot_si128(temp, temp);
 		}
 		
-		SIMD_SSE<unsigned char> operator<(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator<(const SIMD_SSE<uint8_t>& other) const
 		{
 			return _mm_cmpeq_epi8(_mm_min_epu8(values, other.values), values);
 		}
-		SIMD_SSE<unsigned char> operator<=(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> operator<=(const SIMD_SSE<uint8_t>& other) const
 		{
 			__m128i temp = operator>(other).values;
 			return _mm_andnot_si128(temp, temp);
 		}
 
-		SIMD_SSE<unsigned char> blend(const SIMD_SSE<unsigned char>& other, const SIMD_SSE<unsigned char>& blendFactor) const
+		SIMD_SSE<uint8_t> blend(const SIMD_SSE<uint8_t>& other, const SIMD_SSE<uint8_t>& blendFactor) const
 		{
 			return _mm_blendv_epi8(values, other.values, blendFactor.values);
 		}
@@ -314,24 +330,35 @@ namespace smpl
 		}
 
 		//additional arithmetic functions
-		SIMD_SSE<unsigned char> max(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> max(const SIMD_SSE<uint8_t>& other) const
 		{
 			return _mm_max_epu8(values, other.values);
 		}
-		SIMD_SSE<unsigned char> min(const SIMD_SSE<unsigned char>& other) const
+		SIMD_SSE<uint8_t> min(const SIMD_SSE<uint8_t>& other) const
 		{
 			return _mm_min_epu8(values, other.values);
 		}
-		SIMD_SSE<unsigned char> clamp(const SIMD_SSE<unsigned char>& min, const SIMD_SSE<unsigned char>& max) const
+		SIMD_SSE<uint8_t> clamp(const SIMD_SSE<uint8_t>& min, const SIMD_SSE<uint8_t>& max) const
 		{
 			return _mm_min_epu8(_mm_max_epu8(values, min.values), max.values);
 		}
 
 		//load / store
-		static SIMD_SSE<unsigned char>load(const unsigned char* pointer){return _mm_loadu_si128((__m128i*)pointer);}
-		void store(unsigned char* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
+		static SIMD_SSE<uint8_t>load(const uint8_t* pointer){return _mm_loadu_si128((__m128i*)pointer);}
+		void store(uint8_t* pointer) const {_mm_storeu_si128((__m128i*)pointer, values);}
 		
 	};
+	
+	template<>
+	inline SIMD_SSE<uint8_t> min(const SIMD_SSE<uint8_t>& a, const SIMD_SSE<uint8_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_SSE<uint8_t> max(const SIMD_SSE<uint8_t>& a, const SIMD_SSE<uint8_t>& b)
+	{
+		return a.max(b);
+	}
 
 	#endif
 
@@ -346,6 +373,10 @@ namespace smpl
 
 		SIMD_AVX(){}
 		SIMD_AVX(char byte){values = _mm256_set1_epi8(byte);}
+		SIMD_AVX(char v1, char v2, char v3, char v4, char v5, char v6, char v7, char v8,
+				char v9, char v10, char v11, char v12, char v13, char v14, char v15, char v16,
+				char v17, char v18, char v19, char v20, char v21, char v22, char v23, char v24,
+				char v25, char v26, char v27, char v28, char v29, char v30, char v31, char v32){values = _mm256_set_epi8(v32,v31,v30,v29,v28,v27,v26,v25,v24,v23,v22,v21,v20,v19,v18,v17,v16,v15,v14,v13,v12,v11,v10,v9,v8,v7,v6,v5,v4,v3,v2,v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
 		SIMD_AVX(const SIMD_AVX<char>& other) {values = other.values;}
@@ -522,29 +553,44 @@ namespace smpl
 			return _mm256_min_epi8(_mm256_max_epi8(values, min.values), max.values);
 		}
 
-		operator SIMD_AVX<unsigned char>() const;
+		operator SIMD_AVX<uint8_t>() const;
 		__m256i values;
 
 	private:
 	};
 
 	template<>
-	class SIMD_AVX<unsigned char> : public SIMD_AVX<char>
+	inline SIMD_AVX<char> min(const SIMD_AVX<char>& a, const SIMD_AVX<char>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<char> max(const SIMD_AVX<char>& a, const SIMD_AVX<char>& b)
+	{
+		return a.max(b);
+	}
+
+	template<>
+	class SIMD_AVX<uint8_t> : public SIMD_AVX<char>
 	{
 	public:
 		SIMD_AVX(){}
-		SIMD_AVX(unsigned char byte){values = _mm256_set1_epi8(byte);}
+		SIMD_AVX(uint8_t byte){values = _mm256_set1_epi8(byte);}
+		SIMD_AVX(uint8_t v1, uint8_t v2, uint8_t v3, uint8_t v4, uint8_t v5, uint8_t v6, uint8_t v7, uint8_t v8,
+				uint8_t v9, uint8_t v10, uint8_t v11, uint8_t v12, uint8_t v13, uint8_t v14, uint8_t v15, uint8_t v16,
+				uint8_t v17, uint8_t v18, uint8_t v19, uint8_t v20, uint8_t v21, uint8_t v22, uint8_t v23, uint8_t v24,
+				uint8_t v25, uint8_t v26, uint8_t v27, uint8_t v28, uint8_t v29, uint8_t v30, uint8_t v31, uint8_t v32){values = _mm256_set_epi8(v32,v31,v30,v29,v28,v27,v26,v25,v24,v23,v22,v21,v20,v19,v18,v17,v16,v15,v14,v13,v12,v11,v10,v9,v8,v7,v6,v5,v4,v3,v2,v1);}
 		SIMD_AVX(__m256i byte){values = byte;}
 		
-		SIMD_AVX(const SIMD_AVX<unsigned char>& other) {values = other.values;}
-		void operator=(const SIMD_AVX<unsigned char>& other) {values = other.values;}
+		SIMD_AVX(const SIMD_AVX<uint8_t>& other) {values = other.values;}
+		void operator=(const SIMD_AVX<uint8_t>& other) {values = other.values;}
 		
-		SIMD_AVX(const SIMD_AVX<unsigned char>&& other) noexcept {values = other.values;}
-		void operator=(const SIMD_AVX<unsigned char>&& other) noexcept {values = other.values;}
+		SIMD_AVX(const SIMD_AVX<uint8_t>&& other) noexcept {values = other.values;}
+		void operator=(const SIMD_AVX<uint8_t>&& other) noexcept {values = other.values;}
 		
 		~SIMD_AVX(){}
 
-		SIMD_AVX<unsigned char> operator*(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator*(const SIMD_AVX<uint8_t>& other) const
 		{
 			//convert to shorts -> multiply -> convert back
 			__m256i lowShortsA = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(values, 0));
@@ -558,7 +604,7 @@ namespace smpl
 			__m256i packedData = _mm256_packus_epi16(lowShortMult, highShortMult);
 			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
-		SIMD_AVX<unsigned char> operator/(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator/(const SIMD_AVX<uint8_t>& other) const
 		{
 			//doesn't really exist here. Potential operations require AVX or casting to a higher datatype.
 			//Just cast to float -> divide -> cast back
@@ -598,7 +644,7 @@ namespace smpl
 			return _mm256_permute4x64_epi64(packedData, 0b11011000);
 		}
 
-		SIMD_AVX<unsigned char> operator>>(const int shift) const 
+		SIMD_AVX<uint8_t> operator>>(const int shift) const 
 		{
 			__m256i low = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(values, 0));
 			__m256i high = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(values, 1));
@@ -607,7 +653,7 @@ namespace smpl
 			
 			return _mm256_packus_epi16(low, high);
 		}
-		SIMD_AVX<unsigned char> operator<<(const int shift) const
+		SIMD_AVX<uint8_t> operator<<(const int shift) const
 		{
 			__m256i low = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(values, 0));
 			__m256i high = _mm256_cvtepu8_epi16(_mm256_extracti128_si256(values, 1));
@@ -617,27 +663,27 @@ namespace smpl
 			return _mm256_packus_epi16(low, high);
 		}
 		
-		SIMD_AVX<unsigned char> operator>(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator>(const SIMD_AVX<uint8_t>& other) const
 		{
 			return _mm256_cmpeq_epi8(_mm256_max_epu8(values, other.values), values);
 		}
-		SIMD_AVX<unsigned char> operator>=(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator>=(const SIMD_AVX<uint8_t>& other) const
 		{
 			__m256i temp = operator<(other).values;
 			return _mm256_andnot_si256(temp, temp);
 		}
 		
-		SIMD_AVX<unsigned char> operator<(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator<(const SIMD_AVX<uint8_t>& other) const
 		{
 			return _mm256_cmpeq_epi8(_mm256_min_epu8(values, other.values), values);
 		}
-		SIMD_AVX<unsigned char> operator<=(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> operator<=(const SIMD_AVX<uint8_t>& other) const
 		{
 			__m256i temp = operator>(other).values;
 			return _mm256_andnot_si256(temp, temp);
 		}
 
-		SIMD_AVX<unsigned char> blend(const SIMD_AVX<unsigned char>& other, const SIMD_AVX<unsigned char>& blendFactor) const
+		SIMD_AVX<uint8_t> blend(const SIMD_AVX<uint8_t>& other, const SIMD_AVX<uint8_t>& blendFactor) const
 		{
 			return _mm256_blendv_epi8(values, other.values, blendFactor.values);
 		}
@@ -660,22 +706,33 @@ namespace smpl
 		}
 		
 		//additional arithmetic functions
-		SIMD_AVX<unsigned char> max(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> max(const SIMD_AVX<uint8_t>& other) const
 		{
 			return _mm256_max_epu8(values, other.values);
 		}
-		SIMD_AVX<unsigned char> min(const SIMD_AVX<unsigned char>& other) const
+		SIMD_AVX<uint8_t> min(const SIMD_AVX<uint8_t>& other) const
 		{
 			return _mm256_min_epu8(values, other.values);
 		}
-		SIMD_AVX<unsigned char> clamp(const SIMD_AVX<unsigned char>& min, const SIMD_AVX<unsigned char>& max) const
+		SIMD_AVX<uint8_t> clamp(const SIMD_AVX<uint8_t>& min, const SIMD_AVX<uint8_t>& max) const
 		{
 			return _mm256_min_epu8(_mm256_max_epu8(values, min.values), max.values);
 		}
 
 		//load / store
-		static SIMD_AVX<unsigned char>load(const unsigned char* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
-		void store(unsigned char* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
+		static SIMD_AVX<uint8_t>load(const uint8_t* pointer){return _mm256_loadu_si256((__m256i*)pointer);}
+		void store(uint8_t* pointer) const {_mm256_storeu_si256((__m256i*)pointer, values);}
 	};
+	
+	template<>
+	inline SIMD_AVX<uint8_t> min(const SIMD_AVX<uint8_t>& a, const SIMD_AVX<uint8_t>& b)
+	{
+		return a.min(b);
+	}
+	template<>
+	inline SIMD_AVX<uint8_t> max(const SIMD_AVX<uint8_t>& a, const SIMD_AVX<uint8_t>& b)
+	{
+		return a.max(b);
+	}
 	#endif
 }

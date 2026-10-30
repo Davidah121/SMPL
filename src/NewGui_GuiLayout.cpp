@@ -22,10 +22,10 @@ namespace smpl
         }
     }
 
-    void GuiLayout::update(SmartMemory<GuiManager> manager)
+    void GuiLayout::update(const SmartMemory<GuiManager>& manager)
     {
         //just call update on the children
-        for(SmartMemory<GuiItem> c : children)
+        for(const SmartMemory<GuiItem>& c : children)
         {
             GuiItem* p = c.getPointer();
             if(p != nullptr)
@@ -75,10 +75,10 @@ namespace smpl
         smpl::GraphicsInterface::drawRect(tx, ty, (tx2-tx), (ty2-ty), false);
     }
 
-    void GuiLayout::render(SmartMemory<GuiManager> manager)
+    void GuiLayout::render(const SmartMemory<GuiManager>& manager)
     {
         baseRender();
-        for(SmartMemory<GuiItem> child : children)
+        for(const SmartMemory<GuiItem>& child : children)
         {
             GuiItem* rawP = child.getPointer();
             if(rawP != nullptr)
@@ -86,7 +86,7 @@ namespace smpl
         }
     }
 
-    void GuiLayout::addChild(SmartMemory<GuiItem> c)
+    void GuiLayout::addChild(const SmartMemory<GuiItem>& c)
     {
         GuiItem* rawPointer = c.getPointer();
 
@@ -97,7 +97,7 @@ namespace smpl
         }
     }
 
-    void GuiLayout::removeChild(SmartMemory<GuiItem> c)
+    void GuiLayout::removeChild(const SmartMemory<GuiItem>& c)
     {
         std::vector<SmartMemory<GuiItem>> nChildren;
         GuiItem* rawChildPointer = c.getPointer();
@@ -221,28 +221,28 @@ namespace smpl
         flags = temp;
     }
 
-    void GuiLayout::setMargin(GRect r)
+    void GuiLayout::setMargin(const GRect& r)
     {
         setShouldRender();
         margin = r;
     }
-    void GuiLayout::setPadding(GRect r)
+    void GuiLayout::setPadding(const GRect& r)
     {
         setShouldRender();
         padding = r;
     }
-    void GuiLayout::setBorder(GRect r)
+    void GuiLayout::setBorder(const GRect& r)
     {
         setShouldRender();
         border = r;
     }
 
-    void GuiLayout::setBorderColor(smpl::Color c)
+    void GuiLayout::setBorderColor(const Color& c)
     {
         setShouldRender();
         borderColor = c;
     }
-    void GuiLayout::setBackgroundColor(smpl::Color c)
+    void GuiLayout::setBackgroundColor(const Color& c)
     {
         setShouldRender();
         backgroundColor = c;
@@ -393,7 +393,7 @@ namespace smpl
         }
     }
 
-    void GuiLayout::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiLayout::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiItem::loadDataFromXML(attribs, manager);
 

@@ -25,7 +25,8 @@ namespace smpl
 		else
 			otherImg = surf;
 
-		Font* tFont = getFont();
+		SmartMemory<Font> ogFont = getFont();
+		LockingSmartMemory<Font> tFont = ogFont.getLockingPointer();
 
 		if (otherImg != nullptr && tFont != nullptr)
 		{
@@ -39,9 +40,9 @@ namespace smpl
 			auto boxes = tFont->getAllCharBoxes(str, maxWidth, wrapMode);
 			for(auto boxPair : boxes)
 			{
-				int charIndex = tFont->getCharIndex(str[boxPair.charIndex]);
-				Image* charImg = tFont->getImage(charIndex);
-				FontCharInfo fci = tFont->getFontCharInfo(charIndex);
+				FontCharInfo fci = tFont->getFontCharInfo(str[boxPair.charIndex]);
+				
+				LockingSmartMemory<Image> charImg = tFont->getImage(fci).getLockingPointer();
 				
 				if(charImg == nullptr || boxPair.boundingBox.getWidth() == 0 || boxPair.boundingBox.getHeight() == 0)
 				{
@@ -72,9 +73,9 @@ namespace smpl
 				if(str[boxPair.charIndex] != ' ')
 				{
 					if(fci.x!=0 || fci.y!=0 || fci.width != charImg->getWidth() || fci.height != charImg->getHeight())
-						drawSpritePart(charImg, x+boxPair.boundingBox.getLeftBound(), y+boxPair.boundingBox.getTopBound(), fci.x, fci.y, fci.width, fci.height, otherImg);
+						drawSpritePart(charImg.getPointer(), x+boxPair.boundingBox.getLeftBound(), y+boxPair.boundingBox.getTopBound(), fci.x, fci.y, fci.width, fci.height, otherImg);
 					else
-						drawSprite(charImg, x+boxPair.boundingBox.getLeftBound(), y+boxPair.boundingBox.getTopBound(), otherImg);
+						drawSprite(charImg.getPointer(), x+boxPair.boundingBox.getLeftBound(), y+boxPair.boundingBox.getTopBound(), otherImg);
 				}
 
 				if(boxPair.charIndex >= highlightStart && boxPair.charIndex < highlightEnd)

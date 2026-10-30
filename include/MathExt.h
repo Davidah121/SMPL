@@ -6,9 +6,9 @@
 #include <math.h>
 #include <cmath>
 #include "Line.h"
-#include "Vec2f.h"
-#include "Vec3f.h"
-#include "Vec4f.h"
+#include "Vec2.h"
+#include "Vec3.h"
+#include "Vec4.h"
 #include "Matrix.h"
 #include "Mat2f.h"
 #include "Mat3f.h"
@@ -154,19 +154,6 @@ namespace smpl
 		static int16_t saturatedSub(int16_t v1, int16_t v2);
 		static int32_t saturatedSub(int32_t v1, int32_t v2);
 		static int64_t saturatedSub(int64_t v1, int64_t v2);
-
-		/**
-		 * @brief Returns the max of the 2 template values.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return T 
-		 */
-		template<typename T>
-		static T max(T a, T b)
-		{
-			return (((a)>(b))? (a):(b));
-		}
 		
 		/**
 		 * @brief Returns the max from the array of template values
@@ -181,15 +168,12 @@ namespace smpl
 		static T max(T* a, int count)
 		{
 			if(a == nullptr || count == 0)
-			{
 				return T();
-			}
 
 			T maxV = a[0];
-			for(int i=0; i<count; i++)
+			for(size_t i=0; i<count; i++)
 			{
-				if(a[i] > maxV)
-					maxV = a[i];
+				maxV = smpl::max<T>(maxV, a[i]);
 			}
 			return maxV;
 		}
@@ -203,35 +187,18 @@ namespace smpl
 		 * @return T 
 		 */
 		template<typename T>
-		static T max( std::initializer_list<T> list)
+		static T max(const std::initializer_list<T>& list)
 		{
-			T maxV;
-			bool first = true;
-			for(T elem : list)
-			{	
-				if(first)
+			if(list.size() > 0)
+			{
+				T maxV = *list.begin();
+				for(T elem : list)
 				{
-					maxV = elem;
-					first = false;
+					maxV = smpl::max<T>(maxV, elem);
 				}
-				
-				if(elem > maxV)
-					maxV = elem;
+				return maxV;
 			}
-			return maxV;
-		}
-
-		/**
-		 * @brief Returns the min of the 2 template values.
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @return T 
-		 */
-		template<typename T>
-		static T min(T a, T b)
-		{
-			return ((a<b)? a:b);
+			return T();
 		}
 
 		/**
@@ -247,14 +214,12 @@ namespace smpl
 		static T min(T* a, int count)
 		{
 			if(a == nullptr || count == 0)
-			{
 				return T();
-			}
+			
 			T minV = a[0];
-			for(int i=0; i<count; i++)
+			for(size_t i=0; i<count; i++)
 			{
-				if(a[i] < minV)
-					minV = a[i];
+				minV = smpl::min(minV, a[i]);
 			}
 			return minV;
 		}
@@ -268,22 +233,18 @@ namespace smpl
 		 * @return T 
 		 */
 		template<typename T>
-		static T min( std::initializer_list<T> list)
+		static T min(const std::initializer_list<T>& list)
 		{
-			T minV;
-			bool first = true;
-			for(T elem : list)
+			if(list.size() > 0)
 			{
-				if(first)
+				T minV = *list.begin();
+				for(T elem : list)
 				{
-					minV = elem;
-					first = false;
+					minV = smpl::min<T>(minV, elem);
 				}
-
-				if(elem < minV)
-					minV = elem;
+				return minV;
 			}
-			return minV;
+			return T();
 		}
 		
 		/**
@@ -542,16 +503,17 @@ namespace smpl
 		 * @return float 
 		 */
 		static float lerp(float a, float b, float blend);
-
-		/**
-		 * @brief Linearly blend 2 values together using a blend value between [0, 1]
-		 * 
-		 * @param a 
-		 * @param b 
-		 * @param blend 
-		 * @return double 
-		 */
 		static double lerp(double a, double b, double blend);
+		template<typename T>
+		static T lerp(const T& a, const T& b, T blend)
+		{
+			return (T(1.0)-blend)*a + blend*b;
+		}
+		template<typename T>
+		static Vec2<T> lerp(const Vec2<T>& a, const Vec2<T>& b, T blend)
+		{
+			return (T(1.0)-blend)*a + blend*b;
+		}
 
 		/**
 		 * @brief Returns the absolute value
@@ -613,13 +575,9 @@ namespace smpl
 		 * @return T 
 		 */
 		template<typename T>
-		static T clamp(T value, T min, T max)
+		static T clamp(T value, T minValue, T maxValue)
 		{
-			if(value <= min)
-				return min;
-			if(value >= max)
-				return max;
-			return value;
+			return smpl::min(smpl::max(value, minValue), maxValue);
 		}
 
 		/**
@@ -1629,7 +1587,7 @@ namespace smpl
 		 * @return std::vector<double> 
 		 */
 		static std::vector<double> getIntersectionQuadratic(double A1, double B1, double C1, double A2, double B2, double C2);
-		static std::vector<double> getIntersectionQuadratic(PolynomialMathFunction a, PolynomialMathFunction b);
+		static std::vector<double> getIntersectionQuadratic(const PolynomialMathFunction& a, const PolynomialMathFunction& b);
 
 		/**
 		 * @brief Creates the chebyshev polynomial of the first or second kind of the specified degree.
@@ -2253,13 +2211,11 @@ namespace smpl
 			kR++;
 		Matrix<T> output = Matrix<T>(input_matrix.getRows()-kR, input_matrix.getColumns()-kC);
 
-		LARGE_ENOUGH_CLAUSE(output.getRows())
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(output.getRows(), OMP_HEAVY_TASK))
 		#pragma omp parallel for
 		for(size_t i=0; i<output.getRows(); i++)
 		{
 			int startY = i;
-			LARGE_ENOUGH_CLAUSE(output.getColumns())
-			#pragma omp parallel for
 			for(size_t j=0; j<output.getColumns(); j++)
 			{
 				int startX = j;
@@ -2277,6 +2233,7 @@ namespace smpl
 				output[i][j] = sum;
 			}
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return output;
 	}
 	template<typename T>
@@ -2293,13 +2250,11 @@ namespace smpl
 		}
 		Matrix<T> output = Matrix<T>(input_matrix.getRows(), input_matrix.getColumns());
 		
-		LARGE_ENOUGH_CLAUSE(output.getRows())
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(output.getRows(), OMP_HEAVY_TASK))
 		#pragma omp parallel for
 		for(size_t i=0; i<output.getRows(); i++)
 		{
 			int startY = i-kR;
-			LARGE_ENOUGH_CLAUSE(output.getColumns())
-			#pragma omp parallel for
 			for(size_t j=0; j<output.getColumns(); j++)
 			{
 				int startX = j-kC;
@@ -2339,6 +2294,7 @@ namespace smpl
 				output[i][j] = sum;
 			}
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return output;
 	}
 	template<typename T>
@@ -2353,13 +2309,11 @@ namespace smpl
 		
 		Matrix<T> output = Matrix<T>(input_matrix.getRows()+kR, input_matrix.getColumns()+kC);
 		
-		LARGE_ENOUGH_CLAUSE(output.getRows())
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(output.getRows(), OMP_HEAVY_TASK))
 		#pragma omp parallel for
 		for(size_t i=0; i<output.getRows(); i++)
 		{
 			int startY = i-kR;
-			LARGE_ENOUGH_CLAUSE(output.getColumns())
-			#pragma omp parallel for
 			for(size_t j=0; j<output.getColumns(); j++)
 			{
 				int startX = j-kC;
@@ -2399,6 +2353,7 @@ namespace smpl
 				output[i][j] = sum;
 			}
 		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		return output;
 	}
 

@@ -91,6 +91,11 @@ namespace smpl
 
 		points = prePoints;
 	}
+	
+	std::pair<Vec2f, Vec2f> VectorPolygon::getBoundingBox()
+	{
+		return {};
+	}
 
 	void VectorPolygon::addPoint(double x, double y)
 	{

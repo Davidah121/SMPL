@@ -4,6 +4,7 @@
 #include "Image.h"
 #include "Shape.h"
 #include "Font.h"
+#include "SmartMemory.h"
 
 namespace smpl
 {
@@ -11,66 +12,75 @@ namespace smpl
     class DLL_OPTION SurfaceInterface
 	{
 	public:
-		static SurfaceInterface* createSoftwareSurface(int width, int height);
-		static SurfaceInterface* createGLSurface(int width, int height);
-		static SurfaceInterface* createDXSurface(int width, int height);
+		static SurfaceInterface createSoftwareSurface(int width, int height);
+		static SurfaceInterface createGLSurface(int width, int height);
+		static SurfaceInterface createDXSurface(int width, int height);
 		
-		SurfaceInterface(const SurfaceInterface& other);
-		void operator=(const SurfaceInterface& other);
+		SurfaceInterface();
 		~SurfaceInterface();
 
-		void* getSurface();
-		int getType();
+		GenericSmartMemory getSurface() const;
+		int getType() const;
+		bool isValid() const;
 
-		int getWidth();
-		int getHeight();
+		int getWidth() const;
+		int getHeight() const;
+
+		bool operator==(const SurfaceInterface& other) const;
+		bool operator!=(const SurfaceInterface& other) const;
+		
 	private:
 		SurfaceInterface(int width, int height, unsigned char type);
-		void* surface = nullptr;
+		GenericSmartMemory surface;
 		int type = -1;
 	};
 
 	class DLL_OPTION ImageInterface
 	{
 	public:
-		static ImageInterface* createSoftwareImage(File f);
-		static ImageInterface* createGLImage(File f);
-		static ImageInterface* createDXImage(File f);
+		static ImageInterface createSoftwareImage(const File& f);
+		static ImageInterface createSoftwareImage(const GenericSmartMemory& ref);
 
-		ImageInterface(const ImageInterface& other);
-		void operator=(const ImageInterface& other);
-		void copy(const ImageInterface& other);
+		static ImageInterface createGLImage(const File& f);
+		static ImageInterface createGLImage(const GenericSmartMemory& ref);
+
+		static ImageInterface createDXImage(const File& f);
+		static ImageInterface createDXImage(const GenericSmartMemory& ref);
+		
+
+		ImageInterface();
 		~ImageInterface();
 
-		void* getImage();
-		int getType();
+		GenericSmartMemory getImage() const;
+		int getType() const;
+		bool isValid() const;
 
-		int getWidth();
-		int getHeight();
+		int getWidth() const;
+		int getHeight() const;
+		
+		bool operator==(const ImageInterface& other) const;
+		bool operator!=(const ImageInterface& other) const;
 	private:
 		friend class SpriteInterface;
-		ImageInterface(File file, unsigned char type);
-		ImageInterface();
-
-		bool shouldDelete = true;
-		void* image = nullptr;
+		ImageInterface(const GenericSmartMemory& mem, unsigned char type);
+		ImageInterface(const File& file, unsigned char type);
+		GenericSmartMemory image;
 		int type = -1;
 	};
 
 	class DLL_OPTION SpriteInterface
 	{
 	public:
-		static SpriteInterface* createSoftwareSprite(File f);
-		static SpriteInterface* createGLSprite(File f);
-		static SpriteInterface* createDXSprite(File f);
+		static SpriteInterface createSoftwareSprite(const File& f);
+		static SpriteInterface createGLSprite(const File& f);
+		static SpriteInterface createDXSprite(const File& f);
 
-		SpriteInterface(const SpriteInterface& other);
-		void operator=(const SpriteInterface& other);
-		void copy(const SpriteInterface& other);
+		SpriteInterface();
 		~SpriteInterface();
 
-		void* getSprite();
-		int getType();
+		GenericSmartMemory getSprite() const;
+		int getType() const;
+		bool isValid() const;
 
 		/**
 		 * @brief Returns a shallow copy of the image stored by the sprite at the specified index.
@@ -80,37 +90,45 @@ namespace smpl
 		 * @param index 
 		 * @return ImageInterface 
 		 */
-		ImageInterface getImage(size_t index);
-		int getDelayTime(size_t index);
-		size_t getSize();
-		bool shouldLoop();
+		ImageInterface getImage(size_t index) const;
+		int getDelayTime(size_t index) const;
+		size_t getSize() const;
+		bool shouldLoop() const;
+
+		bool load(const File& f, bool shouldClear);
+		
+		bool operator==(const SpriteInterface& other) const;
+		bool operator!=(const SpriteInterface& other) const;
 	private:
 
-		SpriteInterface(File file, unsigned char type);
-		void* sprite = nullptr;
+		SpriteInterface(const File& file, unsigned char type);
+		GenericSmartMemory sprite;
 		int type = -1;
 	};
 
 	class DLL_OPTION FontInterface
 	{
 	public:
-		static FontInterface* createSoftwareFont(File f);
-		static FontInterface* createGLFont(File f);
-		static FontInterface* createDXFont(File f);
-		static FontInterface* createFromFont(Font* f, unsigned char type);
+		static FontInterface createSoftwareFont(const File& f);
+		static FontInterface createGLFont(const File& f);
+		static FontInterface createDXFont(const File& f);
+		static FontInterface createFromFont(const SmartMemory<Font>& f, unsigned char type);
 
-		FontInterface(const FontInterface& other);
-		void operator=(const FontInterface& other);
+		FontInterface();
 		~FontInterface();
-		Font* getFont();
-		int getType();
+
+		SmartMemory<Font> getFont() const;
+		int getType() const;
+		bool isValid() const;
+		
+		bool operator==(const FontInterface& other) const;
+		bool operator!=(const FontInterface& other) const;
 	private:
 	
-		FontInterface(File file, unsigned char type);
-		FontInterface(Font* f, unsigned char type);
-		Font* font = nullptr;
+		FontInterface(const File& file, unsigned char type);
+		FontInterface(const SmartMemory<Font>& f, unsigned char type);
+		SmartMemory<Font> font;
 		int type = -1;
-		bool shouldDelete = true;
 	};
 
 	class DLL_OPTION GraphicsInterface
@@ -128,36 +146,36 @@ namespace smpl
 		 * 
 		 * @param width 
 		 * @param height 
-		 * @return SurfaceInterface* 
+		 * @return SurfaceInterface
 		 */
-		static SurfaceInterface* createSurface(int width, int height);
+		static SurfaceInterface createSurface(int width, int height);
 
 		/**
 		 * @brief Create a ImageInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return ImageInterface* 
+		 * @return ImageInterface
 		 */
-		static ImageInterface* createImage(File f);
+		static ImageInterface createImage(const File& f);
 
 		/**
 		 * @brief Create a SpriteInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return SpriteInterface* 
+		 * @return SpriteInterface
 		 */
-		static SpriteInterface* createSprite(File f);
+		static SpriteInterface createSprite(const File& f);
 
 		/**
 		 * @brief Create a FontInterface object that aligns with this
 		 * 		Graphics Interface.
 		 * 
 		 * @param f 
-		 * @return FontInterface* 
+		 * @return FontInterface
 		 */
-		static FontInterface* createFont(File f);
+		static FontInterface createFont(const File& f);
 
 		static unsigned char getDefaultType();
 		static void setDefaultType(unsigned char type);
@@ -179,16 +197,17 @@ namespace smpl
 		 */
 		static void dispose();
 
-		static void setBoundSurface(SurfaceInterface* surface);
-		static SurfaceInterface* getBoundSurface();
+		static void setBoundSurface(const SurfaceInterface& surface);
+		static void unbindDeletedSurface(const SurfaceInterface& surface);
+		static SurfaceInterface getBoundSurface();
 
 		static void setColor(Vec4f color);
 		static void setColor(Color color);
 		static Color getColor();
 		static Vec4f getColorVec4f();
 
-		static void setFont(FontInterface* f);
-		static FontInterface* getFont();
+		static void setFont(const FontInterface& f);
+		static FontInterface getFont();
 
 		static void clear();
 
@@ -197,9 +216,9 @@ namespace smpl
 		static void drawCircle(int x, int y, int radius, bool outline);
 		static void drawEllipse(int x, int y, int xRad, int yRad, bool outline);
 
-		static void drawSprite(ImageInterface* img, int x, int y);
-		static void drawSprite(ImageInterface* img, int x1, int y1, int width, int height);
-		static void drawSpritePart(ImageInterface* img, int x, int y, int imgX, int imgY, int imgW, int imgH);
+		static void drawSprite(const ImageInterface& img, int x, int y);
+		static void drawSprite(const ImageInterface& img, int x1, int y1, int width, int height);
+		static void drawSpritePart(const ImageInterface& img, int x, int y, int imgX, int imgY, int imgW, int imgH);
 
 		static void drawText(StringBridge strBridge, int x, int y);
 		static void drawTextHighlighted(StringBridge strBridge, int x, int y, int highlightStart, int highlightEnd, Color highlightColor);
@@ -212,8 +231,8 @@ namespace smpl
 		static Box2D getClippingRect();
 		static void resetClippingPlane();
 
-		static void drawSurface(SurfaceInterface* img, int x, int y);
-		static void drawSurface(SurfaceInterface* img, int x1, int y1, int width, int height); //TODO
+		static void drawSurface(const SurfaceInterface& img, int x, int y);
+		static void drawSurface(const SurfaceInterface& img, int x1, int y1, int width, int height); //TODO
 
 		static void drawToScreen();
 		static void setProjection(Mat4f proj);
@@ -230,9 +249,8 @@ namespace smpl
 
 		static unsigned char type;
 		static unsigned char defaultType;
-		static SurfaceInterface* boundSurface;
-		static FontInterface* boundFont;
-		static bool ownedFont;
+		static SurfaceInterface boundSurface;
+		static FontInterface boundFont;
 		static Box2D clippingRect;
 		static Vec2f scalingFactor;
 		static Vec2f translationFactor;

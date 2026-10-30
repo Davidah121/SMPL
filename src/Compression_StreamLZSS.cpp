@@ -17,8 +17,6 @@ namespace smpl
 		this->maxBackDist = __min(maxBackwardsDistance, 32768);
 		this->maxLength = maxLength+3;
 
-        buffer.setBitOrder(BinarySet::LMSB);
-
         if(mode == TYPE_COMPRESSION)
         {
             csa = new ChainedSuffixAutomaton(this->maxBackDist, 3, this->maxLength);

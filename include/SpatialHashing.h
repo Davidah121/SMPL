@@ -166,7 +166,7 @@ namespace smpl
                     boxShape.setLeftBound(startXGrid*xInc);
                     boxShape.setRightBound((startXGrid+1) * xInc);
 
-                    if( CollisionMaster::getCollision( &boxShape, shape ) )
+                    if( CollisionMaster::getCollision( boxShape, *shape ) )
                     {
                         int gridIndex = x + y*xGrids;
 

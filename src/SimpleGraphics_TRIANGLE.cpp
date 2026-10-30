@@ -43,7 +43,7 @@ namespace smpl
 			int approxArea = (maxX-minX)*(maxY-minY);
 			SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
 			
-			LARGE_ENOUGH_CLAUSE(approxArea)
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
 			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{
@@ -119,7 +119,7 @@ namespace smpl
 			int approxArea = (maxX-minX)*(maxY-minY);
 			double det = (p2.y-p3.y)*(p1.x-p3.x) + (p3.x-p2.x)*(p1.y-p3.y);
 
-			LARGE_ENOUGH_CLAUSE(approxArea)
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
 			#pragma omp parallel for
 			for(int y=minY; y<maxY; y++)
 			{

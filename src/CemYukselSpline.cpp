@@ -164,15 +164,15 @@ namespace smpl
 		Vec3f circleInfo = MathExt::fitCircleToTriangle(points[indexI], points[index], points[indexJ], false);
 
 		//Just need the angle to p[i-1] and p[i+1]
-		Vec2f tempV = points[indexI] - circleInfo.toVec2f();
-		Vec2f tempV2 = points[indexJ] - circleInfo.toVec2f();
+		Vec2f tempV = points[indexI] - circleInfo.toVec2();
+		Vec2f tempV2 = points[indexJ] - circleInfo.toVec2();
 		double angle1 = MathExt::arctan2( tempV.y, tempV.x );
 		double angle2 = MathExt::arctan2( tempV2.y, tempV2.x );
 		
 		//blend between the angles. Note that we want the small angle between them not the large angle.
 		Vec2f range = MathExt::angleRange(angle1, angle2, true);
 		
-		Vec2f finalPoint = MathExt::lengthDir(circleInfo.z, MathExt::lerp(range.x, range.y, normalizedWeight)) + circleInfo.toVec2f();
+		Vec2f finalPoint = MathExt::lengthDir(circleInfo.z, MathExt::lerp(range.x, range.y, normalizedWeight)) + circleInfo.toVec2();
 		return finalPoint;
 	}
 
@@ -259,8 +259,7 @@ namespace smpl
 			endRange = temp;
 		}
 		
-		GeneralMathFunction f = GeneralMathFunction();
-		f.setFunction([circleMid, circleRadius, mainP, longerP ](double t) -> double{
+		GeneralMathFunction f = GeneralMathFunction([circleMid, circleRadius, mainP, longerP ](double t) -> double{
 			//solve ellipse 
 			return 0.0;
 		});

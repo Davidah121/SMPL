@@ -4,6 +4,18 @@
 
 namespace smpl
 {
+	
+	const unsigned int WebRequest::TYPE_GET = 0;
+	const unsigned int WebRequest::TYPE_POST = 1;
+	const unsigned int WebRequest::TYPE_HEAD = 2;
+	const unsigned int WebRequest::TYPE_PUT = 3;
+	const unsigned int WebRequest::TYPE_DELETE = 4;
+	const unsigned int WebRequest::TYPE_CONNECT = 5;
+	const unsigned int WebRequest::TYPE_OPTIONS = 6;
+	const unsigned int WebRequest::TYPE_TRACE = 7;
+	const unsigned int WebRequest::TYPE_PATCH = 8;
+	const unsigned int WebRequest::TYPE_SERVER = 0xFFFFFFFF;
+
 	WebRequest::WebRequest()
 	{
 	}
@@ -24,25 +36,25 @@ namespace smpl
 		init((unsigned char*)buffer.data(), buffer.size(), nullptr);
 	}
 	
-	WebRequest::WebRequest(WebRequest& other)
+	WebRequest::WebRequest(const WebRequest& other)
 	{
 		reset();
 		type = other.type;
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
-		url = other.url;
+		pathOrMessage = other.pathOrMessage;
 		cookieMap = other.cookieMap;
 	}
 
-	void WebRequest::operator=(WebRequest& other)
+	void WebRequest::operator=(const WebRequest& other)
 	{
 		reset();
 		type = other.type;
 		bytesInHeader = other.bytesInHeader;
 		header = other.header;
 		data = other.data;
-		url = other.url;
+		pathOrMessage = other.pathOrMessage;
 		cookieMap = other.cookieMap;
 	}
 	
@@ -53,7 +65,7 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
-		url = std::move(other.url);
+		pathOrMessage = std::move(other.pathOrMessage);
 		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
@@ -64,22 +76,53 @@ namespace smpl
 		bytesInHeader = std::move(other.bytesInHeader);
 		header = std::move(other.header);
 		data = std::move(other.data);
-		url = std::move(other.url);
+		pathOrMessage = std::move(other.pathOrMessage);
 		cookieMap = std::move(other.cookieMap);
 		other.reset();
 	}
 
 	void WebRequest::reset()
 	{
-		type = TYPE_SERVER;
+		type = WebRequest::TYPE_SERVER;
 		bytesInHeader = 0;
 		header = "";
 		cookieMap.clear();
 		data.clear();
 	}
+	
+	WebRequest WebRequest::createQuickWebRequest(unsigned int type, const std::string& urlPath, const SimpleHashMap<std::string, std::string>& pairs)
+	{
+		WebRequest m = WebRequest();
+		m.setHeader(type, urlPath);
+
+		//required because you may be sending over cookies which gets processed a little differently
+		for(auto& kv : pairs)
+		{
+			m.addKeyValue(kv.first, kv.second);
+		}
+		return m;
+	}
+	WebRequest WebRequest::createQuickServerResponse(unsigned short statusCode, const SimpleHashMap<std::string, std::string>& pairs)
+	{
+		WebRequest m = WebRequest();
+		std::string statusMsg;
+		m.setHeader(WebRequest::WebRequest::TYPE_SERVER, StringTools::toString(statusCode) + " " + getStatusMessage(statusCode));
+		//required because you may be sending over cookies which gets processed a little differently
+		for(auto& kv : pairs)
+		{
+			m.addKeyValue(kv.first, kv.second);
+		}
+
+		return m;
+	}
 
 	bool WebRequest::init(unsigned char* buffer, size_t size, size_t* bytesRead)
 	{
+		static const std::unordered_map<std::string, unsigned int> WebRequestTypeToString = {
+			{"GET", WebRequest::TYPE_GET}, {"POST", WebRequest::TYPE_POST}, {"HEAD", WebRequest::TYPE_HEAD}, {"PUT", WebRequest::TYPE_PUT}, {"DELETE", WebRequest::TYPE_DELETE}, 
+			{"CONNECT", WebRequest::TYPE_CONNECT}, {"OPTIONS", WebRequest::TYPE_OPTIONS}, {"TRACE", WebRequest::TYPE_TRACE}, {"PATCH", WebRequest::TYPE_PATCH}
+		};
+
 		//delete everything and restart
 		reset();
 
@@ -103,32 +146,40 @@ namespace smpl
 		size_t firstSpaceIndex = header.find_first_of(' ');
 		size_t lastSpaceIndex = header.find_last_of(' ');
 		
-		std::string typeName = header.substr(0, firstSpaceIndex);
-		if(typeName == "CONNECT")
-			type = TYPE_CONNECT;
-		else if(typeName == "DELETE")
-			type = TYPE_DELETE;
-		else if(typeName == "GET")
-			type = TYPE_GET;
-		else if(typeName == "HEAD")
-			type = TYPE_HEAD;
-		else if(typeName == "OPTIONS")
-			type = TYPE_OPTIONS;
-		else if(typeName == "PATCH")
-			type = TYPE_PATCH;
-		else if(typeName == "POST")
-			type = TYPE_POST;
-		else if(typeName == "PUT")
-			type = TYPE_PUT;
-		else if(typeName == "TRACE")
-			type = TYPE_TRACE;
+		std::string typeName = StringTools::toUppercase(header.substr(0, firstSpaceIndex));
+		auto it = WebRequestTypeToString.find(typeName);
+		if(it != WebRequestTypeToString.end())
+			type = it->second;
 		else
-			type = TYPE_SERVER;
+		 	type = WebRequest::TYPE_SERVER;
 		
-		//url is everything between header and http version
-		//basically, stuff between the first space and the last space
-		url = header.substr(firstSpaceIndex+1, lastSpaceIndex-firstSpaceIndex-1);
-		
+		if(this->type == WebRequest::TYPE_SERVER)
+		{
+			pathOrMessage = header.substr(firstSpaceIndex+1);
+			statusCode = 0;
+			//the first value in the data part should be a number which is the status code
+			//on the off case, remove starting spaces
+			std::string tempNumber;
+			for(int i=0; i<pathOrMessage.size(); i++)
+			{
+				if(pathOrMessage[i] == ' ' && !pathOrMessage.empty())
+					break;
+				else if(pathOrMessage[i] != ' ')
+					tempNumber += pathOrMessage[i];
+			}
+			if(!tempNumber.empty())
+				statusCode = StringTools::toInt(tempNumber);
+		}
+		else
+		{
+			//path is everything between header and http version
+			//basically, stuff between the first space and the last space
+			if(header[firstSpaceIndex+1] == '/')
+				pathOrMessage = header.substr(firstSpaceIndex+1, lastSpaceIndex-firstSpaceIndex-1);
+			else
+				pathOrMessage = "/" + header.substr(firstSpaceIndex+1, lastSpaceIndex-firstSpaceIndex-1);
+		}
+
 		//read all key value pairs
 		std::string key, value;
 		bool mode = false;
@@ -175,41 +226,43 @@ namespace smpl
 		return properEnd;
 	}
 
-	void WebRequest::setHeader(unsigned int type, const std::string& data, bool includeHTTP)
+	void WebRequest::setHeader(unsigned int type, const std::string& data)
 	{
+		static const std::vector<std::string> TypeToString = {"GET ", "POST ", "HEAD ", "PUT ", "DELETE ", "CONNECT ", "OPTIONS ", "TRACE ", "PATCH "};
 		this->type = type;
-		if(type == TYPE_CONNECT)
-			header = "CONNECT ";
-		else if(type == TYPE_DELETE)
-			header = "DELETE ";
-		else if(type == TYPE_GET)
-			header = "GET ";
-		else if(type == TYPE_HEAD)
-			header = "HEAD ";
-		else if(type == TYPE_OPTIONS)
-			header = "OPTIONS ";
-		else if(type == TYPE_PATCH)
-			header = "PATCH ";
-		else if(type == TYPE_POST)
-			header = "POST ";
-		else if(type == TYPE_PUT)
-			header = "PUT ";
-		else if(type == TYPE_TRACE)
-			header = "TRACE ";
+		if(type < TypeToString.size())
+			header = TypeToString[type];
 		else
 		{
-			header = "";
-			this->type = TYPE_SERVER;
+			header = "HTTP/1.1 ";
+			this->type = WebRequest::TYPE_SERVER;
 		}
-
-		if(this->type != TYPE_SERVER)
-			url = data; //assume url is data
-		else
-			url = "";
-		
+		pathOrMessage = data;
 		header += data;
-		if(includeHTTP)
+		if(this->type != WebRequest::TYPE_SERVER)
 			header += " HTTP/1.1";
+		
+		statusCode = 0;
+		if(this->type == WebRequest::TYPE_SERVER)
+		{
+			//the first value in the data part should be a number which is the status code
+			//on the off case, remove starting spaces
+			std::string tempNumber;
+			for(int i=0; i<data.size(); i++)
+			{
+				if(data[i] == ' ' && !data.empty())
+					break;
+				else if(data[i] != ' ')
+					tempNumber += data[i];
+			}
+			if(!tempNumber.empty())
+				statusCode = StringTools::toInt(tempNumber);
+		}
+		else
+		{
+			if(pathOrMessage.front() != '/')
+				pathOrMessage = "/" + pathOrMessage;
+		}
 	}
 
 	std::string WebRequest::getHeader() const
@@ -217,9 +270,9 @@ namespace smpl
 		return header;
 	}
 
-	std::string WebRequest::getUrl() const
+	std::string WebRequest::getPathOrMessage() const
 	{
-		return url;
+		return pathOrMessage;
 	}
 
 	unsigned int WebRequest::getType() const
@@ -273,7 +326,7 @@ namespace smpl
 		if(!cookieMap.empty())
 		{
 			//add cookies
-			if(type == TYPE_SERVER)
+			if(type == WebRequest::TYPE_SERVER)
 			{
 				for(auto& it : cookieMap.getAllCookies())
 				{
@@ -295,6 +348,15 @@ namespace smpl
 		return bytesInHeader;
 	}
 
+	unsigned int WebRequest::getStatus() const
+	{
+		return statusCode;
+	}
+	
+	void WebRequest::setCookies(const CookieManager& existingCookieMap)
+	{
+		cookieMap = existingCookieMap;
+	}
 	CookieManager& WebRequest::getCookieMap()
 	{
 		return cookieMap;
@@ -320,7 +382,7 @@ namespace smpl
 		if(!cookieMap.empty())
 		{
 			//add cookies
-			if(type == TYPE_SERVER)
+			if(type == WebRequest::TYPE_SERVER)
 			{
 				for(auto& it : cookieMap.getAllCookies())
 				{
@@ -391,6 +453,14 @@ namespace smpl
 		}
 		return true;
 	}
+	
+	std::string WebRequest::getStatusMessage(unsigned short statusCode)
+	{
+		auto it = statusAndMessages.find(statusCode);
+		if(it != statusAndMessages.end())
+			return it->second;
+		return "";
+	}
 
 	const std::string WebRequest::MIME_FORM_DATA = "application/x-www-form-urlencoded";
 	const SimpleHashMap<std::string, std::string> WebRequest::mimeTypes = {
@@ -459,5 +529,79 @@ namespace smpl
         {"xml", "application/xml"},
         {"zip", "application/zip"},
         {"7z", "application/x-7z-compressed"},
+    };
+
+	const SimpleHashMap<unsigned short, std::string> WebRequest::statusAndMessages = {
+        {100, "Continue"},
+		{101, "Switching Protocols"},
+		{102, "Processing"},
+		{103, "Early Hints"},
+		
+		
+		{200, "OK"},
+		{201, "Created"},
+		{202, "Accepted"},
+		{203, "Non-Authoritative Information"},
+		{204, "No Content"},
+		{205, "Reset Content"},
+		{206, "PartialContent"},
+		{207, "Multi-Status"},
+		{208, "Already Reported"},
+		{226, "IM Used"},
+
+		
+		{300, "Multiple Choices"},
+		{301, "Moved Permanently"},
+		{302, "Found"},
+		{303, "See Other"},
+		{304, "Not Modified"},
+		{305, "Use Proxy"},
+		{306, "Unused"},
+		{307, "Temporary Redirect"},
+		{308, "Permanent Redirect"},
+
+		
+		{400, "Bad Request"},
+		{401, "Unauthorized"},
+		{402, "Payment Required"},
+		{403, "Forbidden"},
+		{404, "Not Found"},
+		{405, "Method Not Allowed"},
+		{406, "Not Acceptable"},
+		{407, "Proxy Authentication Required"},
+		{408, "Request Timeout"},
+		{409, "Conflict"},
+		{410, "Gone"},
+		{411, "Length Required"},
+		{412, "Precondition Failed"},
+		{413, "Content Too Large"},
+		{414, "URI Too Long"},
+		{415, "Unsupported Media Type"},
+		{416, "Range Not Satisfiable"},
+		{417, "Expectation Failed"},
+		{418, "I'm a teapot"},
+		{421, "Misdirected Request"},
+		{422, "Unprocessable Content"},
+		{423, "Locked"},
+		{424, "Failed Dependency"},
+		{425, "Too Early"},
+		{426, "Upgrade Required"},
+		{428, "Precondition Required"},
+		{429, "Too Many Requests"},
+		{431, "Request Header Fields Too Large"},
+		{451, "Unavailable For Legal Reasons"},
+
+		
+		{500, "Internal Server Error"},
+		{501, "Not Implemented"},
+		{502, "Bad Gateway"},
+		{503, "Service Unavailable"},
+		{504, "Gateway Timeout"},
+		{505, "HTTP Version Not Supported"},
+		{506, "Variant Also Negotiates"},
+		{507, "Insufficient Storage"},
+		{508, "Loop Detected"},
+		{510, "Not Extended"},
+		{511, "Network Authentication Required"},
     };
 }

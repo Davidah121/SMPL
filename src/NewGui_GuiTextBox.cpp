@@ -24,12 +24,12 @@ namespace smpl
 
     }
 
-    void GuiTextBox::addChild(SmartMemory<GuiItem> item)
+    void GuiTextBox::addChild(const SmartMemory<GuiItem>& item)
     {
         GuiScrollBar::addChild(item);
     }
 
-    void GuiTextBox::removeChild(SmartMemory<GuiItem> item)
+    void GuiTextBox::removeChild(const SmartMemory<GuiItem>& item)
     {
         GuiScrollBar::removeChild(item);
     }
@@ -44,7 +44,7 @@ namespace smpl
         allowLineBreaks = lb;
     }
     
-    void GuiTextBox::setDefaultText(std::string s)
+    void GuiTextBox::setDefaultText(const std::string& s)
     {
         defaultText = s;
     }
@@ -81,10 +81,8 @@ namespace smpl
     {
         bool textChanged = false;
         std::queue<int> chars = Input::getCharactersTyped();
-        FontInterface* fiPtr = GraphicsInterface::getFont();
-        Font* fPtr = nullptr;
-        if(fiPtr != nullptr)
-            fPtr = fiPtr->getFont();
+        FontInterface fiPtr = GraphicsInterface::getFont();
+		LockingSmartMemory<Font> fPtr = fiPtr.getFont().getLockingPointer();
         
         //make modifications to str then set once at the end
         int oldSelectionStart = textElement.getHighlightStartIndex();
@@ -167,7 +165,10 @@ namespace smpl
             }
             else if(v == Input::KEY_UP)
             {
-                int nextSelection = fPtr->moveSelectionUp(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+				int nextSelection = 0;
+				if(fPtr != nullptr)
+                	nextSelection = fPtr->moveSelectionUp(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+
                 if(nextSelection < 0)
                     nextSelection = 0;
                 selectionStart = nextSelection;
@@ -182,8 +183,10 @@ namespace smpl
             }
             else if(v == Input::KEY_DOWN)
             {
-                
-                int nextSelection = fPtr->moveSelectionDown(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+				int nextSelection = 0;
+				if(fPtr != nullptr)
+                	nextSelection = fPtr->moveSelectionDown(str, textElement.getFinalWidthOfText(), textElement.getWrapMode(), selectionStart);
+
                 if(nextSelection >= str.size())
                     nextSelection = str.size();
                 if(nextSelection == 0)
@@ -365,7 +368,7 @@ namespace smpl
         textElement.setSelectIndex(selectionStart, selectionEnd);
     }
 
-    void GuiTextBox::onFocusChanged(SmartMemory<GuiManager> manager, bool changedTo)
+    void GuiTextBox::onFocusChanged(const SmartMemory<GuiManager>& manager, bool changedTo)
     {
         if(changedTo)
         {
@@ -402,7 +405,7 @@ namespace smpl
         }
     }
 
-    void GuiTextBox::update(SmartMemory<GuiManager> manager)
+    void GuiTextBox::update(const SmartMemory<GuiManager>& manager)
     {
         //Update the layout which will update the text element too.
         GuiScrollBar::update(manager);
@@ -411,10 +414,8 @@ namespace smpl
         startT = System::getCurrentTimeMillis();
         
         std::u32string str;
-        Font* fptr = nullptr;
-        FontInterface* fInterPtr = GraphicsInterface::getFont();
-        if(fInterPtr != nullptr)
-            fptr = fInterPtr->getFont();
+        FontInterface fInterPtr = GraphicsInterface::getFont();
+        LockingSmartMemory<Font> fptr = fInterPtr.getFont().getLockingPointer();
         
         if(fptr == nullptr)
             return;
@@ -451,7 +452,7 @@ namespace smpl
 
     }
 
-    void GuiTextBox::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiTextBox::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         //Important that we call the parent first. The other elements are called later
         GuiScrollBar::loadDataFromXML(attribs, manager);
@@ -472,7 +473,7 @@ namespace smpl
         setTextEmpty(textElement.getText().empty());
     }
 
-    SmartMemory<GuiItem> GuiTextBox::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiTextBox::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiTextBox* ins = new GuiTextBox();
         ins->loadDataFromXML(attributes, manager);

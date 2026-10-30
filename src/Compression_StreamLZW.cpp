@@ -8,8 +8,6 @@ namespace smpl
 		this->baseCodeSize = codeSize;
 		buildBaseDictionaryTree(codeSize);
 
-		leftovers.setBitOrder(BinarySet::LMSB);
-		buffer.setBitOrder(BinarySet::LMSB);
 		started = false;
 	}
 
@@ -178,7 +176,7 @@ namespace smpl
 				}
 				else
 				{
-					index = bits.getBits(bitNum, bitNum+currBits, false);
+					index = bits.getBits(bitNum, bitNum+currBits, BinarySet::LittleEndian);
 					bitNum += currBits;
 				}
 

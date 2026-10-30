@@ -293,14 +293,13 @@ namespace smpl
 		//Must return allowed methods and request headers.
 		//Lazy and will just say that by default, GET, HEAD, and OPTIONS are available
 
-		WebRequest response = WebRequest();
-		response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
-		std::string expectedURL = req.getUrl();
+		WebRequest response = WebRequest::createQuickServerResponse(200);
+		std::string expectedPath = req.getPathOrMessage();
 		unsigned int allowFlags = WebRequest::TYPE_OPTIONS;
 		std::string allowedMethodsStr = "";
 		std::string allowedHeaders = "";
 		
-		auto it = urlsAndAllowedMethodsAndHeaders.find(expectedURL);
+		auto it = urlsAndAllowedMethodsAndHeaders.find(expectedPath);
 		if(it != urlsAndAllowedMethodsAndHeaders.end())
 		{
 			allowFlags |= it->second.first;
@@ -466,8 +465,7 @@ namespace smpl
 			logMutex.unlock();
 		}
 
-		WebRequest resp = WebRequest();
-		resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 404 Not Found", false);
+		WebRequest resp = WebRequest::createQuickServerResponse(404);
 		resp.addKeyValue("Content-Length", "0");
 		fillGetResponseHeaders(resp);
 
@@ -500,8 +498,7 @@ namespace smpl
 			logMutex.unlock();
 		}
 
-		WebRequest resp = WebRequest();
-		resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 403 Forbidden", false);
+		WebRequest resp = WebRequest::createQuickServerResponse(403);
 		resp.addKeyValue("Content-Length", "0");
 		fillGetResponseHeaders(resp);
 		
@@ -534,8 +531,7 @@ namespace smpl
 			logMutex.unlock();
 		}
 
-		WebRequest resp = WebRequest();
-		resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 416 Range Not Statisfiable", false);
+		WebRequest resp = WebRequest::createQuickServerResponse(416);
 		resp.addKeyValue("Content-Length", "0");
 		resp.addKeyValue("Content-Range", ranges);
 		fillGetResponseHeaders(resp);
@@ -570,8 +566,7 @@ namespace smpl
 			logMutex.unlock();
 		}
 
-		WebRequest resp = WebRequest();
-		resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 400 Bad Request", false);
+		WebRequest resp = WebRequest::createQuickServerResponse(400);
 		resp.addKeyValue("Content-Length", "0");
 		fillGetResponseHeaders(resp);
 
@@ -604,8 +599,7 @@ namespace smpl
 			logMutex.unlock();
 		}
 
-		WebRequest resp = WebRequest();
-		resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 413 Entity Too Large", false);
+		WebRequest resp = WebRequest::createQuickServerResponse(413);
 		resp.addKeyValue("Content-Length", "0");
 		fillGetResponseHeaders(resp);
 
@@ -639,7 +633,7 @@ namespace smpl
 		}
 				
 		//parse the request for the resource name
-		std::string expectedURL = req.getUrl();
+		std::string expectedURL = req.getPathOrMessage();
 		
 		//must be local to the starting directory.
 		std::string fStr = "./";
@@ -800,13 +794,13 @@ namespace smpl
 		WebRequest resp = WebRequest();
 		if(!usingRanges)
 		{
-			resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 200 OK", false);
+			resp = WebRequest::createQuickServerResponse(200);
 			resp.addKeyValue("Accept-Ranges", "bytes");
 			resp.addKeyValue("Content-Length", StringTools::toString(filesize));
 		}
 		else
 		{
-			resp.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 206 Partial Content", false);
+			resp = WebRequest::createQuickServerResponse(206);
 			resp.addKeyValue("Accept-Ranges", "bytes");
 			resp.addKeyValue("Content-Range", "bytes " + StringTools::toString(startRange) + "-" + StringTools::toString(endRange)+"/"+StringTools::toString(filesize));
 			resp.addKeyValue("Content-Length", StringTools::toString(desiredSize));

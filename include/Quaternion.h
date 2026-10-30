@@ -2,7 +2,7 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include "SimpleSerialization.h"
-#include "Vec4f.h"
+#include "Vec4.h"
 
 namespace smpl
 {

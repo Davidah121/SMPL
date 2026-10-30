@@ -16,6 +16,10 @@ namespace smpl
          * 
          */
         VectorSprite();
+		VectorSprite(const VectorSprite& other);
+		VectorSprite& operator=(const VectorSprite& other);
+		VectorSprite(VectorSprite&& other) noexcept;
+		VectorSprite& operator=(VectorSprite&& other) noexcept;
 
         /**
          * @brief Destroy the VectorSprite object

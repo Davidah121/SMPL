@@ -311,6 +311,11 @@ namespace smpl
 		}
 	}
 
+	std::pair<Vec2f, Vec2f> VectorCircle::getBoundingBox()
+	{
+		return {Vec2f(cx-radius, cy-radius), Vec2f(cx+radius, cy+radius)};
+	}
+
 	void VectorCircle::setX(double x)
 	{
 		this->cx = x;

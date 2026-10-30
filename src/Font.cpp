@@ -13,34 +13,19 @@ namespace smpl
 	Font::~Font()
 	{
 	}
-	
-	void Font::copyFont(Font& f)
+
+	FontCharInfo Font::getFontCharInfo(uint32_t c)
 	{
-		charInfoList = f.charInfoList;
-
-		maxHorizAdv = f.maxHorizAdv;
-		ascent = f.ascent;
-		descent = f.descent;
-		verticalAdv = f.verticalAdv;
-		
-		fontSize = f.fontSize;
-		originalFontSize = f.originalFontSize;
-
-		sorted = f.sorted;
-	}
-
-	FontCharInfo Font::getFontCharInfo(size_t index)
-	{
-		if (index >= 0 && index < charInfoList.size())
+		auto it = charInfoSet.find(c);
+		if(it != charInfoSet.end())
 		{
 			double scaleVal = (double)fontSize / originalFontSize;
-
-			FontCharInfo nFCI = charInfoList[index];
+			FontCharInfo nFCI = *it;
 			nFCI.x = (int)MathExt::round(nFCI.x * scaleVal);
 			nFCI.y = (int)MathExt::round(nFCI.y * scaleVal);
-			nFCI.width = (int)MathExt::round(nFCI.width * scaleVal);
-			nFCI.height = (int)MathExt::round(nFCI.height * scaleVal);
-			nFCI.horizAdv = (int)MathExt::round(nFCI.horizAdv * scaleVal);
+			nFCI.width = (int)MathExt::ceil(nFCI.width * scaleVal);
+			nFCI.height = (int)MathExt::ceil(nFCI.height * scaleVal);
+			nFCI.horizAdv = 1+(int)MathExt::ceil(nFCI.horizAdv * scaleVal);
 			nFCI.xOffset = (int)MathExt::round(nFCI.xOffset * scaleVal);
 			nFCI.yOffset = (int)MathExt::round(nFCI.yOffset * scaleVal);
 			return nFCI;
@@ -52,70 +37,12 @@ namespace smpl
 		return {};
 	}
 
-	std::vector<FontCharInfo>& Font::getListOfFontCharInfo()
+	SimpleHashSet<FontCharInfo, FontCharInfoHash, FontCharInfoEquals>& Font::getListOfFontCharInfo()
 	{
-		return charInfoList;
+		return charInfoSet;
 	}
 
-	size_t Font::getCharIndex(int c)
-	{
-		size_t index = SIZE_MAX;
-
-		if(sorted)
-		{
-			//binary search
-			size_t l = 0;
-			size_t r = charInfoList.size()-1;
-
-			size_t preL, preR;
-			preL = l;
-			preR = r;
-
-			//check bounds first since they will never occur in the loop
-			if(charInfoList[l].unicodeValue == c)
-				return l;
-			if(charInfoList[r].unicodeValue == c)
-				return r;
-			
-			while(l < r)
-			{
-				size_t m = (l+r) / 2;
-				int uniVal = charInfoList[m].unicodeValue;
-				
-				if(uniVal == c)
-					return m;
-				else if( c < uniVal)
-					r = m;
-				else if( c > uniVal)
-					l = m;
-				
-				if(preL == l && preR == r)
-				{
-					//not found
-					break;
-				}
-				preL = l;
-				preR = r;
-			}
-		}
-		else
-		{
-			//linear search
-			for (size_t i = 0; i < charInfoList.size(); i++)
-			{
-				if (charInfoList[i].unicodeValue == c)
-				{
-					index = i;
-					break;
-				}
-			}
-		}
-		
-		
-		return index;
-	}
-
-	std::vector<FontCharBoxInfo> Font::getAllCharBoxes(StringBridge textBridge, unsigned int maxWidth, char wrapMode)
+	std::vector<FontCharBoxInfo> Font::getAllCharBoxes(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode)
 	{
 		size_t lastWordIndex = 0;
 		std::vector<FontCharBoxInfo> output;
@@ -142,12 +69,9 @@ namespace smpl
 				continue;
 			}
 
-			size_t actualIndex = getCharIndex(text[i]);
-			if(actualIndex == SIZE_MAX)
-			{
+			FontCharInfo fci = getFontCharInfo(text[i]);
+			if(fci.unicodeValue == 0)
 				continue;
-			}
-			FontCharInfo fci = getFontCharInfo(actualIndex);
 
 			if(lastChar == ' ' && fci.unicodeValue > ' ')
 			{
@@ -203,7 +127,7 @@ namespace smpl
 		return output;
 	}
 
-	Image* Font::getImage(size_t index)
+	SmartMemory<Image> Font::getImage(const FontCharInfo& fci)
 	{
 		return nullptr;
 	}
@@ -229,7 +153,7 @@ namespace smpl
 		return (int)MathExt::round(verticalAdv*scaleVal);
 	}
 
-	Box2D Font::getBoundingBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode)
+	Box2D Font::getBoundingBox(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode)
 	{
 		int totalWidth = 0;
 		int totalHeight = 0;
@@ -238,8 +162,8 @@ namespace smpl
 
 		for(FontCharBoxInfo& boxPair : allBoxes)
 		{
-			totalWidth = MathExt::max<int>(boxPair.boundingBox.getRightBound(), totalWidth);
-			totalHeight = MathExt::max<int>(boxPair.rowStartPosition + getVerticalAdvance(), totalHeight);
+			totalWidth = max<int>(boxPair.boundingBox.getRightBound(), totalWidth);
+			totalHeight = max<int>(boxPair.rowStartPosition + getVerticalAdvance(), totalHeight);
 		}
 		
 		return Box2D(0, 0, totalWidth, totalHeight);
@@ -275,13 +199,13 @@ namespace smpl
         return {0.0f, 0.0f, 0.0f, 0.0f};
 	}
 
-	Box2D Font::getCaretBox(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t index)
+	Box2D Font::getCaretBox(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t index)
 	{
 		std::vector<FontCharBoxInfo> listStuff = getAllCharBoxes(textBridge, maxWidth, wrapMode);
 		return processCharBoxesForSelectIndex(listStuff, getVerticalAdvance(), index);
 	}
 
-	size_t Font::getSelectIndex(StringBridge textBridge, unsigned int maxWidth, char wrapMode, int x, int y)
+	size_t Font::getSelectIndex(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, int x, int y)
 	{
 		if(x < 0 || y < 0)
 			return SIZE_MAX;
@@ -314,7 +238,7 @@ namespace smpl
 	}
 
 	
-	size_t Font::moveSelectionUp(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
+	size_t Font::moveSelectionUp(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
 	{
 		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
 		Vec2f cursorPos = Vec2f();
@@ -337,7 +261,7 @@ namespace smpl
 		return newSelectIndex;
 	}
 
-	size_t Font::moveSelectionDown(StringBridge textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
+	size_t Font::moveSelectionDown(const StringBridge& textBridge, unsigned int maxWidth, char wrapMode, size_t startSelectIndex)
 	{
 		auto allBoxes = getAllCharBoxes(textBridge, maxWidth, wrapMode);
 		Vec2f cursorPos = Vec2f();
@@ -360,28 +284,9 @@ namespace smpl
 		return newSelectIndex;
 	}
 
-	void Font::addChar(FontCharInfo a)
+	void Font::addChar(const FontCharInfo& a)
 	{
-		charInfoList.push_back(a);
-		sorted = false;
-	}
-
-	void Font::sortList(bool insertionSort)
-	{
-		if(insertionSort)
-		{
-			sorted = true;
-			Sort::insertionSort<FontCharInfo>(charInfoList.data(), charInfoList.size(), [](FontCharInfo a, FontCharInfo b) -> bool{
-				return a.unicodeValue < b.unicodeValue;
-			});
-		}
-		else
-		{
-			sorted = true;
-			Sort::mergeSort<FontCharInfo>(charInfoList.data(), charInfoList.size(), [](FontCharInfo a, FontCharInfo b) -> bool{
-				return a.unicodeValue < b.unicodeValue;
-			});
-		}
+		charInfoSet.insert(a);
 	}
 
 } //NAMESPACE glib END

@@ -173,8 +173,8 @@ namespace smpl
 		bottomRight.x = baseBottomRight.x * getScale().x;
 		bottomRight.y = baseBottomRight.y * getScale().y;
 
-		topLeft += getPosition().toVec2f();
-		bottomRight += getPosition().toVec2f();
+		topLeft += getPosition().toVec2();
+		bottomRight += getPosition().toVec2();
 	}	
 
 	float Box2D::generateBoundingRadius() const
@@ -287,7 +287,7 @@ namespace smpl
 
 	float Ellipse::generateBoundingRadius() const
 	{
-		return MathExt::max(xRadius, yRadius);
+		return max(xRadius, yRadius);
 	}
 
 	#pragma endregion
@@ -378,11 +378,11 @@ namespace smpl
 		Vec3f rotatedP2 = rot*Vec3f(p2);
 
 		//Translate
-		p1 = (rotatedP1 + getPosition()).toVec2f();
-		p2 = (rotatedP2 + getPosition()).toVec2f();
+		p1 = (rotatedP1 + getPosition()).toVec2();
+		p2 = (rotatedP2 + getPosition()).toVec2();
 		
 		//Undo move to origin
-		Vec2f nMidPoint = getPosition().toVec2f() + Vec2f( midPoint.x*getScale().x, midPoint.y*getScale().y );
+		Vec2f nMidPoint = getPosition().toVec2() + Vec2f( midPoint.x*getScale().x, midPoint.y*getScale().y );
 
 		p1 += nMidPoint;
 		p2 += nMidPoint;
@@ -1052,7 +1052,7 @@ namespace smpl
 		Vec2f v1 = b.getVertex2() - b.getVertex1();
 		Vec2f v2 = b.getVertex3() - b.getVertex1();
 
-		Vec2f toPoint = a.getPosition().toVec2f() - b.getVertex1();
+		Vec2f toPoint = a.getPosition().toVec2() - b.getVertex1();
 		//v1*v2 = v1*toPoint + v2*tPoint
 
 		
@@ -1205,8 +1205,8 @@ namespace smpl
 			float yNeeded1 = bLine.solveForY(a.getLeftBound());
 			float yNeeded2 = bLine.solveForY(a.getRightBound());
 
-			float maY = MathExt::max(yNeeded1, yNeeded2);
-			float miY = MathExt::min(yNeeded1, yNeeded2);
+			float maY = max(yNeeded1, yNeeded2);
+			float miY = min(yNeeded1, yNeeded2);
 
 			maY = MathExt::clamp<float>(maY, bLine.getMinY(), bLine.getMaxY());
 			miY = MathExt::clamp<float>(miY, bLine.getMinY(), bLine.getMaxY());
@@ -1283,13 +1283,12 @@ namespace smpl
 			//possible collision.
 			//Find closest point within reason.
 			//actual closest point is described by this: -sin(t)*(sqr(ry) - sqr(rx)) = x*rx*tan(t) - y*ry
-			GeneralMathFunction f = GeneralMathFunction();
 			float rx = b.getXRadius();
 			float ry = b.getYRadius();
 			float x = toVec.x;
 			float y = toVec.y;
-
-			f.setFunction( [rx, ry, x, y](float t) ->float{
+			
+			GeneralMathFunction f = GeneralMathFunction([rx, ry, x, y](float t) ->float{
 				float val = -MathExt::sin(t)*(MathExt::sqr(ry) - MathExt::sqr(rx));
 				val +=  y*ry;
 				val -= (x*rx*MathExt::tan(t));
@@ -1387,7 +1386,7 @@ namespace smpl
 
 		Line lineArr[3] = {l1, l2, l3};
 
-		Vec2f circlePos = a.getPosition().toVec2f();
+		Vec2f circlePos = a.getPosition().toVec2();
 
 		//check if circle collides with lines in the triangle
 		for(int i=0; i<3; i++)
@@ -1753,7 +1752,7 @@ namespace smpl
 			return true;
 
 		//check if ellipse is inside triangle
-		p = Point2D( a.getPosition().toVec2f() );
+		p = Point2D( a.getPosition().toVec2() );
 		return collisionMethod( p, b );
 	}
 
@@ -1877,7 +1876,7 @@ namespace smpl
 		}
 
 		//check if circle is in the polygon
-		Point2D p = Point2D(b.getPosition().toVec2f());
+		Point2D p = Point2D(b.getPosition().toVec2());
 		return collisionMethod(p, b);
 	}
 
@@ -1894,7 +1893,7 @@ namespace smpl
 		}
 
 		//check if ellipse is in the polygon
-		Point2D p = Point2D(b.getPosition().toVec2f());
+		Point2D p = Point2D(b.getPosition().toVec2());
 		return collisionMethod(p, b);
 	}
 
@@ -1937,15 +1936,15 @@ namespace smpl
 		for(Vec2f v : points1)
 		{
 			float projection = v.project(axis);
-			minAVal = MathExt::min(projection, minAVal);
-			maxAVal = MathExt::max(projection, maxAVal);
+			minAVal = min(projection, minAVal);
+			maxAVal = max(projection, maxAVal);
 		}
 		
 		for(Vec2f v : points2)
 		{
 			float projection = v.project(axis);
-			minBVal = MathExt::min(projection, minBVal);
-			maxBVal = MathExt::max(projection, maxBVal);
+			minBVal = min(projection, minBVal);
+			maxBVal = max(projection, maxBVal);
 		}
 
 		float overlapVal1 = maxAVal - minBVal;
@@ -1964,15 +1963,15 @@ namespace smpl
 		for(Vec3f v : points1)
 		{
 			float projection = v.project(axis);
-			minAVal = MathExt::min(projection, minAVal);
-			maxAVal = MathExt::max(projection, maxAVal);
+			minAVal = min(projection, minAVal);
+			maxAVal = max(projection, maxAVal);
 		}
 		
 		for(Vec3f v : points2)
 		{
 			float projection = v.project(axis);
-			minBVal = MathExt::min(projection, minBVal);
-			maxBVal = MathExt::max(projection, maxBVal);
+			minBVal = min(projection, minBVal);
+			maxBVal = max(projection, maxBVal);
 		}
 
 		float overlapVal1 = maxAVal - minBVal;

@@ -16,67 +16,60 @@ namespace smpl
 		//invalid otherwise and will morph to the image it will be drawn upon.
 	}
 
-	VectorGraphic::VectorGraphic(const VectorGraphic& c)
+	
+	VectorGraphic::VectorGraphic(const VectorGraphic& other)
 	{
-		copy(c);
-	}
-
-	void VectorGraphic::operator=(const VectorGraphic& c)
-	{
-		copy(c);
-	}
-
-	void VectorGraphic::copy(const VectorGraphic& c)
-	{
-		this->width = c.width;
-		this->height = c.height;
-
-		for(size_t i=0; i<c.shapes.size(); i++)
+		shapes = std::vector<VectorShape*>(other.shapes.size());
+		for(size_t i=0; i<other.shapes.size(); i++)
 		{
-			if(c.shapes[i]->getClass() == TypeInfo::get<VectorRectangle>())
-			{
-				//rectangle
-				VectorRectangle* g = new VectorRectangle(*(VectorRectangle*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorLine>())
-			{
-				//line
-				VectorLine* g = new VectorLine(*(VectorLine*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorCircle>())
-			{
-				//circle
-				VectorCircle* g = new VectorCircle(*(VectorCircle*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorEllipse>())
-			{
-				//ellipse
-				VectorEllipse* g = new VectorEllipse(*(VectorEllipse*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorPolygon>())
-			{
-				//polygon
-				VectorPolygon* g = new VectorPolygon(*(VectorPolygon*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorPolyline>())
-			{
-				//polyline
-				VectorPolyline* g = new VectorPolyline(*(VectorPolyline*)c.shapes[i]);
-				shapes.push_back(g);
-			}
-			else if(c.shapes[i]->getClass() == TypeInfo::get<VectorPath>())
-			{
-				//path
-				VectorPath* g = new VectorPath(*(VectorPath*)c.shapes[i]);
-				shapes.push_back(g);
-			}
+			shapes[i] = VectorShape::createNewFromVectorShape(*other.shapes[i]);
 		}
+		width = other.width;
+		height = other.height;
+
+		//transforms
+		transform = other.transform;
+		viewBox = other.viewBox;
 	}
+	VectorGraphic& VectorGraphic::operator=(const VectorGraphic& other)
+	{
+		shapes = std::vector<VectorShape*>(other.shapes.size());
+		for(size_t i=0; i<other.shapes.size(); i++)
+		{
+			shapes[i] = VectorShape::createNewFromVectorShape(*other.shapes[i]);
+		}
+		width = other.width;
+		height = other.height;
+
+		//transforms
+		transform = other.transform;
+		viewBox = other.viewBox;
+
+		return *this;
+	}
+
+	VectorGraphic::VectorGraphic(VectorGraphic&& other) noexcept
+	{
+		shapes = std::move(other.shapes);
+		width = std::move(other.width);
+		height = std::move(other.height);
+
+		//transforms
+		transform = std::move(other.transform);
+		viewBox = std::move(other.viewBox);
+	}
+	VectorGraphic& VectorGraphic::operator=(VectorGraphic&& other) noexcept
+	{
+		shapes = std::move(other.shapes);
+		width = std::move(other.width);
+		height = std::move(other.height);
+
+		//transforms
+		transform = std::move(other.transform);
+		viewBox = std::move(other.viewBox);
+		return *this;
+	}
+
 	VectorGraphic::~VectorGraphic()
 	{
 		clearShapes();
@@ -98,6 +91,31 @@ namespace smpl
 	{
 		return shapes.size();
 	}
+	
+	std::pair<Vec2f, Vec2f> VectorGraphic::getBoundingBox()
+	{
+		Mat3f globalTransform = transform*viewBox;
+		Mat3f temp = Mat3f::getIdentity();
+		Mat3f finalTransform;
+		Vec2f minPoint = Vec2f(INFINITY, INFINITY);
+		Vec2f maxPoint = Vec2f(-INFINITY, -INFINITY);
+		
+		for(size_t i=0; i<shapes.size(); i++)
+		{
+			temp = shapes[i]->getTransform();
+			finalTransform = globalTransform * temp;
+
+			shapes[i]->setTransform(finalTransform);
+			
+			auto newBoundingPoints = shapes[i]->getBoundingBox();
+			minPoint = min(minPoint, newBoundingPoints.first);
+			maxPoint = max(maxPoint, newBoundingPoints.second);
+			
+			shapes[i]->setTransform(temp);
+		}
+
+		return {minPoint, maxPoint};
+	}
 
 	void VectorGraphic::clearShapes()
 	{
@@ -112,7 +130,7 @@ namespace smpl
 	{
 		if(buffer!=nullptr)
 		{
-			Mat3f globalTransform = viewBox * transform;
+			Mat3f globalTransform = transform*viewBox;
 			Mat3f temp = Mat3f::getIdentity();
 			Mat3f finalTransform;
 
@@ -163,12 +181,22 @@ namespace smpl
 		return viewBox;
 	}
 
-	int VectorGraphic::getWidth()
+	void VectorGraphic::setWidth(uint32_t w)
+	{
+		width = w;
+	}
+
+	uint32_t VectorGraphic::getWidth()
 	{
 		return width;
 	}
 
-	int VectorGraphic::getHeight()
+	void VectorGraphic::setHeight(uint32_t h)
+	{
+		height = h;
+	}
+	
+	uint32_t VectorGraphic::getHeight()
 	{
 		return height;
 	}
@@ -253,21 +281,19 @@ namespace smpl
 					if(this->height == 0)
 						height = MathExt::abs(tempHeight);
 					
-					double xScale = (double)this->width / tempWidth;
-					double yScale = (double)this->height / tempHeight;
-
-					viewBox = MathExt::scale2D(xScale, yScale) * MathExt::translation2D(-minX, -minY);
+					viewBox = MathExt::translation2D(minX, minY);
 				}
 			}
 
-			if(height>0 && width>0)
-			{
+			//realistically you need the width and height but it should be fine. Can calculate afterwards
+			// if(height>0 && width>0)
+			// {
 				
-			}
-			else
-			{
-				return false;
-			}
+			// }
+			// else
+			// {
+			// 	return false;
+			// }
 			
 			loadNode(parentNode);
 		}
@@ -350,6 +376,7 @@ namespace smpl
 			if(shape!=nullptr)
 			{
 				loadTransforms(childNode, shape, groupPointer);
+				shape->setTransform(shape->getTransform()*viewBox);
 				this->addShape(shape);
 			}
 		}
@@ -891,7 +918,7 @@ namespace smpl
 		}
 
 		auto attrib = node->getAttribute("d");
-		if(attrib != node->getRawAttributes().end())
+		if(attrib == node->getRawAttributes().end())
 			return; //invalid node
 		
 		if(!attrib->first.empty())

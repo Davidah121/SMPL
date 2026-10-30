@@ -8,6 +8,39 @@ namespace smpl
     {
 
     }
+	
+	VectorSprite::VectorSprite(const VectorSprite& other)
+	{
+		transform = other.transform;
+		vectorGraphicList = std::vector<VectorGraphic*>(other.vectorGraphicList.size());
+		for(size_t i=0; i<vectorGraphicList.size(); i++)
+		{
+			vectorGraphicList[i] = new VectorGraphic(*other.vectorGraphicList[i]);
+		}
+	}
+	VectorSprite& VectorSprite::operator=(const VectorSprite& other)
+	{
+		transform = other.transform;
+		vectorGraphicList = std::vector<VectorGraphic*>(other.vectorGraphicList.size());
+		for(size_t i=0; i<vectorGraphicList.size(); i++)
+		{
+			vectorGraphicList[i] = new VectorGraphic(*other.vectorGraphicList[i]);
+		}
+
+		return *this;
+	}
+
+	VectorSprite::VectorSprite(VectorSprite&& other) noexcept
+	{
+		transform = std::move(other.transform);
+		vectorGraphicList = std::move(other.vectorGraphicList);
+	}
+	VectorSprite& VectorSprite::operator=(VectorSprite&& other) noexcept
+	{
+		transform = std::move(other.transform);
+		vectorGraphicList = std::move(other.vectorGraphicList);
+		return *this;
+	}
 
     VectorSprite::~VectorSprite()
     {

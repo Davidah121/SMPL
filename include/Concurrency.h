@@ -19,16 +19,17 @@
 #define __max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
-#ifndef LARGE_ENOUGH_CLAUSE
-#ifdef DEBUG
-    #define LARGE_ENOUGH_LIMIT 128
-#else
-    #define LARGE_ENOUGH_LIMIT 0x4000
+#ifndef OMP_THREAD_ADJUSTMENTS
+	#define OMP_THREAD_ADJUSTMENTS
+	#define OMP_LIGHT_TASK 0x100
+	#define OMP_MEDIUM_TASK 0x40
+	#define OMP_HEAVY_TASK 0x08
+	#define OMP_DESIRED_THREADS(problemSize, problemWeight) __min(MAX_THREADS_KNOWN, ((problemSize) / (problemWeight)))
 #endif
 #define MAX_THREADS_KNOWN std::thread::hardware_concurrency()
+#define SET_OMP_THREADS(num) omp_set_num_threads(num);
 #define RESET_LARGE_ENOUGH_CLAUSE() omp_set_num_threads(MAX_THREADS_KNOWN);
-#define LARGE_ENOUGH_CLAUSE(size) omp_set_num_threads(__min(MAX_THREADS_KNOWN, ((double)size / LARGE_ENOUGH_LIMIT)));
-#endif
+
 
 namespace smpl
 {
@@ -73,7 +74,7 @@ namespace smpl
 			isLocked = false;
             lockVar.unlock();
         }
-        bool tryLock()
+        bool try_lock()
         {
             return lockVar.try_lock();
         }

@@ -42,7 +42,7 @@
 			 * @return Image*
 			 * 		A nullptr is returned if no texture was found. Otherwise, a valid GLTexture* is returned.
 			 */
-			GLTexture* getTexture(int index);
+			SmartMemory<GLTexture> getTexture(const FontCharInfo& fci);
 
 			/**
 			 * @brief Gets the Model for the specified character.
@@ -54,18 +54,16 @@
 			 * 		The desired character.
 			 * @return GLModel* 
 			 */
-			GLModel* getModel(int index);
+			GLModel* getModel(const FontCharInfo& fci);
 			
 		private:
 
 			void convertBitmapFont(BitmapFont& p);
 			GLSprite img = GLSprite();
-			std::vector<GLModel*> models = std::vector<GLModel*>();
+			SimpleHashMap<size_t, GLModel*> models;
+			std::vector<size_t> imgPage;
 
-			std::vector<size_t> imgPage = std::vector<size_t>();
-
-		SERIALIZE_SUPER_CLASS(Font)
-		SERIALIZE_CLASS()
+			// std::vector<GLModel*> models = std::vector<GLModel*>();
 		};
 	}
 #endif

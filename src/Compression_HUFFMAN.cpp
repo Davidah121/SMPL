@@ -30,7 +30,6 @@ namespace smpl
 		}
 
 		BinarySet output = BinarySet();
-		output.setBitOrder(BinarySet::LMSB);
 
 		//First, build a huffmanTree.
 		//We have created a function to do this since it takes up
@@ -111,7 +110,6 @@ namespace smpl
 		}
 
 		BinarySet input = BinarySet();
-		input.setBitOrder(BinarySet::LMSB);
 		
 		//first, fill the BinarySet
 		input.setValues(data, size);

@@ -4,6 +4,7 @@
 #include "StringTools.h"
 #include "BezierCurve.h"
 #include "ColorNameConverter.h"
+#include "System.h"
 
 namespace smpl
 {
@@ -17,29 +18,6 @@ namespace smpl
 	{
 	}
 
-	VectorPath::VectorPath(const VectorPath& other) : VectorShape()
-	{
-		copy((VectorPath&)other);
-	}
-
-	void VectorPath::operator=(VectorPath& other)
-	{
-		copy(other);
-	}
-
-	void VectorPath::copy(VectorPath& other)
-	{
-		this->setFillColor( other.getFillColor() );
-		this->setStrokeColor( other.getStrokeColor() );
-		this->setFillMethod( other.getFillMethod() );
-		this->setStrokeWidth( other.getStrokeWidth() );
-		this->setTransform( other.getTransform() );
-		this->setLineCap( other.getLineCap() );
-		this->setLineJoin( other.getLineJoin() );
-
-		commands = other.commands;
-	}
-
 	VectorPath::~VectorPath()
 	{
 		clear();
@@ -47,12 +25,28 @@ namespace smpl
 
 	void VectorPath::draw(Image* img, int globalWidth, int globalHeight)
 	{
-		//copy to old vectorpath
+		// size_t t1=System::getCurrentTimeMicro();
+		applyTransform();
+		// size_t t2=System::getCurrentTimeMicro();
+		// StringTools::println("Time to applyTransform: %llu", t2-t1);
+		
+		// t1=System::getCurrentTimeMicro();
+		SimpleGraphics::setFillRule(SimpleGraphics::FILL_EVEN_ODD);
+		SimpleGraphics::setColor(getFillColor());
+		auto poly = toPolygon();
+		// t2=System::getCurrentTimeMicro();
+		// StringTools::println("Time to convert polygon: %llu", t2-t1);
+
+
+		// t1=System::getCurrentTimeMicro();
+		SimpleGraphics::drawPolygon(poly, img);
+		// t2=System::getCurrentTimeMicro();
+		// StringTools::println("Time to drawPolygon: %llu", t2-t1);
+		// StringTools::println("%.3f", toPolygon());
+		return;
+
 		surfImg = img;
 		count = 0;
-		VectorPath copyVal = VectorPath(*this);
-
-		// applyTransform();
 
 		Vec2f currentPos;
 		Vec2f extraPos;
@@ -73,69 +67,69 @@ namespace smpl
 		
 		PathScanLineInfo scanLineInfo = PathScanLineInfo(yDis);
 		
-		for(int i=0; i<commands.size(); i++)
+		for(int i=0; i<transformedCommands.size(); i++)
 		{
-			switch(commands[i].c)
+			switch(transformedCommands[i].c)
 			{
 				case 'M':
 					//no drawing
-					currentPos = commands[i].points[0];
+					currentPos = transformedCommands[i].points[0];
 					closeTo = currentPos;
 					break;
 				case 'm':
 					//no drawing
-					currentPos += commands[i].points[0];
+					currentPos += transformedCommands[i].points[0];
 					closeTo = currentPos;
 					break;
 				case 'L':
 					//record
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					currentPos = commands[i].points[0];
+					drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					currentPos = transformedCommands[i].points[0];
 					break;
 				case 'l':
 					//record
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					currentPos += commands[i].points[0];
+					drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					currentPos += transformedCommands[i].points[0];
 					break;
 				case 'H':
 					//no drawing
-					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-					currentPos.x = commands[i].points[0].x;
+					drawHorizontalTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					// drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLines, strokeScanLines, false);
+					currentPos.x = transformedCommands[i].points[0].x;
 					break;
 				case 'h':
 					//no drawing
-					drawHorizontalTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					// drawLineTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-					currentPos += commands[i].points[0];
+					drawHorizontalTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					// drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLines, strokeScanLines, true);
+					currentPos += transformedCommands[i].points[0];
 					break;
 				case 'V':
 					//record
-					//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, false);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					currentPos.y = commands[i].points[0].y;
+					//drawVerticalTo(currentPos, transformedCommands[i], minY, maxY, scanLines, strokeScanLines, false);
+					drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					currentPos.y = transformedCommands[i].points[0].y;
 					break;
 				case 'v':
 					//record
-					//drawVerticalTo(currentPos, commands[i], minY, maxY, scanLines, strokeScanLines, true);
-					drawLineTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					currentPos += commands[i].points[0];
+					//drawVerticalTo(currentPos, transformedCommands[i], minY, maxY, scanLines, strokeScanLines, true);
+					drawLineTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					currentPos += transformedCommands[i].points[0];
 					break;
 				case 'Q':
 					//record
-					drawQuadTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					extraPos = commands[i].points[0];
-					currentPos = commands[i].points[1];
+					drawQuadTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					extraPos = transformedCommands[i].points[0];
+					currentPos = transformedCommands[i].points[1];
 					break;
 				case 'q':
 					//record
-					drawQuadTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					extraPos = currentPos+commands[i].points[0];
-					currentPos += commands[i].points[1];
+					drawQuadTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					extraPos = currentPos+transformedCommands[i].points[0];
+					currentPos += transformedCommands[i].points[1];
 					break;
 				case 'T':
 					//record
-					if(commands[i-1].c == 'Q' || commands[i-1].c == 'q' || commands[i-1].c == 'T' || commands[i-1].c == 't')
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
 					{
 						extraPos = currentPos + (currentPos-extraPos);
 					}
@@ -143,12 +137,12 @@ namespace smpl
 					{
 						extraPos = currentPos;
 					}
-					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, false);
+					drawQuadShortTo(currentPos, extraPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
 
-					currentPos = commands[i].points[0];
+					currentPos = transformedCommands[i].points[0];
 					break;
 				case 't':
-					if(commands[i-1].c == 'Q' || commands[i-1].c == 'q' || commands[i-1].c == 'T' || commands[i-1].c == 't')
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
 					{
 						extraPos = currentPos + (currentPos-extraPos);
 					}
@@ -156,53 +150,53 @@ namespace smpl
 					{
 						extraPos = currentPos;
 					}
-					drawQuadShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, true);
+					drawQuadShortTo(currentPos, extraPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
 					
-					currentPos += commands[i].points[0];
+					currentPos += transformedCommands[i].points[0];
 					break;
 				case 'C':
 					//record
-					drawCubicTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					extraPos = commands[i].points[1];
-					currentPos = commands[i].points[2];
+					drawCubicTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					extraPos = transformedCommands[i].points[1];
+					currentPos = transformedCommands[i].points[2];
 					break;
 				case 'c':
 					//record
-					drawCubicTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					extraPos = currentPos + commands[i].points[1];
-					currentPos += commands[i].points[2];
+					drawCubicTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					extraPos = currentPos + transformedCommands[i].points[1];
+					currentPos += transformedCommands[i].points[2];
 					break;
 				case 'S':
 					//record, check previous index as well
-					if(commands[i-1].c == 'S' || commands[i-1].c == 's' || commands[i-1].c == 'C' || commands[i-1].c == 'c')
+					if(transformedCommands[i-1].c == 'S' || transformedCommands[i-1].c == 's' || transformedCommands[i-1].c == 'C' || transformedCommands[i-1].c == 'c')
 						extraPos = currentPos + (currentPos-extraPos);
 					else
 						extraPos = currentPos;
 
-					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, false);
-					extraPos = commands[i].points[0];
-					currentPos = commands[i].points[1];
+					drawCubicShortTo(currentPos, extraPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					extraPos = transformedCommands[i].points[0];
+					currentPos = transformedCommands[i].points[1];
 					break;
 				case 's':
 					//record, check previous index as well
-					if(commands[i-1].c == 'S' || commands[i-1].c == 's' || commands[i-1].c == 'C' || commands[i-1].c == 'c')
+					if(transformedCommands[i-1].c == 'S' || transformedCommands[i-1].c == 's' || transformedCommands[i-1].c == 'C' || transformedCommands[i-1].c == 'c')
 						extraPos = currentPos + (currentPos-extraPos);
 					else
 						extraPos = currentPos;
 						
-					drawCubicShortTo(currentPos, extraPos, commands[i], minY, maxY, scanLineInfo, true);
-					extraPos = currentPos + commands[i].points[0];
-					currentPos += commands[i].points[1];
+					drawCubicShortTo(currentPos, extraPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					extraPos = currentPos + transformedCommands[i].points[0];
+					currentPos += transformedCommands[i].points[1];
 					break;
 				case 'A':
 					//record. Also difficult
-					drawArcTo(currentPos, commands[i], minY, maxY, scanLineInfo, false);
-					currentPos = commands[i].points[2];
+					drawArcTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, false);
+					currentPos = transformedCommands[i].points[2];
 					break;
 				case 'a':
 					//record. Also difficult
-					drawArcTo(currentPos, commands[i], minY, maxY, scanLineInfo, true);
-					currentPos += commands[i].points[2];
+					drawArcTo(currentPos, transformedCommands[i], minY, maxY, scanLineInfo, true);
+					currentPos += transformedCommands[i].points[2];
 					break;
 				case 'Z':
 					//record
@@ -225,90 +219,29 @@ namespace smpl
 				//sort by xValue. Sort by end point or not
 				Sort::insertionSort<PathCriticalPoint>(scanLineInfo.scanLines[i].data(), scanLineInfo.scanLines[i].size(), [](PathCriticalPoint a, PathCriticalPoint b) -> bool {return a.xValue<b.xValue;});
 
-
 				std::vector<PathCriticalPoint> newScanLine = std::vector<PathCriticalPoint>();
-				//may need to insert a points to handle horizontal line cases
-				{
-					std::vector<PathCriticalPoint> tempLines;
-					int j=0;
-					while(j < scanLineInfo.scanLines[i].size())
-					{
-						if(j == scanLineInfo.scanLines[i].size()-1)
-						{
-							tempLines.push_back(scanLineInfo.scanLines[i][j]);
-							j++;
-							break;
-						}
-						
-						bool isConnected = false;
-						for(std::pair<double, double> p : scanLineInfo.horizontalLines[i])
-						{
-							if(p.first == scanLineInfo.scanLines[i][j].xValue && p.second == scanLineInfo.scanLines[i][j+1].xValue)
-							{
-								//this is part of a horizontal line. do extra stuff
-								isConnected = true;
-							}
-						}
-						
-						if(isConnected)
-						{
-							//do extra stuff
-							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j+1].direction)
-							{
-								tempLines.push_back(scanLineInfo.scanLines[i][j]);
-							}
-							j++;
-						}
-						else
-						{
-							//add single point
-							tempLines.push_back(scanLineInfo.scanLines[i][j]);
-							j++;
-						}
-					}
-					scanLineInfo.scanLines[i] = tempLines;
-				}
-
+				std::vector<PathCriticalPoint>& processingLine = scanLineInfo.scanLines[i]; //not a copy. A reference
 				
-				//rule, can not be the same if you are filling to it.
-				//different for even-odd and non-zero
-
 				if(getFillMethod() == SimpleGraphics::FILL_EVEN_ODD)
 				{
-					for(int j=1; j<scanLineInfo.scanLines[i].size(); j+=2)
+					//assuming everything was already calculated, this should be easy
+					for(PathCriticalPoint& pcp : processingLine)
 					{
-						//check if its apart of a horizontal line. IE, both xValues at this y value are apart of the points exactly
-						if(scanLineInfo.scanLines[i][j].xValue != scanLineInfo.scanLines[i][j-1].xValue)
-						{
-							newScanLine.push_back(scanLineInfo.scanLines[i][j-1]);
-							newScanLine.push_back(scanLineInfo.scanLines[i][j]);
-						}
-						else
-						{
-							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j-1].direction)
-							{
-								newScanLine.push_back(scanLineInfo.scanLines[i][j-1]);
-								newScanLine.push_back(scanLineInfo.scanLines[i][j]);
-							}
-						}
+						newScanLine.push_back(pcp);
+						if(pcp.onVertex && (pcp.v1Above == pcp.v2Above))
+							newScanLine.push_back(pcp);
 					}
 				}
 				else
 				{
-					newScanLine.push_back(scanLineInfo.scanLines[i][0]);
-					for(int j=1; j<scanLineInfo.scanLines[i].size(); j++)
+					int counter = 0;
+					newScanLine.push_back(processingLine.front());
+					counter += (processingLine.front().ySlopeDirection) ? 1 : -1;
+					for(size_t j=1; j<processingLine.size(); j++)
 					{
-						if(scanLineInfo.scanLines[i][j].xValue != scanLineInfo.scanLines[i][j-1].xValue)
-						{
-							newScanLine.push_back(scanLineInfo.scanLines[i][j]);
-						}
-						else
-						{
-							if(scanLineInfo.scanLines[i][j].direction != scanLineInfo.scanLines[i][j-1].direction)
-							{
-								newScanLine.push_back(scanLineInfo.scanLines[i][j]);
-							}
-						}
+						counter += (processingLine[j].ySlopeDirection) ? 1 : -1;
+						if(counter == 0)
+							newScanLine.push_back(processingLine[j]);
 					}
 				}
 
@@ -316,72 +249,28 @@ namespace smpl
 			}
 		}
 
+		//Regardless of render type, grab 2 values and fill between them.
 		
-		if(getFillMethod()==SimpleGraphics::FILL_EVEN_ODD)
+		// LARGE_ENOUGH_CLAUSE(yDis)
+		// #pragma omp parallel for
+		for(size_t j=0; j<yDis; j++)
 		{
-			//even-odd rule. Fill between even to odd indicies
-			//not odd to even indicies
-			LARGE_ENOUGH_CLAUSE(yDis)
-			#pragma omp parallel for
-			for(int j=0; j<yDis; j++)
+			size_t actualSize = scanLineInfo.scanLines[j].size();
+			if(actualSize%2 == 1)
 			{
-				int actualSize = scanLineInfo.scanLines[j].size();
-				if(actualSize%2 == 1)
-				{
-					actualSize-=2;
-				}
-				else
-				{
-					actualSize-=1;
-				}
-				
-
-				for(int i=0; i<actualSize; i+=2)
-				{
-					//fill between spots
-					double fracStartX, fracEndX;
-					int startX = MathExt::floor(scanLineInfo.scanLines[j][i].xValue);
-					int endX = MathExt::ceil(scanLineInfo.scanLines[j][i+1].xValue);
-					SIMD_U32 simdColor = getFillColor().toUInt();
-					SimpleGraphics::fillBetween(simdColor, startX, endX, j+minY, surfImg);
-				}
+				actualSize-=1;
 			}
-			RESET_LARGE_ENOUGH_CLAUSE()
-		}
-		else
-		{
-			//non-zero rule. Fill when positive only. Not when zero or
-			//less.
-			LARGE_ENOUGH_CLAUSE(yDis)
-			#pragma omp parallel for
-			for(int j=0; j<yDis; j++)
+			
+			for(size_t i=0; i<actualSize; i+=2)
 			{
-				int passCounter = 0;
-				for(int i=0; i<scanLineInfo.scanLines[j].size()-1; i++)
-				{
-					//fill between spots
-					int startX = MathExt::floor(scanLineInfo.scanLines[j][i].xValue);
-					int endX = MathExt::ceil(scanLineInfo.scanLines[j][i+1].xValue);
-					if(scanLineInfo.scanLines[j][i].direction.y > 0)
-					{
-						//positive y direction
-						passCounter++;
-					}
-					else
-					{
-						//negative y direction
-						passCounter--;
-					}
-					
-					if(passCounter!=0)
-					{
-						SIMD_U32 simdColor = getFillColor().toUInt();
-						SimpleGraphics::fillBetween(simdColor, startX, endX, j+minY, surfImg);
-					}
-				}
+				//fill between spots
+				int startX = MathExt::floor(scanLineInfo.scanLines[j][i].xValue);
+				int endX = MathExt::ceil(scanLineInfo.scanLines[j][i+1].xValue);
+				SIMD_U32 simdColor = getFillColor().toUInt();
+				SimpleGraphics::fillBetween(simdColor, startX, endX, j+minY, surfImg);
 			}
-			RESET_LARGE_ENOUGH_CLAUSE()
 		}
+		// RESET_LARGE_ENOUGH_CLAUSE()
 
 		//strokes
 		/*
@@ -434,7 +323,6 @@ namespace smpl
 			
 		}
 		*/
-		copy(copyVal);
 	}
 
 	void VectorPath::drawStroke(Image* buffer, int globalWidth, int globalHeight)
@@ -455,27 +343,31 @@ namespace smpl
 		{
 			b.addPoint(command.points[0]);
 
-			actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, command.points[0].y));
-			actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, command.points[0].y));
+			actualMinY = (int)MathExt::floor(min( currentPos.y, command.points[0].y));
+			actualMaxY = (int)MathExt::ceil(max( currentPos.y, command.points[0].y));
 		}
 		else
 		{
 			b.addPoint(currentPos + command.points[0]);
 
-			actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, currentPos.y + command.points[0].y));
-			actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, currentPos.y + command.points[0].y));
+			actualMinY = (int)MathExt::floor(min( currentPos.y, currentPos.y + command.points[0].y));
+			actualMaxY = (int)MathExt::ceil(max( currentPos.y, currentPos.y + command.points[0].y));
 		}
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
+
+		//tricky part here, don't add the first vertex or last one just yet. adding duplicates is not ideal so don't do that if you can avoid it.
+		//if its at the vertex, look at the previous point added and if its the same, note the location of the next vertex (specifically if its above or below the scanline)
+		//if it doesn't exist, add it and mark v1Above accordingly
 
 		if(actualMaxY == actualMinY)
 		{
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(1).x);
-			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(1).x);
+			double minX = min(b.getPoint(0).x, b.getPoint(1).x);
+			double maxX = max(b.getPoint(0).x, b.getPoint(1).x);
 			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
@@ -485,11 +377,37 @@ namespace smpl
 			std::vector<double> times = b.findTimeForY(y, true);
 			for(int t=0; t<times.size(); t++)
 			{
+				bool onVertex = false;
+				bool v1Above = false;
 				//because it is only 2 points, we can use get simple derivative and it will be accurate.
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
-				
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+
+				if(times[t] == 0 || times[t] == 1)
+				{
+					//its on the vertex
+					if(!scanLineInfo.scanLines[y].empty())
+					{
+						if(scanLineInfo.scanLines[y].back().xValue == v.x)
+						{
+							//not the first one. Amend the last one
+							if(times[t] == 0)
+								scanLineInfo.scanLines[y].back().v2Above = b.getPoint(1).y > y;
+							else
+								scanLineInfo.scanLines[y].back().v2Above = b.getPoint(0).y > y;
+							continue;
+						}
+						else
+						{
+							//the first one
+							if(times[t] == 0)
+								v1Above = b.getPoint(1).y > y;
+							else
+								v1Above = b.getPoint(0).y > y;
+						}
+					}
+				}
+				scanLineInfo.scanLines[y].push_back({v.x, dir.y > 0, onVertex, v1Above, false});
 			}
 		}
 	}
@@ -499,51 +417,54 @@ namespace smpl
 		int actualMinY, actualMaxY;
 		if(!relative)
 		{
-			actualMinY = (int)MathExt::ceil(MathExt::min( currentPos.y, command.points[0].y));
-			actualMaxY = (int)MathExt::floor(MathExt::max( currentPos.y, command.points[0].y));
+			actualMinY = (int)MathExt::ceil(min( currentPos.y, command.points[0].y));
+			actualMaxY = (int)MathExt::floor(max( currentPos.y, command.points[0].y));
 		}
 		else
 		{
-			actualMinY = (int)MathExt::ceil(MathExt::min( currentPos.y, currentPos.y+command.points[0].y));
-			actualMaxY = (int)MathExt::floor(MathExt::max( currentPos.y, currentPos.y+command.points[0].y));
+			actualMinY = (int)MathExt::ceil(min( currentPos.y, currentPos.y+command.points[0].y));
+			actualMaxY = (int)MathExt::floor(max( currentPos.y, currentPos.y+command.points[0].y));
 		}
 		
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
 		Vec2f dir = (command.points[0].y >= 0) ? Vec2f(0,1) : Vec2f(0,-1);
 
-		if(!relative)
-		{
-			for(int y=actualMinY; y<=actualMaxY; y++)
-			{
-				scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
-			}
-		}
-		else
-		{
-			for(int y=actualMinY; y<=actualMaxY; y++)
-			{
-				scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
-			}
-		}
+		// if(!relative)
+		// {
+		// 	for(int y=actualMinY; y<=actualMaxY; y++)
+		// 	{
+		// 		scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
+		// 	}
+		// }
+		// else
+		// {
+		// 	for(int y=actualMinY; y<=actualMaxY; y++)
+		// 	{
+		// 		scanLineInfo.scanLines[y].push_back({currentPos.x, dir});
+		// 	}
+		// }
 		
 	}
 
 	void VectorPath::drawHorizontalTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
 	{
-		int yVal = (int)MathExt::floor(currentPos.y);
-		double minX, maxX;
-		if(!relative)
+		if(currentPos.y >= minY && currentPos.y <= maxY)
 		{
-			minX = MathExt::min(currentPos.x, command.points[0].x);
-			maxX = MathExt::max(currentPos.x, command.points[0].x);
+			int yVal = (int)MathExt::floor(currentPos.y);
+			double minX, maxX;
+			if(!relative)
+			{
+				minX = min(currentPos.x, command.points[0].x);
+				maxX = max(currentPos.x, command.points[0].x);
+			}
+			else
+			{
+				minX = min(currentPos.x, currentPos.x + command.points[0].x);
+				maxX = max(currentPos.x, currentPos.x + command.points[0].x);
+			}
+			scanLineInfo.horizontalLines[yVal].push_back({minX, maxX});
 		}
-		else
-		{
-			minX = MathExt::min(currentPos.x, currentPos.x + command.points[0].x);
-			maxX = MathExt::max(currentPos.x, currentPos.x + command.points[0].x);
-		}
-		scanLineInfo.horizontalLines[yVal].push_back({minX, maxX});
 	}
 
 	void VectorPath::drawQuadTo(Vec2f currentPos, PathCommand command, int minY, int maxY, PathScanLineInfo& scanLineInfo, bool relative)
@@ -591,8 +512,8 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(2).x);
-			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(2).x);
+			double minX = min(b.getPoint(0).x, b.getPoint(2).x);
+			double maxX = max(b.getPoint(0).x, b.getPoint(2).x);
 			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
@@ -605,7 +526,7 @@ namespace smpl
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+				// scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
@@ -646,8 +567,8 @@ namespace smpl
 		if(actualMaxY == actualMinY)
 		{
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(2).x);
-			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(2).x);
+			double minX = min(b.getPoint(0).x, b.getPoint(2).x);
+			double maxX = max(b.getPoint(0).x, b.getPoint(2).x);
 			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
@@ -660,7 +581,7 @@ namespace smpl
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+				// scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
@@ -710,8 +631,8 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(3).x);
-			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(3).x);
+			double minX = min(b.getPoint(0).x, b.getPoint(3).x);
+			double maxX = max(b.getPoint(0).x, b.getPoint(3).x);
 			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
@@ -724,7 +645,7 @@ namespace smpl
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+				// scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
@@ -771,8 +692,8 @@ namespace smpl
 			//horizontal line
 			//because it is only 2 points, we can use get simple derivative and it will be accurate.
 			Vec2f dir = b.getSimpleDerivativeAt(0);
-			double minX = MathExt::min(b.getPoint(0).x, b.getPoint(3).x);
-			double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(3).x);
+			double minX = min(b.getPoint(0).x, b.getPoint(3).x);
+			double maxX = max(b.getPoint(0).x, b.getPoint(3).x);
 			scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			return;
 		}
@@ -785,7 +706,7 @@ namespace smpl
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+				// scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
@@ -991,8 +912,8 @@ namespace smpl
 				//fill from min to max
 				//deal with direction and large arc
 
-				double minX = finalArcPosition.x + MathExt::min(solutions[0], solutions[1]);
-				double maxX = finalArcPosition.x + MathExt::max(solutions[0], solutions[1]);
+				double minX = finalArcPosition.x + min(solutions[0], solutions[1]);
+				double maxX = finalArcPosition.x + max(solutions[0], solutions[1]);
 				
 				bool isMinXSlopePos = false;
 				bool isMaxXSlopePos = false;
@@ -1003,41 +924,41 @@ namespace smpl
 				
 				std::vector<double> times = separatingLine.findTimeForY(y, true);
 
-				//TODO: FIX DIRECTION LATER
-				if(times.size()>0)
-				{
-					double solveX = separatingLine.getFunctionAt(times[0]).x;
-					if(!minSide)
-					{
-						if(solveX > minX)
-						{
-							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
-						}
-						else
-						{
-							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
-							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
-						}
-					}
-					else
-					{
-						if(solveX < maxX)
-						{
-							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
-						}
-						else
-						{
-							scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
-							scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
-						}
-					}
+				// //TODO: FIX DIRECTION LATER
+				// if(times.size()>0)
+				// {
+				// 	double solveX = separatingLine.getFunctionAt(times[0]).x;
+				// 	if(!minSide)
+				// 	{
+				// 		if(solveX > minX)
+				// 		{
+				// 			scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
+				// 		}
+				// 		else
+				// 		{
+				// 			scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+				// 			scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
+				// 		}
+				// 	}
+				// 	else
+				// 	{
+				// 		if(solveX < maxX)
+				// 		{
+				// 			scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+				// 		}
+				// 		else
+				// 		{
+				// 			scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+				// 			scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
+				// 		}
+				// 	}
 					
-				}
-				else
-				{
-					scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
-					scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
-				}
+				// }
+				// else
+				// {
+				// 	scanLineInfo.scanLines[y].push_back({minX, Vec2f(0,-1)});
+				// 	scanLineInfo.scanLines[y].push_back({maxX, Vec2f(0,1)});
+				// }
 			}
 			
 		}				
@@ -1049,8 +970,8 @@ namespace smpl
 		b.addPoint(currentPos);
 		b.addPoint(closePoint);
 
-		int actualMinY = (int)MathExt::floor(MathExt::min( currentPos.y, closePoint.y));
-		int actualMaxY = (int)MathExt::ceil(MathExt::max( currentPos.y, closePoint.y));
+		int actualMinY = (int)MathExt::floor(min( currentPos.y, closePoint.y));
+		int actualMaxY = (int)MathExt::ceil(max( currentPos.y, closePoint.y));
 
 		actualMinY = MathExt::clamp((int)actualMinY, minY, maxY);
 		actualMaxY = MathExt::clamp((int)actualMaxY, minY, maxY);
@@ -1064,8 +985,8 @@ namespace smpl
 			if(b.getPoint(0) != b.getPoint(1))
 			{
 				Vec2f dir = b.getSimpleDerivativeAt(0);
-				double minX = MathExt::min(b.getPoint(0).x, b.getPoint(1).x);
-				double maxX = MathExt::max(b.getPoint(0).x, b.getPoint(1).x);
+				double minX = min(b.getPoint(0).x, b.getPoint(1).x);
+				double maxX = max(b.getPoint(0).x, b.getPoint(1).x);
 				scanLineInfo.horizontalLines[actualMinY].push_back({minX, maxX});
 			}
 			return;
@@ -1079,13 +1000,171 @@ namespace smpl
 				Vec2f v = b.getFunctionAt(times[t]);
 				Vec2f dir = b.getDerivativeAt(times[t]);
 				
-				scanLineInfo.scanLines[y].push_back({v.x, dir});
+				// scanLineInfo.scanLines[y].push_back({v.x, dir});
 			}
 		}
 	}
 		
 
 	#pragma endregion
+
+	
+	std::pair<Vec2f, Vec2f> VectorPath::getBoundingBox()
+	{
+		applyTransform();
+		
+		Vec2f minPoint = Vec2f(INFINITY, INFINITY);
+		Vec2f maxPoint = Vec2f(-INFINITY, -INFINITY);
+
+		Vec2f currentPos;
+		Vec2f extraPos;
+		Vec2f closeTo;
+		bool endOfCommands = false;
+		bool skipAdd = false;
+		bool closed = false;
+		for(int i=0; i<transformedCommands.size(); i++)
+		{
+			switch(transformedCommands[i].c)
+			{
+				case 'M':
+					//no drawing
+					currentPos = transformedCommands[i].points[0];
+					closeTo = currentPos;
+					break;
+				case 'm':
+					//no drawing
+					currentPos += transformedCommands[i].points[0];
+					closeTo = currentPos;
+					break;
+				case 'L':
+					//record
+					currentPos = transformedCommands[i].points[0];
+					break;
+				case 'l':
+					//record
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'H':
+					//no drawing
+					currentPos.x = transformedCommands[i].points[0].x;
+					break;
+				case 'h':
+					//no drawing
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'V':
+					//record
+					currentPos.y = transformedCommands[i].points[0].y;
+					break;
+				case 'v':
+					//record
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'Q':
+					//record
+					extraPos = transformedCommands[i].points[0];
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos = transformedCommands[i].points[1];
+					break;
+				case 'q':
+					//record
+					extraPos = currentPos + transformedCommands[i].points[0];
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos += transformedCommands[i].points[1];
+					break;
+				case 'T':
+					//record
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
+					{
+						extraPos = currentPos + (currentPos-extraPos);
+					}
+					else
+					{
+						extraPos = currentPos;
+					}
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos = transformedCommands[i].points[0];
+					break;
+				case 't':
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
+					{
+						extraPos = currentPos + (currentPos-extraPos);
+					}
+					else
+					{
+						extraPos = currentPos;
+					}
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'C':
+					//record
+					minPoint = min(minPoint, transformedCommands[i].points[0]);
+					maxPoint = max(maxPoint, transformedCommands[i].points[0]);
+
+					extraPos = transformedCommands[i].points[1];
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos = transformedCommands[i].points[2];
+					break;
+				case 'c':
+					//record
+					minPoint = min(minPoint, currentPos + transformedCommands[i].points[0]);
+					maxPoint = max(maxPoint, currentPos + transformedCommands[i].points[0]);
+
+					extraPos = currentPos + transformedCommands[i].points[1];
+					minPoint = min(minPoint, extraPos);
+					maxPoint = max(maxPoint, extraPos);
+
+					currentPos += transformedCommands[i].points[2];
+					break;
+				case 'S':
+					//record, check previous index as well
+					currentPos = transformedCommands[i].points[1];
+					break;
+				case 's':
+					//record, check previous index as well
+					currentPos += transformedCommands[i].points[1];
+					break;
+				case 'A':
+					//record. Also difficult
+					currentPos = transformedCommands[i].points[2];
+					break;
+				case 'a':
+					//record. Also difficult
+					currentPos += transformedCommands[i].points[2];
+					break;
+				case 'Z':
+					//record
+					skipAdd = true;
+					currentPos = closeTo;
+					closed = true;
+					break;
+				default:
+					endOfCommands=true;
+					break;
+			}
+
+			minPoint = min(minPoint, currentPos);
+			maxPoint = max(maxPoint, currentPos);
+			
+			closed = false;
+			skipAdd = false;
+			if(endOfCommands)
+				break;
+		}
+
+		return {minPoint, maxPoint};
+	}
 
 	void VectorPath::addMoveTo(double x, double y)
 	{
@@ -1263,11 +1342,175 @@ namespace smpl
 	void VectorPath::clear()
 	{
 		commands.clear();
+		transformedCommands.clear();
 	}
 
 	int VectorPath::size()
 	{
 		return commands.size();
+	}
+	
+	std::vector<std::vector<Vec2f>> VectorPath::toPolygon()
+	{
+		applyTransform();
+		std::vector<std::vector<Vec2f>> result;
+		std::vector<Vec2f> temp;
+		Vec2f currentPos;
+		Vec2f extraPos;
+		Vec2f closeTo;
+		bool endOfCommands = false;
+		bool skipAdd = false;
+		bool closed = false;
+		for(int i=0; i<transformedCommands.size(); i++)
+		{
+			switch(transformedCommands[i].c)
+			{
+				case 'M':
+					//no drawing
+					currentPos = transformedCommands[i].points[0];
+					closeTo = currentPos;
+					if(i > 0)
+						if(transformedCommands[i-1].c == 'M' || transformedCommands[i-1].c == 'm')
+							temp.pop_back();
+					break;
+				case 'm':
+					//no drawing
+					currentPos += transformedCommands[i].points[0];
+					closeTo = currentPos;
+					if(i > 0)
+						if(transformedCommands[i-1].c == 'M' || transformedCommands[i-1].c == 'm')
+							temp.pop_back();
+					break;
+				case 'L':
+					//record
+					currentPos = transformedCommands[i].points[0];
+					break;
+				case 'l':
+					//record
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'H':
+					//no drawing
+					currentPos.x = transformedCommands[i].points[0].x;
+					break;
+				case 'h':
+					//no drawing
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'V':
+					//record
+					currentPos.y = transformedCommands[i].points[0].y;
+					break;
+				case 'v':
+					//record
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'Q':
+					//record
+					temp.push_back(transformedCommands[i].points[0]);
+					extraPos = transformedCommands[i].points[0];
+					currentPos = transformedCommands[i].points[1];
+					break;
+				case 'q':
+					//record
+					temp.push_back(currentPos + transformedCommands[i].points[0]);
+					extraPos = currentPos + transformedCommands[i].points[0];
+					currentPos += transformedCommands[i].points[1];
+					break;
+				case 'T':
+					//record
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
+					{
+						extraPos = currentPos + (currentPos-extraPos);
+					}
+					else
+					{
+						extraPos = currentPos;
+					}
+						temp.push_back(extraPos);
+					currentPos = transformedCommands[i].points[0];
+					break;
+				case 't':
+					if(transformedCommands[i-1].c == 'Q' || transformedCommands[i-1].c == 'q' || transformedCommands[i-1].c == 'T' || transformedCommands[i-1].c == 't')
+					{
+						extraPos = currentPos + (currentPos-extraPos);
+					}
+					else
+					{
+						extraPos = currentPos;
+					}
+						temp.push_back(extraPos);
+					currentPos += transformedCommands[i].points[0];
+					break;
+				case 'C':
+					//record
+					temp.push_back(transformedCommands[i].points[0]);
+					temp.push_back(transformedCommands[i].points[1]);
+					extraPos = transformedCommands[i].points[1];
+					currentPos = transformedCommands[i].points[2];
+					break;
+				case 'c':
+					//record
+					temp.push_back(currentPos + transformedCommands[i].points[0]);
+					temp.push_back(currentPos + transformedCommands[i].points[1]);
+					extraPos = currentPos + transformedCommands[i].points[1];
+					currentPos += transformedCommands[i].points[2];
+					break;
+				case 'S':
+					//record, check previous index as well
+					currentPos = transformedCommands[i].points[1];
+					break;
+				case 's':
+					//record, check previous index as well
+					currentPos += transformedCommands[i].points[1];
+					break;
+				case 'A':
+					//record. Also difficult
+					currentPos = transformedCommands[i].points[2];
+					break;
+				case 'a':
+					//record. Also difficult
+					currentPos += transformedCommands[i].points[2];
+					break;
+				case 'Z':
+					//record
+					// if(closeTo.x == currentPos.x && currentPos.y == closeTo.y)
+					if(currentPos == closeTo)
+					{
+						//can remove the last point actually
+						temp.pop_back();
+					}
+					skipAdd = true;
+					currentPos = closeTo;
+					closed = true;
+					break;
+				default:
+					endOfCommands=true;
+					break;
+			}
+			if(!skipAdd)
+				temp.push_back(currentPos);
+			
+			if(closed)
+			{
+				if(!temp.empty())
+				{
+					result.push_back(temp);
+					temp.clear();
+				}
+			}
+			
+			closed = false;
+			skipAdd = false;
+			if(endOfCommands)
+				break;
+		}
+
+		//gather remaining points that didn't end with a close if that happens
+		if(!temp.empty())
+			result.push_back(temp);
+
+		return result;
 	}
 
 	std::vector<Vec2f> VectorPath::getArcStuff(Vec2f radi, double angle, Vec2f p1, Vec2f p2)
@@ -1383,15 +1626,17 @@ namespace smpl
 
 	void VectorPath::applyTransform()
 	{
+		transformedCommands = std::vector<PathCommand>();
 		Vec2f currentPos;
-		for(PathCommand& com : commands)
+
+		for(PathCommand& oldCommand : commands)
 		{
+			PathCommand com = oldCommand;
 			double translationToo = 1.0;
 			if( std::islower(com.c) )
 				translationToo = 0.0;
-
+			
 			int commandVal = std::tolower(com.c);
-
 			if(commandVal == 'm')
 			{
 				Vec3f pos = (getTransform() * Vec3f( com.points[0].x, com.points[0].y, translationToo ));
@@ -1521,6 +1766,7 @@ namespace smpl
 				com.points[2] = Vec2f(pos.x, pos.y);
 			}
 
+			transformedCommands.push_back(com);
 		}
 	}
 

@@ -1,4 +1,5 @@
 #include "InternalGraphicsHeader.h"
+#include "VectorGraphic.h"
 
 namespace smpl
 {
@@ -311,7 +312,7 @@ namespace smpl
 
 	// }
 
-	void SimpleGraphics::drawPolygon(Vec2f* points, int size, Image* surf)
+	void SimpleGraphics::drawPolygonOld(const Vec2f* points, size_t size, Image* surf)
 	{
 		Image* otherImg;
 		if (surf == nullptr)
@@ -474,6 +475,236 @@ namespace smpl
 			}
 		}
 
+	}
+
+	void SimpleGraphics::drawPolygon(const Vec2f *points, size_t size, Image *surf)
+	{
+		drawPolygon(std::vector<const Vec2f*>{points},std::vector<size_t>{size}, surf);
+	}
+	
+	void SimpleGraphics::drawPolygon(const std::vector<std::vector<Vec2f>>& polygons, Image* surf)
+	{
+		std::vector<const Vec2f*> ptrs = std::vector<const Vec2f*>(polygons.size());
+		std::vector<size_t> sizeOfGons = std::vector<size_t>(polygons.size());
+
+		for(size_t i=0; i<polygons.size(); i++)
+		{
+			ptrs[i] = polygons[i].data();
+			sizeOfGons[i] = polygons[i].size();
+		}
+		drawPolygon(ptrs, sizeOfGons, surf);
+	}
+
+	void SimpleGraphics::drawPolygon(const std::vector<const Vec2f*>& polygons, const std::vector<size_t>& sizeOfEachGon, Image* surf)
+	{
+		if (surf == nullptr)
+			return;
+
+		if(surf->getWidth()<=0 || surf->getHeight()<=0)
+			return;
+
+		if(polygons.size() == 0 && sizeOfEachGon.size() == 0)
+			return;
+
+		//at least one of the gons must have a size > 0
+		bool validGonExist = false;
+		float minYFloat = INFINITY;
+		float maxYFloat = -INFINITY;
+		for(size_t index=0; index<polygons.size(); index++)
+		{
+			if(sizeOfEachGon[index] >= 3)
+			{
+				for(size_t i=0; i<sizeOfEachGon[index]; i++)
+				{
+					minYFloat = __min(polygons[index][i].y, minYFloat);
+					maxYFloat = __max(polygons[index][i].y, maxYFloat);
+				}
+			}
+		}
+
+		//invalid points found or none of the polygons provided have a valid size. Must be a fully closed shape. Can't just be a line
+		if(minYFloat == INFINITY || maxYFloat == -INFINITY)
+			return;
+
+		//create a list of Lines for each gon.
+		std::vector<std::vector<Line>> allGons;
+		for(size_t index=0; index<polygons.size(); index++)
+		{
+			if(sizeOfEachGon[index] >= 3)
+			{
+				allGons.push_back(std::vector<Line>(sizeOfEachGon[index]));
+				for(size_t i=0; i<sizeOfEachGon[index]; i++)
+				{
+					size_t j = (i+1) % sizeOfEachGon[index];
+					allGons.back()[i] = Line(polygons[index][i], polygons[index][j]);
+				}
+			}
+		}
+
+		int minY = MathExt::round(minYFloat);
+		int maxY = MathExt::round(maxYFloat);
+		
+		//limit minY and maxY to image bounds
+		minY = MathExt::clamp(minY, 0, surf->getHeight());
+		maxY = MathExt::clamp(maxY, 0, surf->getHeight());
+
+		static const float GRAPHICS_EPISLON = 1E-4;
+
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
+		#pragma omp parallel for
+		for(size_t y=minY; y<maxY; y++)
+		{
+			//cast horizontal line through all lines
+			std::vector<PathCriticalPoint> critPoints;
+			Line horizontalLine = Line(0, y, surf->getWidth(), y); //can do this too
+
+			std::vector<std::pair<float, float>> delayedHorizontalLines;
+
+			size_t lastNormalLine = 0;
+			bool horizLine = false;
+			//whenever you find a horizontal line, 
+			for(auto& gon : allGons)
+			{
+				for(size_t i=0; i<gon.size(); i++)
+				{
+					Line& l = gon[i];
+					//current line is horizontal
+					if(l.getToPoint().y == 0)
+					{
+						//actual rule. If the previous line and the next line have the same y derivatives directions, ignore
+						//otherwise, ignore but also ignore the last end point of the previous connected lines.
+
+						//didn't collide with it anyway. Ignore it
+						if(l.getPoint1().y != y)
+							continue;
+						
+						delayedHorizontalLines.push_back({l.getMinX(), l.getMaxX()});
+						if(getFillRule() == SimpleGraphics::FILL_NON_ZERO)
+						{
+							//for now, assume the last line and next line are not horizontal too
+							size_t jPrev = i-1;
+							if(jPrev == SIZE_MAX)
+								jPrev = gon.size()-1;
+							size_t jNext = (i+1) % gon.size();
+
+							//just care about end points and their distance from our horizontal scanline
+							float prevY = gon[jPrev].getPoint1().y - y;
+							float nextY = gon[jNext].getPoint2().y - y;
+
+							if(prevY*nextY < 0)
+							{
+								//only keep 1 point. It does not matter which one but to keep things simple, duplicate
+								//the first end point and set its slope to be opposite sign of the previous slope so non-zero works
+								
+								PathCriticalPoint pcp;
+								if(l.getToPoint().x > 0)
+									pcp.xValue = l.getPoint1().x;
+								else
+									pcp.xValue = l.getPoint2().x;
+								pcp.onVertex = true;
+								pcp.ySlopeDirection = gon[jPrev].getToPoint().y <= 0; //flip slope of the last line
+								pcp.v1Above = true;
+								pcp.v2Above = false;
+
+								critPoints.push_back(pcp);
+							}
+						}
+						
+						//both lie on the same side, ignore the horizontal line. (draw it separately later?)
+						continue;
+						
+					}
+
+					double timePoint = 0;
+					if(l.getIntersectionParametric(horizontalLine, timePoint))
+					{
+						if(timePoint >= -GRAPHICS_EPISLON && timePoint <= 1+GRAPHICS_EPISLON)
+						{
+							Vec2f intersectionPoint = l.getPoint1() + l.getToPoint()*timePoint;
+							PathCriticalPoint pcp;
+							pcp.xValue = intersectionPoint.x;
+							pcp.onVertex = timePoint <= GRAPHICS_EPISLON || timePoint >= 1-GRAPHICS_EPISLON;
+							pcp.ySlopeDirection = l.getToPoint().y > 0;
+							pcp.v1Above = l.getPoint1().y > y;
+							pcp.v2Above = l.getPoint2().y > y;
+
+							//push back a value that drops everything below epsilon
+							// pcp.xValue = MathExt::roundToDecimal(pcp.xValue, 4);
+							critPoints.push_back(pcp);
+						}
+					}
+				}
+			}
+
+			if(critPoints.empty())
+				continue;
+			
+			//sort critical points
+			Sort::insertionSort<PathCriticalPoint>(critPoints.data(), critPoints.size(), [](const PathCriticalPoint& a, const PathCriticalPoint& b) ->bool{ return a.xValue < b.xValue; });
+
+			//do extra parsing for even-odd rule or non-zero
+			std::vector<PathCriticalPoint> newScanLinePoints = std::vector<PathCriticalPoint>();
+			
+			if(SimpleGraphics::getFillRule() == SimpleGraphics::FILL_EVEN_ODD)
+			{
+				//assuming everything was already calculated, this should be easy
+				for(PathCriticalPoint& pcp : critPoints)
+				{
+					newScanLinePoints.push_back(pcp);
+					if(pcp.onVertex)
+					{
+						// if(pcp.horizontalConnects)
+						// 	newScanLinePoints.pop_back(); //ignore it for now
+						if(pcp.v1Above == pcp.v2Above)
+							newScanLinePoints.push_back(pcp);
+					}
+				}
+			}
+			else
+			{
+				int counter = 0;
+				newScanLinePoints.push_back(critPoints.front());
+				counter += (critPoints.front().ySlopeDirection) ? 1 : -1;
+				for(size_t j=1; j<critPoints.size(); j++)
+				{
+					if(counter == 0)
+						newScanLinePoints.push_back(critPoints[j]);
+
+					counter += (critPoints[j].ySlopeDirection) ? 1 : -1;
+
+					if(counter == 0)
+						newScanLinePoints.push_back(critPoints[j]);
+				}
+			}
+
+			//no need for the extra copy now. Just fill with the new points directly
+			
+			size_t actualSize = newScanLinePoints.size();
+			if(actualSize%2 == 1)
+			{
+				actualSize-=1;
+			}
+			
+			for(size_t i=0; i<actualSize; i+=2)
+			{
+				//fill between spots
+				int startX = MathExt::clamp<int>(MathExt::floor(newScanLinePoints[i].xValue), 0, surf->getWidth());
+				int endX = MathExt::clamp<int>(MathExt::ceil(newScanLinePoints[i+1].xValue), 0, surf->getWidth());
+				SIMD_U32 simdColor = activeColor.toUInt();
+				SimpleGraphics::fillBetween(simdColor, startX, endX, y, surf);
+			}
+
+			for(size_t i=0; i<delayedHorizontalLines.size(); i++)
+			{
+				//fill between spots
+				int startX = MathExt::clamp<int>(MathExt::floor(delayedHorizontalLines[i].first), 0, surf->getWidth());
+				int endX = MathExt::clamp<int>(MathExt::ceil(delayedHorizontalLines[i].second), 0, surf->getWidth());
+				SIMD_U32 simdColor = activeColor.toUInt();
+				SimpleGraphics::fillBetween(simdColor, startX, endX, y, surf);
+			}
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
+		
 	}
 	
 	void SimpleGraphics::drawModel(Model* model, Image* texture, Image* surf)

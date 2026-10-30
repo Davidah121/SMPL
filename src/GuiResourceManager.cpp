@@ -12,40 +12,48 @@ namespace smpl
 		
 	}
 
-	void GuiResourceManager::addSprite(SpriteInterface* data, std::string key, size_t elements, bool localMemory)
+	void GuiResourceManager::addSprite(const SpriteInterface& data, const std::string& key, size_t elements, bool localMemory)
 	{
-		spriteResources.addResource(data, key, elements, localMemory);
+		//insert or replace? Could ignore anything with same key
+		spriteResources.insert({key, data});
 	}
-	void GuiResourceManager::addFont(FontInterface* data, std::string key, size_t elements, bool localMemory)
+	void GuiResourceManager::addFont(const FontInterface& data, const std::string& key, size_t elements, bool localMemory)
 	{
-		fontResources.addResource(data, key, elements, localMemory);
+		//insert or replace? Could ignore anything with same key
+		fontResources.insert({key, data});
 	}
 
-	SmartMemory<SpriteInterface> GuiResourceManager::getSprite(std::string key)
+	SpriteInterface GuiResourceManager::getSprite(const std::string& key)
 	{
-		return spriteResources.getResource(key);
+		auto it = spriteResources.find(key);
+		if(it != spriteResources.end())
+			return it->second;
+		return SpriteInterface();
 	}
-	SmartMemory<FontInterface> GuiResourceManager::getFont(std::string key)
+	FontInterface GuiResourceManager::getFont(const std::string& key)
 	{
-		return fontResources.getResource(key);
-	}
-	
-	void GuiResourceManager::deleteSprite(std::string key)
-	{
-		spriteResources.deleteResource(key);
-	}
-	void GuiResourceManager::deleteFont(std::string key)
-	{
-		fontResources.deleteResource(key);
+		auto it = fontResources.find(key);
+		if(it != fontResources.end())
+			return it->second;
+		return FontInterface();
 	}
 	
-	ResourceManager<SpriteInterface>* GuiResourceManager::getSpriteResourceManager()
+	void GuiResourceManager::deleteSprite(const std::string& key)
 	{
-		return &spriteResources;
+		spriteResources.erase(key);
 	}
-	ResourceManager<FontInterface>* GuiResourceManager::getFontResourceManager()
+	void GuiResourceManager::deleteFont(const std::string& key)
 	{
-		return &fontResources;
+		fontResources.erase(key);
+	}
+	
+	SimpleHashMap<std::string, SpriteInterface>& GuiResourceManager::getAllSpriteResources()
+	{
+		return spriteResources;
+	}
+	SimpleHashMap<std::string, FontInterface>& GuiResourceManager::getAllFontResources()
+	{
+		return fontResources;
 	}
 	
 	GuiResourceManager& GuiResourceManager::getResourceManager()

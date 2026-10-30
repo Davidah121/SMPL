@@ -6,6 +6,8 @@
 #include "System.h"
 #include "StringTools.h"
 #include "Input.h"
+#include "BitwiseTools.h"
+#include "SIMD.h"
 
 #ifndef NO_WINDOW
 
@@ -197,9 +199,10 @@
 			LRESULT _stdcall SimpleWindow::wndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			{
 				SimpleWindow* currentWindow = SimpleWindow::getWindowByHandle((size_t)hwnd);
-
+				
 				bool canDo = false;
-
+				size_t timeInNanos;
+				
 				HDC hdc;
 				HDC deskHDC;
 				PAINTSTRUCT ps;
@@ -212,7 +215,6 @@
 				blend.BlendFlags = 0;
 				blend.SourceConstantAlpha = 255;
 				blend.AlphaFormat = AC_SRC_ALPHA;
-
 
 
 
@@ -264,6 +266,10 @@
 							DeleteDC(mem);
 							EndPaint(hwnd, &ps);
 						}
+
+						timeInNanos = System::getCurrentTimeNano();
+						currentWindow->timeFromLastPaint = timeInNanos - currentWindow->lastRenderTime;
+						currentWindow->lastRenderTime = timeInNanos;
 						break;
 					case WM_CLOSE:
 						if (currentWindow->closingFunction != nullptr)
@@ -1188,11 +1194,8 @@
 
 		void SimpleWindow::resizeToGuiManager()
 		{
-			auto guiSurf = gui->getSurface();
-			if(guiSurf != nullptr)
-			{
-				setSize(guiSurf->getWidth(), guiSurf->getHeight());
-			}
+			SurfaceInterface guiSurf = gui->getSurface();
+			setSize(guiSurf.getWidth(), guiSurf.getHeight());
 		}
 
 		int SimpleWindow::getMouseX()
@@ -1521,25 +1524,37 @@
 			SetWindowDisplayAffinity((HWND)windowHandle, v);
 			#endif
 		}
+		
+		size_t SimpleWindow::getTimeFromLastPaint()
+		{
+			return timeFromLastPaint;
+		}
 
 		void SimpleWindow::setThreadUpdateTime(size_t millis, size_t micros)
 		{
-			myMutex.lock();
+			// myMutex.lock();
 			sleepTimeMillis = millis;
 			sleepTimeMicros = micros;
-			myMutex.unlock();
+			// myMutex.unlock();
 		}
 
 		void SimpleWindow::drawImage(Image* g)
 		{
+			if(g == nullptr)
+				return;
+
+			if(width != g->getWidth() || height != g->getHeight())
+			{
+				throw std::runtime_error("Image provided to window in drawImage() is not the same width and height");
+			}
+
 			#ifdef __unix__
 			Color* imgPixels = (Color*)g->getPixels();
 			int* windowPixels = (int*)wndPixels;
 			int* endWindowPixels = windowPixels + width*height;
 			Color* endImgPixels = imgPixels + g->getWidth()*g->getHeight();
 			
-			if(width == g->getWidth() && height == g->getHeight())
-			{
+			
 				while(windowPixels < endWindowPixels)
 				{
 					
@@ -1552,110 +1567,38 @@
 					windowPixels++;
 					imgPixels++;
 				}
-			}
-			else
-			{
-				int minWidth = MathExt::min(width, g->getWidth());
-				int wndPixelAdjust = width - minWidth;
-				int imgPixelAdjust = g->getWidth() - minWidth;
-				int tX = 0;
-				while(windowPixels < endWindowPixels && imgPixels < endImgPixels)
+			#else
+				//same size
+				Color* imgPixelsStart = g->getPixels();
+				unsigned char* wndPixelsStart = wndPixels;
+				unsigned char* wndPixelsEnd = (wndPixels + wndPixelsSize);
+				if(this->windowType.windowType == TRANSPARENT_WINDOW)
 				{
-					int v = imgPixels->alpha; //switch from RGBA to ARGB
-					v = (v<<8) + imgPixels->red;
-					v = (v<<8) + imgPixels->green;
-					v = (v<<8) + imgPixels->blue;
-					*windowPixels = v;
-					windowPixels++; 
-					imgPixels++;
-					tX++;
-					if(tX >= minWidth)
+					while (wndPixelsStart < wndPixelsEnd)
 					{
-						tX = 0;
-						windowPixels += wndPixelAdjust;
-						imgPixels += imgPixelAdjust;
+						//switch from rgba to bgra
+						//must use premultiplied alpha
+						*wndPixelsStart = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->blue/255.0));
+						*(wndPixelsStart + 1) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->green/255.0));
+						*(wndPixelsStart + 2) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->red/255.0));
+						*(wndPixelsStart + 3) = (*imgPixelsStart).alpha;
+
+						wndPixelsStart += 4;
+						imgPixelsStart++;
 					}
 				}
-			}
-			#else
-
-				if (g != nullptr)
+				else
 				{
-					if (g->getWidth() == width && g->getHeight() == height)
+					while (wndPixelsStart < wndPixelsEnd)
 					{
-						//same size
-						Color* imgPixelsStart = g->getPixels();
-						unsigned char* wndPixelsStart = wndPixels;
-						unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
-						int tX = 0;
-						while (wndPixelsStart < wndPixelsEnd)
-						{
-							//switch from rgba to bgra
-							//normally a byteswap and left rotation is all that is neccessary but must use premultiplied alpha
-							
-							if(this->windowType.windowType == TRANSPARENT_WINDOW)
-							{
-								*wndPixelsStart = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->blue/255.0));
-								*(wndPixelsStart + 1) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->green/255.0));
-								*(wndPixelsStart + 2) = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->red/255.0));
-							}
-							else
-							{
-								*wndPixelsStart = imgPixelsStart->blue;
-								*(wndPixelsStart + 1) = imgPixelsStart->green;
-								*(wndPixelsStart + 2) = imgPixelsStart->red;
-							}
-							*(wndPixelsStart + 3) = (*imgPixelsStart).alpha;
+						//switch from rgba to bgra
+						*wndPixelsStart = imgPixelsStart->blue;
+						*(wndPixelsStart + 1) = imgPixelsStart->green;
+						*(wndPixelsStart + 2) = imgPixelsStart->red;
+						*(wndPixelsStart + 3) = (*imgPixelsStart).alpha;
 
-							wndPixelsStart += 4;
-							imgPixelsStart++;
-							tX++;
-
-							if(tX>=width)
-							{
-								tX=0;
-							}
-						}
-					}
-					else
-					{
-						memset(wndPixels, 0, wndPixelsSize);
-						Color* imgPixelsStart = g->getPixels();
-						Color* imgPixelsEnds = g->getPixels() + (g->getWidth()*g->getHeight());
-						unsigned char* wndPixelsStart = wndPixels;
-						unsigned char* wndPixelsEnd = wndPixels + wndPixelsSize;
-
-						int minWidth = MathExt::min(width, g->getWidth());
-						int wndPixelWidthPadding = width - minWidth;
-						int imgWidthPadding = g->getWidth() - minWidth;
-						int tX = 0;
-
-						while(wndPixelsStart < wndPixelsEnd && imgPixelsStart < imgPixelsEnds)
-						{
-							if(this->windowType.windowType == TRANSPARENT_WINDOW)
-							{
-								wndPixelsStart[0] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->blue/255.0));
-								wndPixelsStart[1] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->green/255.0));
-								wndPixelsStart[2] = (unsigned char)(imgPixelsStart->alpha * ((float)imgPixelsStart->red/255.0));
-							}
-							else
-							{
-								wndPixelsStart[0] = imgPixelsStart->blue;
-								wndPixelsStart[1] = imgPixelsStart->green;
-								wndPixelsStart[2] = imgPixelsStart->red;
-							}
-							wndPixelsStart[3] = imgPixelsStart->red;
-							
-							wndPixelsStart+=4; 
-							imgPixelsStart++;
-							tX++;
-							if(tX >= minWidth)
-							{
-								tX = 0;
-								wndPixelsStart += wndPixelWidthPadding*4;
-								imgPixelsStart += imgWidthPadding;
-							}
-						}
+						wndPixelsStart += 4;
+						imgPixelsStart++;
 					}
 				}
 			#endif
@@ -1663,6 +1606,11 @@
 
 		void SimpleWindow::run()
 		{
+			//try to also gauge fps
+			int currentFPS = 0;
+			size_t totalTime = 0;
+			int counter = 0;
+
 			while (!getShouldEnd())
 			{
 				size_t t1 = System::getCurrentTimeMicro();
@@ -1675,11 +1623,7 @@
 				if(getRepaint())
 					threadRepaint();
 
-				size_t timeNeeded = 0;
-				myMutex.lock();
-				timeNeeded = sleepTimeMillis*1000 + sleepTimeMicros;
-				myMutex.unlock();
-
+				size_t timeNeeded = sleepTimeMillis*1000 + sleepTimeMicros;
 				size_t t2 = System::getCurrentTimeMicro();
 				size_t timePassed = t2-t1;
 				
@@ -1687,6 +1631,22 @@
 				{
 					size_t waitTime = timeNeeded - timePassed;
 					System::sleep(waitTime/1000, waitTime%1000);
+					totalTime += timeNeeded;
+				}
+				else
+				{
+					totalTime += timePassed;
+				}
+
+				if(totalTime >= 1000000)
+				{
+					StringTools::println("%d-FPS: %d", counter, currentFPS);
+					counter++;
+					currentFPS = 0;
+					totalTime = 0;
+				}
+				else {
+					currentFPS++;
 				}
 			}
 
@@ -1759,11 +1719,11 @@
 				if (gui != nullptr && activateGui)
 				{
 					changed = gui->renderGuiElements();
-					if(changed && gui->getSurface() != nullptr)
+					if(changed && gui->getSurface().getSurface().isValid())
 					{
-						if(gui->getSurface()->getType() == GraphicsInterface::TYPE_SOFTWARE)
+						if(gui->getSurface().getType() == GraphicsInterface::TYPE_SOFTWARE)
 						{
-							Image* surface = (Image*)gui->getSurface()->getSurface();
+							Image* surface = (Image*)gui->getSurface().getSurface().getRawPointer();
 							if(surface != nullptr)
 								drawImage(surface);
 						}

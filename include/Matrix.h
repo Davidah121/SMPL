@@ -799,14 +799,15 @@ namespace smpl
 		SIMD_TEMPLATE<T> simdValue = SIMD_TEMPLATE<T>(value);
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-		SJQ_OMP_Replacement::parallelize([this, simdValue, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
-				dataLoaded *= simdValue;
-				dataLoaded.store(&m.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
+			dataLoaded *= simdValue;
+			dataLoaded.store(&m.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -825,14 +826,15 @@ namespace smpl
 		SIMD_TEMPLATE<T> simdValue = SIMD_TEMPLATE<T>(value);
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-		SJQ_OMP_Replacement::parallelize([this, simdValue, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
-				dataLoaded /= simdValue;
-				dataLoaded.store(&m.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
+			dataLoaded /= simdValue;
+			dataLoaded.store(&m.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -854,14 +856,15 @@ namespace smpl
 		SIMD_TEMPLATE<T> simdValue = SIMD_TEMPLATE<T>(value);
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-		SJQ_OMP_Replacement::parallelize([this, simdValue](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
-				dataLoaded *= simdValue;
-				dataLoaded.store(&data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
+			dataLoaded *= simdValue;
+			dataLoaded.store(&data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -876,14 +879,15 @@ namespace smpl
 		SIMD_TEMPLATE<T> simdValue = SIMD_TEMPLATE<T>(value);
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-		SJQ_OMP_Replacement::parallelize([this, simdValue](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
-				dataLoaded /= simdValue;
-				dataLoaded.store(data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> dataLoaded = SIMD_TEMPLATE<T>::load(&data[i]);
+			dataLoaded /= simdValue;
+			dataLoaded.store(data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -901,15 +905,16 @@ namespace smpl
 			size_t simdBound = 0;
 			simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-			SJQ_OMP_Replacement::parallelize([this, &other, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i = tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
-					A += B;
-					A.store(&m.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
+				A += B;
+				A.store(&m.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
@@ -931,15 +936,16 @@ namespace smpl
 			size_t simdBound = 0;
 			simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-			SJQ_OMP_Replacement::parallelize([this, &other](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i = tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
-					A += B;
-					A.store(&data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
+				A += B;
+				A.store(&data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 			
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
@@ -962,15 +968,16 @@ namespace smpl
 			size_t simdBound = 0;
 			simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-			SJQ_OMP_Replacement::parallelize([this, &other, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i = tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
-					A -= B;
-					A.store(&m.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
+				A -= B;
+				A.store(&m.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
@@ -991,15 +998,16 @@ namespace smpl
 
 		size_t simdBound = 0;
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
-
-		SJQ_OMP_Replacement::parallelize([this, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
-				A = -A;
-				A.store(&m.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
+			A = -A;
+			A.store(&m.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for (size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -1016,15 +1024,16 @@ namespace smpl
 			size_t simdBound = 0;
 			simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 
-			SJQ_OMP_Replacement::parallelize([this, &other](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i = tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
-					A -= B;
-					A.store(&data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> A = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> B = SIMD_TEMPLATE<T>::load(&other.data[i]);
+				A -= B;
+				A.store(&data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			for (size_t i = simdBound; i < rows*columns; i++)
 			{
@@ -1071,12 +1080,13 @@ namespace smpl
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 		SIMD_TEMPLATE<T> setValue = v;
 
-		SJQ_OMP_Replacement::parallelize([this, setValue](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				setValue.store(&data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			setValue.store(&data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i = simdBound; i < rows*columns; i++)
 		{
@@ -1093,14 +1103,15 @@ namespace smpl
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 		SIMD_TEMPLATE<T> addV = v;
 		
-		SJQ_OMP_Replacement::parallelize([this, addV, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i = tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
-				v += addV;
-				v.store(&result.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
+			v += addV;
+			v.store(&result.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i=simdBound; i<rows*columns; i++)
 			result.data[i] = data[i] + v;
@@ -1118,44 +1129,47 @@ namespace smpl
 		
 		if(B.rows != 1)
 		{
-			SJQ_OMP_Replacement::parallelize([this, &B, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for(size_t i=tStart; i<tEnd; i+=tIncr)
+			
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(rows, OMP_MEDIUM_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < rows; i++)
+			{
+				size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+				SIMD_TEMPLATE<T> addV = B.data[i];
+				for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
 				{
-					size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-					SIMD_TEMPLATE<T> addV = B.data[i];
-					for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
-					{
-						SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
-						v += addV;
-						v.store(&result.data[i]);
-					}
-					for(size_t j=simdSize; j<columns; j++)
-					{
-						result.data[j + i*columns] = data[j + i*columns] + B.data[i];
-					}
+					SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
+					v += addV;
+					v.store(&result.data[i]);
 				}
-			}, 0, rows, 1, SJQ_DESIRED_THREADS(rows, SJQ_MEDIUM_TASK));
+				for(size_t j=simdSize; j<columns; j++)
+				{
+					result.data[j + i*columns] = data[j + i*columns] + B.data[i];
+				}
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 		else
 		{
 			//broadcast about the columns
-			SJQ_OMP_Replacement::parallelize([this, &B, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for(size_t i=0; i<rows; i++)
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(rows, OMP_MEDIUM_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < rows; i++)
+			{
+				size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+				for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
 				{
-					size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-					for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
-					{
-						SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
-						SIMD_TEMPLATE<T> addV = SIMD_TEMPLATE<T>::load(&B.data[j]);
-						v += addV;
-						v.store(&result.data[i]);
-					}
-					for(size_t j=simdSize; j<columns; j++)
-					{
-						result.data[j + i*columns] = data[j + i*columns] + B.data[j];
-					}
+					SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
+					SIMD_TEMPLATE<T> addV = SIMD_TEMPLATE<T>::load(&B.data[j]);
+					v += addV;
+					v.store(&result.data[i]);
 				}
-			}, 0, rows, 1, SJQ_DESIRED_THREADS(rows, SJQ_MEDIUM_TASK));
+				for(size_t j=simdSize; j<columns; j++)
+				{
+					result.data[j + i*columns] = data[j + i*columns] + B.data[j];
+				}
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 
 		return result;
@@ -1170,14 +1184,15 @@ namespace smpl
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(size);
 		SIMD_TEMPLATE<T> addV = v;
 		
-		SJQ_OMP_Replacement::parallelize([this, addV, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
-				v -= addV;
-				v.store(&result.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
+			v -= addV;
+			v.store(&result.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = data[i] - v;
@@ -1194,14 +1209,16 @@ namespace smpl
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(size);
 		SIMD_TEMPLATE<T> addV = v;
 		
-		SJQ_OMP_Replacement::parallelize([this, addV, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
-				v = addV - v;
-				v.store(&result.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
+			v = addV - v;
+			v.store(&result.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = v - data[i];
@@ -1220,45 +1237,46 @@ namespace smpl
 		if(B.rows != 1)
 		{
 			//broadcast about the rows
-			SJQ_OMP_Replacement::parallelize([this, &B, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for(size_t i=tStart; i<tEnd; i+=tIncr)
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(rows, OMP_MEDIUM_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < rows; i+=1)
+			{
+				size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+				SIMD_TEMPLATE<T> subV = B.data[i];
+				for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
 				{
-					size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-					SIMD_TEMPLATE<T> subV = B.data[i];
-					for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
-					{
-						SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
-						v -= subV;
-						v.store(&result.data[i]);
-					}
-					for(size_t j=simdSize; j<columns; j++)
-					{
-						result.data[j + i*columns] = data[j + i*columns] - B.data[i];
-					}
+					SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
+					v -= subV;
+					v.store(&result.data[i]);
 				}
-			}, 0, rows, 1, SJQ_DESIRED_THREADS(rows, SJQ_MEDIUM_TASK));
+				for(size_t j=simdSize; j<columns; j++)
+				{
+					result.data[j + i*columns] = data[j + i*columns] - B.data[i];
+				}
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 		else
 		{
 			//broadcast about the columns
-			
-			SJQ_OMP_Replacement::parallelize([this, &B, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for(size_t i=tStart; i<tEnd; i+=tIncr)
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(rows, OMP_MEDIUM_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < rows; i+=1)
+			{
+				size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+				for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
 				{
-					size_t simdSize = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-					for(size_t j=0; j<simdSize; j+=SIMD_TEMPLATE<T>::SIZE)
-					{
-						SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
-						SIMD_TEMPLATE<T> subV = SIMD_TEMPLATE<T>::load(&B.data[j]);
-						v -= subV;
-						v.store(&result.data[i]);
-					}
-					for(size_t j=simdSize; j<columns; j++)
-					{
-						result.data[j + i*columns] = data[j + i*columns] - B.data[j];
-					}
+					SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[j + i*columns]);
+					SIMD_TEMPLATE<T> subV = SIMD_TEMPLATE<T>::load(&B.data[j]);
+					v -= subV;
+					v.store(&result.data[i]);
 				}
-			}, 0, rows, 1, SJQ_DESIRED_THREADS(rows, SJQ_MEDIUM_TASK));
+				for(size_t j=simdSize; j<columns; j++)
+				{
+					result.data[j + i*columns] = data[j + i*columns] - B.data[j];
+				}
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 		}
 		return result;
 	}
@@ -1277,14 +1295,15 @@ namespace smpl
 		if(simdFunc == nullptr)
 			simdBound = 0; //Don't do any SIMD work
 		
-		SJQ_OMP_Replacement::parallelize([this, &simdFunc, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
-				v = simdFunc(v);
-				v.store(&result.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK)); //assumes it is a simple function
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
+			v = simdFunc(v);
+			v.store(&result.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = func(data[i]);
@@ -1304,15 +1323,16 @@ namespace smpl
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(size);
 		if(simdFunc == nullptr)
 			simdBound = 0; //Don't do any SIMD work
-			
-		SJQ_OMP_Replacement::parallelize([this, &simdFunc, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
-				v = simdFunc(v);
-				v.store(&result.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK)); //assumes it is a simple function
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> v = SIMD_TEMPLATE<T>::load(&data[i]);
+			v = simdFunc(v);
+			v.store(&result.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		for(size_t i=simdBound; i<size; i++)
 			result.data[i] = func(data[i]);
@@ -1362,15 +1382,17 @@ namespace smpl
 		size_t simdBound = 0;
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 		
-		SJQ_OMP_Replacement::parallelize([this, &other, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&other.data[i]);
-				aValues*=bValues;
-				aValues.store(&m.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+			SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&other.data[i]);
+			aValues*=bValues;
+			aValues.store(&m.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i=simdBound; i<rows*columns; i++)
 			m.data[i] = data[i]*other.data[i];
@@ -1395,16 +1417,17 @@ namespace smpl
 			T* duplicateColumns = new T[B.columns*SIMD_TEMPLATE<T>::SIZE];
 			memcpy(duplicateColumns, B.data, B.columns*sizeof(T));
 			memcpy(duplicateColumns+B.columns*sizeof(T), B.data, SIMD_TEMPLATE<T>::SIZE*sizeof(T));
-
-			SJQ_OMP_Replacement::parallelize([this, &duplicateColumns, &result, &B](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i=tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateColumns[i%B.columns]);
-					aValues*=bValues;
-					aValues.store(&result.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateColumns[i%B.columns]);
+				aValues*=bValues;
+				aValues.store(&result.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			delete[] duplicateColumns;
 			for(size_t i=simdBound; i<size; i++)
@@ -1427,18 +1450,19 @@ namespace smpl
 				startDupRows += SIMD_TEMPLATE<T>::SIZE;
 			}
 
-			SJQ_OMP_Replacement::parallelize([this, &duplicateRows, &result, &B](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i=tStart; i < tEnd; i+=tIncr)
-				{
-					size_t left = columns - i%columns;
-					size_t offset = (left < SIMD_TEMPLATE<T>::SIZE) ? left : 0;
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				size_t left = columns - i%columns;
+				size_t offset = (left < SIMD_TEMPLATE<T>::SIZE) ? left : 0;
 
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateRows[offset + (i/B.rows)]);
-					aValues*=bValues;
-					aValues.store(&result.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateRows[offset + (i/B.rows)]);
+				aValues*=bValues;
+				aValues.store(&result.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			delete[] duplicateRows;
 			for(size_t i=simdBound; i<size; i++)
@@ -1459,15 +1483,16 @@ namespace smpl
 		size_t simdBound = 0;
 		simdBound = SIMD_TEMPLATE<T>::getSIMDBound(rows*columns);
 		
-		SJQ_OMP_Replacement::parallelize([this, &m, &other](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for (size_t i=tStart; i < tEnd; i+=tIncr)
-			{
-				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&other.data[i]);
-				aValues /= bValues;
-				aValues.store(&m.data[i]);
-			}
-		}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+		{
+			SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+			SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&other.data[i]);
+			aValues /= bValues;
+			aValues.store(&m.data[i]);
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		for(size_t i=simdBound; i<rows*columns; i++)
 			m.data[i] = data[i]/other.data[i];
@@ -1493,15 +1518,16 @@ namespace smpl
 			memcpy(duplicateColumns, B.data, B.columns*sizeof(T));
 			memcpy(duplicateColumns+B.columns*sizeof(T), B.data, SIMD_TEMPLATE<T>::SIZE*sizeof(T));
 
-			SJQ_OMP_Replacement::parallelize([this, &duplicateColumns, &result, &B](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i=tStart; i < tEnd; i+=tIncr)
-				{
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateColumns[i%B.columns]);
-					aValues/=bValues;
-					aValues.store(&result.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateColumns[i%B.columns]);
+				aValues/=bValues;
+				aValues.store(&result.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			delete[] duplicateColumns;
 			for(size_t i=simdBound; i<size; i++)
@@ -1522,18 +1548,19 @@ namespace smpl
 				startDupRows += SIMD_TEMPLATE<T>::SIZE;
 			}
 
-			SJQ_OMP_Replacement::parallelize([this, &duplicateRows, &result, &B](size_t tStart, size_t tEnd, size_t tIncr)->void{
-				for (size_t i=tStart; i < tEnd; i+=tIncr)
-				{
-					size_t left = columns - i%columns;
-					size_t offset = (left < SIMD_TEMPLATE<T>::SIZE) ? left : 0;
+			SET_OMP_THREADS(OMP_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, OMP_LIGHT_TASK))
+			#pragma omp parallel for
+			for (size_t i = 0; i < simdBound; i+=SIMD_TEMPLATE<T>::SIZE)
+			{
+				size_t left = columns - i%columns;
+				size_t offset = (left < SIMD_TEMPLATE<T>::SIZE) ? left : 0;
 
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateRows[offset + (i/B.rows)]);
-					aValues/=bValues;
-					aValues.store(&result.data[i]);
-				}
-			}, 0, simdBound, SIMD_TEMPLATE<T>::SIZE, SJQ_DESIRED_THREADS(simdBound/SIMD_TEMPLATE<T>::SIZE, SJQ_LIGHT_TASK));
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[i]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&duplicateRows[offset + (i/B.rows)]);
+				aValues/=bValues;
+				aValues.store(&result.data[i]);
+			}
+			RESET_LARGE_ENOUGH_CLAUSE()
 
 			delete[] duplicateRows;
 			for(size_t i=simdBound; i<size; i++)
@@ -1566,16 +1593,18 @@ namespace smpl
 			{	
 				size_t totalSize = rows*columns;
 				
-				SJQ_OMP_Replacement::parallelize([this, &inverse](size_t tStart, size_t tEnd, size_t tIncr)->void{
-					for(size_t index = tStart; index<tEnd; index+=tIncr)
-					{
-						size_t i = index/columns;
-						size_t j = index%columns;
-						double mult = ((i+j)%2) ? -1 : 1;
+				
+				SET_OMP_THREADS(OMP_DESIRED_THREADS(totalSize, OMP_HEAVY_TASK))
+				#pragma omp parallel for
+				for (size_t index = 0; index< totalSize; index++)
+				{
+					size_t i = index/columns;
+					size_t j = index%columns;
+					double mult = ((i+j)%2) ? -1 : 1;
 
-						inverse[i][j] = mult * getMatrixOfMinors(i, j).getDeterminate();
-					}
-				}, 0, totalSize, 1, SJQ_DESIRED_THREADS(totalSize, SJQ_HEAVY_TASK));
+					inverse[i][j] = mult * getMatrixOfMinors(i, j).getDeterminate();
+				}
+				RESET_LARGE_ENOUGH_CLAUSE()
 				
 				if(typeid(T) == typeid(float) || typeid(T) == typeid(double))
 					return inverse.getTranspose() * (1.0/det);
@@ -1595,14 +1624,15 @@ namespace smpl
 		Matrix<T> m = Matrix<T>(columns, rows);
 		unsigned int totalSize = columns*rows;
 
-		SJQ_OMP_Replacement::parallelize([this, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
-			{
-				unsigned int y = i / columns;
-				unsigned int x = i % columns;
-				m.data[i] = data[y + x*columns];
-			}
-		}, 0, totalSize, 1, SJQ_DESIRED_THREADS(totalSize, SJQ_LIGHT_TASK));
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(totalSize, OMP_HEAVY_TASK))
+		#pragma omp parallel for
+		for (size_t i = 0; i<totalSize; i++)
+		{
+			unsigned int y = i / columns;
+			unsigned int x = i % columns;
+			m.data[i] = data[y + x*columns];
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 		
 		return m;
 	}
@@ -1619,7 +1649,7 @@ namespace smpl
 			else
 			{
 				std::atomic<T> sumValue = {T()};
-				// SJQ_OMP_Replacement::parallelize([this, &sumValue](size_t tStart, size_t tEnd, size_t tIncr)->void{
+				// OMP_OMP_Replacement::parallelize([this, &sumValue](size_t tStart, size_t tEnd, size_t tIncr)->void{
 				
 					for(size_t i=0; i<columns; i++)
 					{
@@ -1630,7 +1660,7 @@ namespace smpl
 						else
 							sumValue = sumValue - addV;
 					}
-				// }, 0, columns, 1, SJQ_DESIRED_THREADS(columns, SJQ_HEAVY_TASK));
+				// }, 0, columns, 1, OMP_DESIRED_THREADS(columns, OMP_HEAVY_TASK));
 
 				return sumValue;
 			}
@@ -1702,11 +1732,11 @@ namespace smpl
 		if(!valid || !B.valid || columns != B.rows)
 			throw InvalidMatrixSize();
 		
-		// if(rows * B.columns > EXCEPTIONALY_LARGE_MATRIX_AREA)
-		// {
-		// 	Matrix<T> BT = B.getTranspose(); //O(N^2)
-		// 	return Matrix<T>::multiplyTranspose(BT); //O(N^3) but better cache locality
-		// }
+		if(rows * B.columns > EXCEPTIONALY_LARGE_MATRIX_AREA)
+		{
+			Matrix<T> BT = B.getTranspose(); //O(N^2)
+			return Matrix<T>::multiplyTranspose(BT); //O(N^3) but better cache locality
+		}
 
 		Matrix<T> C = Matrix<T>(rows, B.columns);
 		size_t columnsAdjusted, inc;
@@ -1721,54 +1751,56 @@ namespace smpl
 			inc = SIMD_TEMPLATE<T>::SIZE;
 		}
 		
-		SJQ_OMP_Replacement::parallelize([this, &B, &C, columnsAdjusted, inc](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(C.rows, OMP_HEAVY_TASK))
+		#pragma omp parallel for
+		for (size_t i=0; i<C.rows; i++)
+		{
+			if(SIMD_TEMPLATE<T>::SIZE == 1)
 			{
-				if(SIMD_TEMPLATE<T>::SIZE == 1)
+				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 				{
-					for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
-					{
-						T sums[4] = {T(), T(), T(), T()}; //defaults to 0 for all primitive types or the equivalent 0 in other types.
-						for(size_t k=0; k<columns; k++)
-						{
-							T aValue = data[k + i*columns];
-							for(int block=0; block<4; block++)
-							{
-								sums[block] += aValue * B.data[j+block + k*B.columns];
-							}
-						}
-						for(int block=0; block<4; block++)
-						{
-							C[i][j+block] = sums[block];
-						}
-					}
-				}
-				else
-				{
-					for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
-					{
-						SIMD_TEMPLATE<T> sums = T();
-						for(size_t k=0; k<columns; k++)
-						{
-							SIMD_TEMPLATE<T> aValue = data[k + i*columns];
-							SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
-							sums += aValue * bValue;
-						}
-						sums.store(&C[i][j]);
-					}
-				}
-				
-				for(size_t j=columnsAdjusted; j<C.columns; j++)
-				{
-					T sum = T();
+					T sums[4] = {T(), T(), T(), T()}; //defaults to 0 for all primitive types or the equivalent 0 in other types.
 					for(size_t k=0; k<columns; k++)
 					{
-						sum += data[k + i*columns] * B.data[j + k*B.columns];
+						T aValue = data[k + i*columns];
+						for(int block=0; block<4; block++)
+						{
+							sums[block] += aValue * B.data[j+block + k*B.columns];
+						}
 					}
-					C[i][j] = sum;
+					for(int block=0; block<4; block++)
+					{
+						C[i][j+block] = sums[block];
+					}
 				}
 			}
-		}, 0, C.rows, 1, SJQ_DESIRED_THREADS(C.rows, SJQ_HEAVY_TASK));
+			else
+			{
+				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
+				{
+					SIMD_TEMPLATE<T> sums = T();
+					for(size_t k=0; k<columns; k++)
+					{
+						SIMD_TEMPLATE<T> aValue = data[k + i*columns];
+						SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
+						sums += aValue * bValue;
+					}
+					sums.store(&C[i][j]);
+				}
+			}
+			
+			for(size_t j=columnsAdjusted; j<C.columns; j++)
+			{
+				T sum = T();
+				for(size_t k=0; k<columns; k++)
+				{
+					sum += data[k + i*columns] * B.data[j + k*B.columns];
+				}
+				C[i][j] = sum;
+			}
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
+
 		return C;
 	}
 
@@ -1780,33 +1812,35 @@ namespace smpl
 		
 		Matrix<T> C = Matrix<T>(rows, B.rows);
 		unsigned int totalSize = rows*B.rows;
-
-		SJQ_OMP_Replacement::parallelize([this, &C, &B](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
+		
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(totalSize, OMP_HEAVY_TASK))
+		#pragma omp parallel for
+		for (size_t i=0; i<totalSize; i++)
+		{
+			unsigned int y = i / B.rows;
+			unsigned int x = i % B.rows;
+			T finalSum = T();
+			SIMD_TEMPLATE<T> simdSum = T();
+			unsigned int k = 0;
+			unsigned int simdBound = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+			while(k < simdBound)
 			{
-				unsigned int y = i / B.rows;
-				unsigned int x = i % B.rows;
-				T finalSum = T();
-				SIMD_TEMPLATE<T> simdSum = T();
-				unsigned int k = 0;
-				unsigned int simdBound = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-				while(k < simdBound)
-				{
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[k + y*columns]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&B.data[k + x*B.columns]);
-					simdSum += aValues*bValues;
-					k+=SIMD_TEMPLATE<T>::SIZE;
-				}
-				while(k < columns)
-				{
-					finalSum += data[k + y*columns] * B.data[k + x*B.columns];
-					k++;
-				}
-
-				finalSum += simdSum.sum();
-				C.data[x + y*B.rows] = finalSum;
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[k + y*columns]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&B.data[k + x*B.columns]);
+				simdSum += aValues*bValues;
+				k+=SIMD_TEMPLATE<T>::SIZE;
 			}
-		}, 0, totalSize, 1, SJQ_DESIRED_THREADS(totalSize, SJQ_LIGHT_TASK));
+			while(k < columns)
+			{
+				finalSum += data[k + y*columns] * B.data[k + x*B.columns];
+				k++;
+			}
+
+			finalSum += simdSum.sum();
+			C.data[x + y*B.rows] = finalSum;
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
+
 		return C;
 	}
 	
@@ -1851,55 +1885,56 @@ namespace smpl
 			inc = SIMD_TEMPLATE<T>::SIZE;
 		}
 
-		SJQ_OMP_Replacement::parallelize([this, &B, &C, &result, columnsAdjusted, inc](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(result.rows, OMP_HEAVY_TASK))
+		#pragma omp parallel for
+		for (size_t i=0; i<result.rows; i++)
+		{
+			if(SIMD_TEMPLATE<T>::SIZE == 1)
 			{
-				if(SIMD_TEMPLATE<T>::SIZE == 1)
+				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
 				{
-					for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
-					{
-						T sums[4] = {C[i][j], C[i][j+1], C[i][j+2], C[i][j+3]};
-						for(size_t k=0; k<columns; k++)
-						{
-							T aValue = data[k + i*columns];
-							for(int block=0; block<4; block++)
-							{
-								sums[block] += aValue * B.data[j+block + k*B.columns];
-							}
-						}
-						for(int block=0; block<4; block++)
-						{
-							result[i][j+block] = sums[block];
-						}
-					}
-				}
-				else
-				{
-					for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
-					{
-						SIMD_TEMPLATE<T> sums = SIMD_TEMPLATE<T>::load(&C.data[i + j*result.columns]);
-						
-						for(size_t k=0; k<columns; k++)
-						{
-							SIMD_TEMPLATE<T> aValue = data[k + i*columns];
-							SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
-							sums += aValue * bValue;
-						}
-						sums.store(&result[i][j]);
-					}
-				}
-				
-				for(size_t j=columnsAdjusted; j<result.columns; j++)
-				{
-					T sum = C[i][j];
+					T sums[4] = {C[i][j], C[i][j+1], C[i][j+2], C[i][j+3]};
 					for(size_t k=0; k<columns; k++)
 					{
-						sum += data[k + i*columns] * B.data[j + k*B.columns];
+						T aValue = data[k + i*columns];
+						for(int block=0; block<4; block++)
+						{
+							sums[block] += aValue * B.data[j+block + k*B.columns];
+						}
 					}
-					result[i][j] = sum;
+					for(int block=0; block<4; block++)
+					{
+						result[i][j+block] = sums[block];
+					}
 				}
 			}
-		}, 0, result.rows, 1, SJQ_DESIRED_THREADS(result.rows, SJQ_HEAVY_TASK));
+			else
+			{
+				for(size_t j=0; j<columnsAdjusted; j+=inc) //compute 4 at once
+				{
+					SIMD_TEMPLATE<T> sums = SIMD_TEMPLATE<T>::load(&C.data[i + j*result.columns]);
+					
+					for(size_t k=0; k<columns; k++)
+					{
+						SIMD_TEMPLATE<T> aValue = data[k + i*columns];
+						SIMD_TEMPLATE<T> bValue = SIMD_TEMPLATE<T>::load(&B.data[j + k*B.columns]);
+						sums += aValue * bValue;
+					}
+					sums.store(&result[i][j]);
+				}
+			}
+			
+			for(size_t j=columnsAdjusted; j<result.columns; j++)
+			{
+				T sum = C[i][j];
+				for(size_t k=0; k<columns; k++)
+				{
+					sum += data[k + i*columns] * B.data[j + k*B.columns];
+				}
+				result[i][j] = sum;
+			}
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		return result;
 	}
@@ -1916,32 +1951,33 @@ namespace smpl
 		Matrix<T> result = Matrix<T>(rows, B.rows);
 		unsigned int totalSize = rows*B.rows;
 
-		SJQ_OMP_Replacement::parallelize([this, &C, &B, &result](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(totalSize, OMP_LIGHT_TASK))
+		#pragma omp parallel for
+		for (size_t i=0; i<totalSize; i++)
+		{
+			unsigned int y = i / B.rows;
+			unsigned int x = i % B.rows;
+			T finalSum = C[y][x];
+			SIMD_TEMPLATE<T> simdSum = T();
+			unsigned int k = 0;
+			unsigned int simdBound = SIMD_TEMPLATE<T>::getSIMDBound(columns);
+			while(k < simdBound)
 			{
-				unsigned int y = i / B.rows;
-				unsigned int x = i % B.rows;
-				T finalSum = C[y][x];
-				SIMD_TEMPLATE<T> simdSum = T();
-				unsigned int k = 0;
-				unsigned int simdBound = SIMD_TEMPLATE<T>::getSIMDBound(columns);
-				while(k < simdBound)
-				{
-					SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[k + y*columns]);
-					SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&B.data[k + x*B.columns]);
-					simdSum += aValues*bValues;
-					k+=SIMD_TEMPLATE<T>::SIZE;
-				}
-				while(k < columns)
-				{
-					finalSum += data[k + y*columns] * B.data[k + x*B.columns];
-					k++;
-				}
-
-				finalSum += simdSum.sum();
-				result.data[x + y*B.rows] = finalSum;
+				SIMD_TEMPLATE<T> aValues = SIMD_TEMPLATE<T>::load(&data[k + y*columns]);
+				SIMD_TEMPLATE<T> bValues = SIMD_TEMPLATE<T>::load(&B.data[k + x*B.columns]);
+				simdSum += aValues*bValues;
+				k+=SIMD_TEMPLATE<T>::SIZE;
 			}
-		}, 0, totalSize, 1, SJQ_DESIRED_THREADS(totalSize, SJQ_LIGHT_TASK));
+			while(k < columns)
+			{
+				finalSum += data[k + y*columns] * B.data[k + x*B.columns];
+				k++;
+			}
+
+			finalSum += simdSum.sum();
+			result.data[x + y*B.rows] = finalSum;
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
 
 		return result;
 	}
@@ -1962,17 +1998,19 @@ namespace smpl
 	{
 		Matrix<T> m = Matrix<T>(rows, 1);
 		
-		SJQ_OMP_Replacement::parallelize([this, &m](size_t tStart, size_t tEnd, size_t tIncr)->void{
-			for(size_t i=tStart; i<tEnd; i+=tIncr)
+		SET_OMP_THREADS(OMP_DESIRED_THREADS(rows, OMP_HEAVY_TASK))
+		#pragma omp parallel for
+		for (size_t i=0; i<rows; i++)
+		{
+			T sum = T();
+			for(size_t j=0; j<columns; j++)
 			{
-				T sum = T();
-				for(size_t j=0; j<columns; j++)
-				{
-					sum += data[j + i*rows];
-				}
-				m[i][0] = sum;
+				sum += data[j + i*rows];
 			}
-		}, 0, rows, 1, SJQ_DESIRED_THREADS(rows, SJQ_HEAVY_TASK));
+			m[i][0] = sum;
+		}
+		RESET_LARGE_ENOUGH_CLAUSE()
+		
 		return m;
 	}
 

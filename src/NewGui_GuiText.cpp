@@ -14,7 +14,7 @@ namespace smpl
 
     }
 
-    void GuiText::setText(std::string s)
+    void GuiText::setText(const std::string& s)
     {
         text = s;
         setShouldRender();
@@ -25,13 +25,13 @@ namespace smpl
         return text;
     }
 
-    void GuiText::setFontColor(Color c)
+    void GuiText::setFontColor(const Color& c)
     {
         fontColor = c;
         setShouldRender();
     }
 
-    void GuiText::setHighlightColor(Color c)
+    void GuiText::setHighlightColor(const Color& c)
     {
         highlightColor = c;
         setShouldRender();
@@ -141,17 +141,14 @@ namespace smpl
 
     GRect GuiText::getCaretBox()
     {
-        FontInterface* f = GraphicsInterface::getFont();
-        if(f != nullptr)
+        FontInterface f = GraphicsInterface::getFont();
+        if(f.getFont().isValid())
         {
             int indexSearchingFor = highlightStartIndex;
             if(caretOnRight)
                 indexSearchingFor = highlightEndIndex;
             
-            if(f->getFont() == nullptr)
-                return {0, 0, 0, 0};
-            
-            Box2D b = f->getFont()->getCaretBox(UnicodeStringBridge(text), finalWidthOfText, wrapMode, indexSearchingFor);
+            Box2D b = f.getFont()->getCaretBox(UnicodeStringBridge(text), finalWidthOfText, wrapMode, indexSearchingFor);
             return {(int32_t)b.getLeftBound(), (int32_t)b.getTopBound(), (int32_t)b.getRightBound(), (int32_t)b.getBottomBound()};
         }
         return {0,0,0,0};
@@ -163,10 +160,8 @@ namespace smpl
         x = offX;
         y = offY;
         
-        FontInterface* f = GraphicsInterface::getFont();
-        if(f == nullptr)
-            return;
-        if(f->getFont() == nullptr)
+        FontInterface f = GraphicsInterface::getFont();
+        if(!f.getFont().isValid())
             return;
         
         if(wrapMode == Font::NO_WRAP)
@@ -175,7 +170,7 @@ namespace smpl
             finalWidthOfText = -1;
             finalHeightOfText = -1;
             
-            Box2D bounds = f->getFont()->getBoundingBox(text, -1, Font::NO_WRAP);
+            Box2D bounds = f.getFont()->getBoundingBox(text, -1, Font::NO_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
         }
@@ -191,13 +186,13 @@ namespace smpl
             else
                 finalHeightOfText = maximumHeight;
             
-            Box2D bounds = f->getFont()->getBoundingBox(text, finalWidthOfText, Font::WORD_WRAP);
+            Box2D bounds = f.getFont()->getBoundingBox(text, finalWidthOfText, Font::WORD_WRAP);
             width = bounds.getWidth();
             height = bounds.getHeight();
         }
     }
 
-    void GuiText::update(SmartMemory<GuiManager> manager)
+    void GuiText::update(const SmartMemory<GuiManager>& manager)
     {
         int oldSelectStart = highlightStartIndex;
         int oldSelectEnd = highlightEndIndex;
@@ -222,8 +217,8 @@ namespace smpl
                 if(isColliding(mouseX, mouseY))
                 {
                     selecting = true;
-                    FontInterface* f = GraphicsInterface::getFont();
-                    size_t sIndex = f->getFont()->getSelectIndex(text, finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
+                    FontInterface f = GraphicsInterface::getFont();
+                    size_t sIndex = f.getFont()->getSelectIndex(text, finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                     if(sIndex != SIZE_MAX)
                     {
@@ -252,12 +247,11 @@ namespace smpl
 
             if(selecting)
             {
-                FontInterface* f = GraphicsInterface::getFont();
-                if(f == nullptr)
+                FontInterface f = GraphicsInterface::getFont();
+                if(f.getFont().isValid())
                     return;
-                if(f->getFont() == nullptr)
-                    return;
-                size_t sIndex = f->getFont()->getSelectIndex(UnicodeStringBridge(text).getData(), finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
+
+                size_t sIndex = f.getFont()->getSelectIndex(UnicodeStringBridge(text).getData(), finalWidthOfText, wrapMode, mouseX-getTrueX(), mouseY-getTrueY());
 
                 //set to endIndex
                 if(sIndex != SIZE_MAX)
@@ -303,7 +297,7 @@ namespace smpl
         }
     }
     
-    void GuiText::render(SmartMemory<GuiManager> manager)
+    void GuiText::render(const SmartMemory<GuiManager>& manager)
     {
         GraphicsInterface::setColor(fontColor);
 
@@ -317,7 +311,7 @@ namespace smpl
         }
     }
 
-    void GuiText::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiText::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiContent::loadDataFromXML(attribs, manager);
         
@@ -366,7 +360,7 @@ namespace smpl
         attribs.erase(pair);
     }
 
-    SmartMemory<GuiItem> GuiText::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiText::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiText* ins = new GuiText();
         ins->loadDataFromXML(attributes, manager);

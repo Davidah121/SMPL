@@ -19,7 +19,7 @@ objDir = ./bin/Release/obj
 exeDir = ./bin/Release
 compiler = clang++
 CXXFLAGS = -std=c++17 -O3 -mavx2 -mf16c
-DEFINES = -D OPTI=2 -D USE_OPENSSL -D USE_PREPROCESSOR_TRICKS=1
+DEFINES = -D OPTI=2 -D USE_OPENSSL -D USE_OPENGL -D USE_PREPROCESSOR_TRICKS=1
 DLLStuff = -fPIC -D DLL_EXPORT
 OPTIONS = -g -c -fopenmp -pipe -Wno-unused-command-line-argument
 EXEOPTIONS = -g -fopenmp

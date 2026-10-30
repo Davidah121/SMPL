@@ -13,27 +13,26 @@ namespace smpl
 
 	void Compression::refPairToDeflateBlocks(std::vector<lengthPair>* block, BinarySet* output, bool dynamic, bool lastBlock)
 	{
-		output->setAddBitOrder(BinarySet::LMSB);
+		// StringTools::println("LASTBLOCK: %d", lastBlock);
 		output->add(lastBlock);
 
 		if(!dynamic)
 		{
 			output->add(1, 2);
-
-			output->setAddBitOrder(BinarySet::RMSB);
 			//should incorporate block ends
 			for(size_t i=0; i<block->size(); i++)
 			{
 				lengthPair lp = block->at(i);
 				if(lp.literal)
 				{
+					// StringTools::println("SYM: %d", lp.v1);
 					if(lp.v1 <= 143)
 					{
-						output->add(48 + lp.v1, 8);
+						output->add(48 + lp.v1, 8, 0, BinarySet::RMSB); //huffman code. Rightmost first
 					}
 					else
 					{
-						output->add(256 + lp.v1, 9);
+						output->add(256 + lp.v1, 9, 0, BinarySet::RMSB); //huffman code. Rightmost first
 					}
 				}
 				else
@@ -77,12 +76,11 @@ namespace smpl
 						bitsRequired = 8;
 					}
 					
-					output->add(codeVal, bitsRequired);
+					// StringTools::println("SYM: %d", codeVal);
+					output->add(codeVal, bitsRequired, 0, BinarySet::RMSB);
 					if(additionalBits>0)
 					{
-						output->setAddBitOrder(BinarySet::LMSB);
 						output->add(addVal, additionalBits);
-						output->setAddBitOrder(BinarySet::RMSB);
 					}
 
 					//now add the extrabits for the backwards distance.
@@ -110,23 +108,19 @@ namespace smpl
 						addVal = (lp.v2-tempV) % expV;
 					}
 					
-					output->add(codeVal, bitsRequired);
+					output->add(codeVal, bitsRequired, 0, BinarySet::RMSB);
 					if(additionalBits>0)
 					{
-						output->setAddBitOrder(BinarySet::LMSB);
 						output->add(addVal, additionalBits);
-						output->setAddBitOrder(BinarySet::RMSB);
 					}
 				}
 			}
 			
-			output->add(0, 7); //end of block
+			output->add(0, 7, 0, BinarySet::RMSB); //end of block
 		}
 		else
 		{
 			output->add(2, 2);
-
-			output->setAddBitOrder(BinarySet::RMSB);
 			//should incorporate block ends
 
 			//Helpful structure for sorting
@@ -345,7 +339,6 @@ namespace smpl
 			std::vector<TraverseInfo<HuffmanNode>> hcTraversalInfo = tempTree->getTraversalInformation(true);
 
 			//write HLIT, HDIST, HCLEN
-			output->setAddBitOrder(BinarySet::LMSB);
 
 			output->add(HLIT, 5);
 			output->add(HDIST, 5);
@@ -369,8 +362,6 @@ namespace smpl
 				int index = indexingArray[allCodeLengths[i]];
 				output->add( hcLengthsUnSorted[index] );
 			}
-			
-			output->setAddBitOrder(BinarySet::RMSB);
 			
 			delete[] allCodeLengths;
 			delete[] hcLengthsUnSorted;
@@ -397,7 +388,7 @@ namespace smpl
 					{
 						if(lp.v1 == n.node->data.value)
 						{
-							output->add( n.path );
+							output->add( n.path, BinarySet::RMSB);
 							found = true;
 							break;
 						}
@@ -473,7 +464,7 @@ namespace smpl
 						if(codeWord == n.node->data.value)
 						{
 							// StringTools::println("Writing Literal %d with value %s", codeWord, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
-							output->add( n.path );
+							output->add( n.path, BinarySet::RMSB);
 							found = true;
 							break;
 						}
@@ -482,10 +473,7 @@ namespace smpl
 					if(additionalBits>0)
 					{
 						// StringTools::println("Writing additional bits with value %s", StringTools::toBinaryString(addVal, additionalBits));
-							
-						output->setAddBitOrder(BinarySet::LMSB);
 						output->add(addVal, additionalBits);
-						output->setAddBitOrder(BinarySet::RMSB);
 					}
 					
 					if(found==false)
@@ -521,7 +509,7 @@ namespace smpl
 						if(codeWord == n.node->data.value)
 						{
 							// StringTools::println("Writing Distance %d with value %s", codeWord, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
-							output->add( n.path );
+							output->add( n.path, BinarySet::RMSB);
 							found = true;
 							break;
 						}
@@ -530,9 +518,7 @@ namespace smpl
 					if(additionalBits>0)
 					{
 						// StringTools::println("Writing additional bits with value %s", StringTools::toBinaryString(addVal, additionalBits));
-						output->setAddBitOrder(BinarySet::LMSB);
 						output->add(addVal, additionalBits);
-						output->setAddBitOrder(BinarySet::RMSB);
 					}
 					
 					if(found==false)
@@ -550,7 +536,7 @@ namespace smpl
 				if(256 == n.node->data.value)
 				{
 					// StringTools::println("Writing %d with value %s", 256, StringTools::toBinaryString(n.path.toBytes()[0], n.path.size()));
-					output->add( n.path );
+					output->add( n.path, BinarySet::RMSB );
 					found = true;
 					break;
 				}
@@ -568,7 +554,6 @@ namespace smpl
 			#pragma endregion
 
 		}
-		output->setAddBitOrder(BinarySet::LMSB);
 	}
 
 
@@ -611,15 +596,12 @@ namespace smpl
 			compressor.addData(data, size);
 			compressor.endData();
 			refPairToDeflateBlocks(&compressor.getBuffer(), outputData, customTable, true);
-			outputData->setAddBitOrder(BinarySet::LMSB);
 			return;
 		}
 
 		std::vector<BinarySet> threadBinData = std::vector<BinarySet>(blocks);
 		BinarySet bin = BinarySet();
 
-		outputData->setBitOrder(BinarySet::LMSB);
-		outputData->setAddBitOrder(BinarySet::RMSB);
 		int sizeOfBlock = size/blocks;
 
 		#pragma omp parallel for
@@ -640,10 +622,8 @@ namespace smpl
 		//Construct
 		for(int block=0; block<blocks; block++)
 		{
-			outputData->add( threadBinData[block] );
+			outputData->add( threadBinData[block], BinarySet::RMSB);
 		}
-
-		outputData->setAddBitOrder(BinarySet::LMSB);
 	}
 
 	std::vector<unsigned char> Compression::decompressDeflate(std::vector<unsigned char> data, size_t expectedSize)
@@ -688,7 +668,6 @@ namespace smpl
 		BinarySet binData = BinarySet();
 		
 		//set data in binarySet
-		binData.setBitOrder(BinarySet::LMSB);
 		binData.setValues(data, size);
 
 		//StringTools::out << "BinSize " << binData.size() << StringTools::lineBreak;
@@ -826,6 +805,7 @@ namespace smpl
 					else
 					{
 						//StringTools::out << "Error creating dynamic tree" << StringTools::lineBreak;
+						StringTools::println("ERROR CREATING DYNAMIC TREE");
 						break;
 					}
 					//StringTools::out << "Finished Tree" << StringTools::lineBreak;
@@ -836,41 +816,20 @@ namespace smpl
 
 				while(blockEnded==false)
 				{
-					if(hitGood!=true)
+					while(true)
 					{
 						//traverse per bit
-
 						if(binData.getBit(currLoc) == 0)
-						{
-							// StringTools::print("0");
 							currNode = currNode->leftChild;
-						}
 						else
-						{
-							// StringTools::print("1");
 							currNode = currNode->rightChild;
-						}
 
-						if (currNode != nullptr)
-						{
-							if (currNode->leftChild == nullptr && currNode->rightChild == nullptr)
-							{
-								//must be the correct value
-								//StringTools::out << "Hit value with value - " << currNode->data.value << StringTools::lineBreak;
-								/*
-								StringTools::out << "Hit value with value - " << currNode->data.value << ", and bitvalue - ";
-								test.printVals();
-								*/
+						currLoc += 1;
 
-								hitGood = true;
-
-							}
-							currLoc += 1;
-						}
-						else
+						if (currNode == nullptr)
 						{
 							//error
-
+							StringTools::println("ERROR PARSING TREE");
 							if(mTree!=nullptr)
 								delete mTree;
 							if(backTree!=nullptr)
@@ -885,151 +844,141 @@ namespace smpl
 							
 							return finalData;
 						}
+
+						if (currNode->leftChild == nullptr && currNode->rightChild == nullptr)
+							break;
+					}
+
+					if(currNode->data.value <= 255)
+					{
+						//literal
+						finalData.push_back(currNode->data.value);
+
+						//Size check for security
+						if(finalData.size() > expectedSize)
+						{
+							return std::vector<unsigned char>();
+						}
+					}
+					else if(currNode->data.value == 256)
+					{
+						//end of block
+						// StringTools::out << "End of block" << StringTools::lineBreak;
+						blockEnded = true;
+						break;
 					}
 					else
 					{
-						if(currNode->data.value <= 255)
-						{
-							//literal
-							// StringTools::println(" Got literal with value %d", currNode->data.value);
-							//StringTools::out << "Literal" << StringTools::lineBreak;
-							finalData.push_back(currNode->data.value);
+						//StringTools::out << "Reference Pair" << StringTools::lineBreak;
+						
+						//reference pair
+						int baseCopyLength = 0;
+						int copyExtraBits = 0;
+						Compression::getCopyLengthInformation(currNode->data.value, &baseCopyLength, &copyExtraBits);
 
-							//Size check for security
-							if(finalData.size() > expectedSize)
-							{
-								return std::vector<unsigned char>();
-							}
-						}
-						else if(currNode->data.value == 256)
+						
+						//get the value of the extra bits
+						int copyExtraVal = binData.getBits(currLoc, currLoc+copyExtraBits, BinarySet::LittleEndian);
+						currLoc+=copyExtraBits;
+
+						int finalCopyLength = baseCopyLength + copyExtraVal;
+						
+						// StringTools::println(" Got length with code %d and final length %d", currNode->data.value, finalCopyLength);
+
+						int backRefCode = 0;
+						int baseBackLength = 0;
+						int backRefExtraBits = 0;
+
+						//read next 5 bits to get back ref
+						//Note that this only works for default compression
+
+						if(backTree==nullptr)
 						{
-							//end of block
-							//StringTools::out << "End of block" << StringTools::lineBreak;
-							blockEnded = true;
-							break;
+							backRefCode = binData.getBitsReversed(currLoc, currLoc+5, BinarySet::LittleEndian);
+							currLoc+=5;
 						}
 						else
 						{
-							//StringTools::out << "Reference Pair" << StringTools::lineBreak;
-							
-							//reference pair
-							int baseCopyLength = 0;
-							int copyExtraBits = 0;
-							Compression::getCopyLengthInformation(currNode->data.value, &baseCopyLength, &copyExtraBits);
+							//traverse the back tree to get the backRefCode
+							BinaryTreeNode<HuffmanNode>* backNode = backTree->getRoot();
 
-							
-							//get the value of the extra bits
-							int copyExtraVal = binData.getBits(currLoc, currLoc+copyExtraBits);
-							currLoc+=copyExtraBits;
-
-							int finalCopyLength = baseCopyLength + copyExtraVal;
-
-							
-							// StringTools::println(" Got length with code %d and final length %d", currNode->data.value, finalCopyLength);
-
-							int backRefCode = 0;
-							int baseBackLength = 0;
-							int backRefExtraBits = 0;
-
-							//read next 5 bits to get back ref
-							//Note that this only works for default compression
-
-							if(backTree==nullptr)
+							while(true)
 							{
-								backRefCode = binData.getBits(currLoc, currLoc+5, true);
-								currLoc+=5;
-							}
-							else
-							{
-								//traverse the back tree to get the backRefCode
-								BinaryTreeNode<HuffmanNode>* backNode = backTree->getRoot();
-
-								while(true)
+								if (backNode == nullptr)
 								{
-									if (backNode == nullptr)
-									{
-										//error
-										if (mTree != nullptr)
-											delete mTree;
-										if (backTree != nullptr)
-											delete backTree;
-										if (dynTrees != nullptr)
-											delete[] dynTrees;
+									//error
+									if (mTree != nullptr)
+										delete mTree;
+									if (backTree != nullptr)
+										delete backTree;
+									if (dynTrees != nullptr)
+										delete[] dynTrees;
 
-										#ifdef USE_EXCEPTIONS
-											throw Compression::HUFFMAN_TREE_ERROR();
-										#endif
+									#ifdef USE_EXCEPTIONS
+										throw Compression::HUFFMAN_TREE_ERROR();
+									#endif
 
-										return finalData;
-									}
+									return finalData;
+								}
 
-									if(binData.getBit(currLoc)==false)
-									{
-										backNode = backNode->leftChild;
-									}
-									else
-									{
-										backNode = backNode->rightChild;
-									}
-									currLoc+=1;
+								if(binData.getBit(currLoc)==0)
+									backNode = backNode->leftChild;
+								else
+									backNode = backNode->rightChild;
 
-									if (backNode == nullptr)
-									{
-										//error
-										if (mTree != nullptr)
-											delete mTree;
-										if (backTree != nullptr)
-											delete backTree;
-										if (dynTrees != nullptr)
-											delete[] dynTrees;
+								currLoc+=1;
 
-										#ifdef USE_EXCEPTIONS
-											throw Compression::HUFFMAN_TREE_ERROR();
-										#endif
+								if (backNode == nullptr)
+								{
+									//error
+									if (mTree != nullptr)
+										delete mTree;
+									if (backTree != nullptr)
+										delete backTree;
+									if (dynTrees != nullptr)
+										delete[] dynTrees;
 
-										return finalData;
-									}
+									#ifdef USE_EXCEPTIONS
+										throw Compression::HUFFMAN_TREE_ERROR();
+									#endif
 
-									if (backNode->leftChild == nullptr && backNode->rightChild == nullptr)
-									{
-										//hit a value;
-										backRefCode = backNode->data.value;
-										break;
-									}
+									return finalData;
+								}
+
+								if (backNode->leftChild == nullptr && backNode->rightChild == nullptr)
+								{
+									//hit a value;
+									backRefCode = backNode->data.value;
+									break;
 								}
 							}
-							
-							Compression::getBackDistanceInformation(backRefCode, &baseBackLength, &backRefExtraBits);
-
-							//get the value of the extra bits
-							int backExtraVal = binData.getBits(currLoc, currLoc+backRefExtraBits);
-							currLoc+=backRefExtraBits;
-							int finalBackRef = baseBackLength + backExtraVal;
-
-							// StringTools::println(" Got Distance with code %d and final length %d", backRefCode, finalBackRef);
-
-							
-							//StringTools::out << "Length is: " << finalCopyLength << ", Dist is: " << finalBackRef << StringTools::lineBreak;
-							//with finalCopyLength and finalBackRef, copy into the finalData
-							int startPos = finalData.size()-finalBackRef;
-
-							//Size check for security
-							if(finalData.size()+finalCopyLength > expectedSize)
-							{
-								return std::vector<unsigned char>();
-							}
-
-							for(int i=0; i<finalCopyLength; i++)
-							{
-								finalData.push_back( finalData[startPos+i] );
-							}
-							
 						}
 						
-						hitGood = false;
-						currNode = mTree->getRoot();
+						Compression::getBackDistanceInformation(backRefCode, &baseBackLength, &backRefExtraBits);
+
+						//get the value of the extra bits
+						int backExtraVal = binData.getBits(currLoc, currLoc+backRefExtraBits, BinarySet::LittleEndian);
+						currLoc+=backRefExtraBits;
+						int finalBackRef = baseBackLength + backExtraVal;
+						
+						//with finalCopyLength and finalBackRef, copy into the finalData
+						int startPos = finalData.size()-finalBackRef;
+						// StringTools::println("Distance= %d  | DistanceSymbol= %d  | copyLength= %d", finalBackRef, backRefCode, finalCopyLength);
+
+						//Size check for security
+						if(finalData.size()+finalCopyLength > expectedSize)
+						{
+							return std::vector<unsigned char>();
+						}
+
+						for(int i=0; i<finalCopyLength; i++)
+						{
+							finalData.push_back( finalData[startPos+i] );
+						}
+						
 					}
 					
+					currNode = mTree->getRoot();
 				}
 
 				if(mode == 1)
@@ -1221,11 +1170,11 @@ namespace smpl
 
 		BinaryTree<HuffmanNode>** trees = new BinaryTree<HuffmanNode> * [2]{};
 
-		int HLIT = data->getBits(*location, *location+5);
+		int HLIT = data->getBits(*location, *location+5, BinarySet::LittleEndian);
 		*location+=5;
-		int HDIST = data->getBits(*location, *location+5);
+		int HDIST = data->getBits(*location, *location+5, BinarySet::LittleEndian);
 		*location+=5;
-		int HCLEN = data->getBits(*location, *location+4);
+		int HCLEN = data->getBits(*location, *location+4, BinarySet::LittleEndian);
 		*location+=4;
 
 		int amountOfLitCodes = 257+HLIT;
@@ -1253,7 +1202,7 @@ namespace smpl
 
 		for(int i=0; i<amountOfCodeLengthCodes; i++)
 		{
-			hcStuff[i].length = data->getBits(*location, *location+3);
+			hcStuff[i].length = data->getBits(*location, *location+3, BinarySet::LittleEndian);
 			*location+=3;
 		}
 		
@@ -1318,7 +1267,7 @@ namespace smpl
 				else if(actualValue==16)
 				{
 					//copy previous value x times
-					int extra = data->getBits(*location, *location+2);
+					int extra = data->getBits(*location, *location+2, BinarySet::LittleEndian);
 					*location+=2;
 
 					int copyLen = extra + 3;
@@ -1333,7 +1282,7 @@ namespace smpl
 				else if(actualValue==17)
 				{
 					//copy 0 x times
-					int extra = data->getBits(*location, *location+3);
+					int extra = data->getBits(*location, *location+3, BinarySet::LittleEndian);
 					*location+=3;
 
 					int copyLen = extra + 3;
@@ -1347,7 +1296,7 @@ namespace smpl
 				else if(actualValue==18)
 				{
 					//copy 0 x times
-					int extra = data->getBits(*location, *location+7);
+					int extra = data->getBits(*location, *location+7, BinarySet::LittleEndian);
 					*location+=7;
 
 					int copyLen = extra + 11;
@@ -1462,27 +1411,28 @@ namespace smpl
 		else if(loc<=11)
 		{
 			*extraBits = 1;
-			*baseValue = 11 + (loc-8)*((int)std::pow(2, *extraBits));
+			
+			*baseValue = 11 + (loc-8)*(1 << *extraBits);
 		}
 		else if(loc<=15)
 		{
 			*extraBits = 2;
-			*baseValue = 19 + (loc-12)*((int)std::pow(2, *extraBits));
+			*baseValue = 19 + (loc-12)*(1 << *extraBits);
 		}
 		else if(loc<=19)
 		{
 			*extraBits = 3;
-			*baseValue = 35 + (loc-16)*((int)std::pow(2, *extraBits));
+			*baseValue = 35 + (loc-16)*(1 << *extraBits);
 		}
 		else if(loc<=23)
 		{
 			*extraBits = 4;
-			*baseValue = 67 + (loc-20)*((int)std::pow(2, *extraBits));
+			*baseValue = 67 + (loc-20)*(1 << *extraBits);
 		}
 		else if(loc<=27)
 		{
 			*extraBits = 5;
-			*baseValue = 131 + (loc-24)*((int)std::pow(2, *extraBits));
+			*baseValue = 131 + (loc-24)*(1 << *extraBits);
 		}
 		else if(loc==28)
 		{
@@ -1509,67 +1459,67 @@ namespace smpl
 		else if(code<=5)
 		{
 			*extraBits = 1;
-			*baseValue = 5 + (code-4)*((int)std::pow(2, *extraBits));
+			*baseValue = 5 + (code-4)*(1 << *extraBits);
 		}
 		else if(code<=7)
 		{
 			*extraBits = 2;
-			*baseValue = 9 + (code-6)*((int)std::pow(2, *extraBits));
+			*baseValue = 9 + (code-6)*(1 << *extraBits);
 		}
 		else if(code<=9)
 		{
 			*extraBits = 3;
-			*baseValue = 17 + (code-8)*((int)std::pow(2, *extraBits));
+			*baseValue = 17 + (code-8)*(1 << *extraBits);
 		}
 		else if(code<=11)
 		{
 			*extraBits = 4;
-			*baseValue = 33 + (code-10)*((int)std::pow(2, *extraBits));
+			*baseValue = 33 + (code-10)*(1 << *extraBits);
 		}
 		else if(code<=13)
 		{
 			*extraBits = 5;
-			*baseValue = 65 + (code-12)*((int)std::pow(2, *extraBits));
+			*baseValue = 65 + (code-12)*(1 << *extraBits);
 		}
 		else if(code<=15)
 		{
 			*extraBits = 6;
-			*baseValue = 129 + (code-14)*((int)std::pow(2, *extraBits));
+			*baseValue = 129 + (code-14)*(1 << *extraBits);
 		}
 		else if(code<=17)
 		{
 			*extraBits = 7;
-			*baseValue = 257 + (code-16)*((int)std::pow(2, *extraBits));
+			*baseValue = 257 + (code-16)*(1 << *extraBits);
 		}
 		else if(code<=19)
 		{
 			*extraBits = 8;
-			*baseValue = 513 + (code-18)*((int)std::pow(2, *extraBits));
+			*baseValue = 513 + (code-18)*(1 << *extraBits);
 		}
 		else if(code<=21)
 		{
 			*extraBits = 9;
-			*baseValue = 1025 + (code-20)*((int)std::pow(2, *extraBits));
+			*baseValue = 1025 + (code-20)*(1 << *extraBits);
 		}
 		else if(code<=23)
 		{
 			*extraBits = 10;
-			*baseValue = 2049 + (code-22)*((int)std::pow(2, *extraBits));
+			*baseValue = 2049 + (code-22)*(1 << *extraBits);
 		}
 		else if(code<=25)
 		{
 			*extraBits = 11;
-			*baseValue = 4097 + (code-24)*((int)std::pow(2, *extraBits));
+			*baseValue = 4097 + (code-24)*(1 << *extraBits);
 		}
 		else if(code<=27)
 		{
 			*extraBits = 12;
-			*baseValue = 8193 + (code-26)*((int)std::pow(2, *extraBits));
+			*baseValue = 8193 + (code-26)*(1 << *extraBits);
 		}
 		else if(code<=29)
 		{
 			*extraBits = 13;
-			*baseValue = 16385 + (code-28)*((int)std::pow(2, *extraBits));
+			*baseValue = 16385 + (code-28)*(1 << *extraBits);
 		}
 	}
 

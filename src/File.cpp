@@ -16,7 +16,7 @@ namespace smpl
         
     }
 
-    void File::init(std::string filename)
+    void File::init(const std::string& filename)
     {
         locationOfExtension = filename.find_last_of('.');
         size_t v1 = filename.find_last_of('/');

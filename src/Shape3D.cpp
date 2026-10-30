@@ -137,7 +137,7 @@ namespace smpl
 
 	Vec3f Triangle3D::getNormal() const
 	{
-		return v1.crossProduct(v2).normalize();
+		return v1.cross(v2).normalize();
 	}
 
 	float Triangle3D::generateBoundingRadius() const
@@ -171,9 +171,9 @@ namespace smpl
 	void Triangle3D::onTransformChanged()
 	{
 		//need to rotate this too. Rotate first? scale first?
-		v1 = baseV1.hadamardProduct(getScale()) + getPosition();
-		v2 = baseV2.hadamardProduct(getScale()) + getPosition();
-		v3 = baseV3.hadamardProduct(getScale()) + getPosition();
+		v1 = (baseV1 * getScale()) + getPosition();
+		v2 = (baseV2 * getScale()) + getPosition();
+		v3 = (baseV3 * getScale()) + getPosition();
 	}
 
 	#pragma endregion
@@ -315,8 +315,8 @@ namespace smpl
 
 	void Box3D::onTransformChanged()
 	{
-		topLeft = baseTopLeft.hadamardProduct(getScale()) + getPosition();
-		bottomRight = baseBottomRight.hadamardProduct(getScale()) + getPosition();
+		topLeft = (baseTopLeft*getScale()) + getPosition();
+		bottomRight = (baseBottomRight*getScale()) + getPosition();
 	}
 	#pragma endregion
 
@@ -351,9 +351,9 @@ namespace smpl
 		Vec3f newV1 = b.getVertex1() - a.getPosition();
 		Vec3f newV2 = b.getVertex2() - a.getPosition();
 		Vec3f newV3 = b.getVertex3() - a.getPosition();
-		Vec3f u = newV2.crossProduct(newV3).normalize();
-		Vec3f v = newV3.crossProduct(newV1).normalize();
-		Vec3f w = newV1.crossProduct(newV2).normalize();
+		Vec3f u = newV2.cross(newV3).normalize();
+		Vec3f v = newV3.cross(newV1).normalize();
+		Vec3f w = newV1.cross(newV2).normalize();
 		
 		if(u.dot(v) < 0)
 			return false;
@@ -425,9 +425,9 @@ namespace smpl
 			return false;
 
 		//cross products
-		Vec3f cross11 = boxAxis1.crossProduct(triPoints[1]-triPoints[0]);
-		Vec3f cross12 = boxAxis1.crossProduct(triPoints[2]-triPoints[1]);
-		Vec3f cross13 = boxAxis1.crossProduct(triPoints[0]-triPoints[2]);
+		Vec3f cross11 = boxAxis1.cross(triPoints[1]-triPoints[0]);
+		Vec3f cross12 = boxAxis1.cross(triPoints[2]-triPoints[1]);
+		Vec3f cross13 = boxAxis1.cross(triPoints[0]-triPoints[2]);
 		
 		if(!SATTest(cross11, boxPoints, triPoints))
 			return false;
@@ -436,9 +436,9 @@ namespace smpl
 		if(!SATTest(cross13, boxPoints, triPoints))
 			return false;
 
-		Vec3f cross21 = boxAxis2.crossProduct(triPoints[1]-triPoints[0]);
-		Vec3f cross22 = boxAxis2.crossProduct(triPoints[2]-triPoints[1]);
-		Vec3f cross23 = boxAxis2.crossProduct(triPoints[0]-triPoints[2]);
+		Vec3f cross21 = boxAxis2.cross(triPoints[1]-triPoints[0]);
+		Vec3f cross22 = boxAxis2.cross(triPoints[2]-triPoints[1]);
+		Vec3f cross23 = boxAxis2.cross(triPoints[0]-triPoints[2]);
 		
 		if(!SATTest(cross21, boxPoints, triPoints))
 			return false;
@@ -447,9 +447,9 @@ namespace smpl
 		if(!SATTest(cross23, boxPoints, triPoints))
 			return false;
 
-		Vec3f cross31 = boxAxis3.crossProduct(triPoints[1]-triPoints[0]);
-		Vec3f cross32 = boxAxis3.crossProduct(triPoints[2]-triPoints[1]);
-		Vec3f cross33 = boxAxis3.crossProduct(triPoints[0]-triPoints[2]);
+		Vec3f cross31 = boxAxis3.cross(triPoints[1]-triPoints[0]);
+		Vec3f cross32 = boxAxis3.cross(triPoints[2]-triPoints[1]);
+		Vec3f cross33 = boxAxis3.cross(triPoints[0]-triPoints[2]);
 
 		if(!SATTest(cross31, boxPoints, triPoints))
 			return false;

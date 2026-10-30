@@ -482,8 +482,7 @@ namespace smpl
 			return; //error
 		
 		//Form HTTP Response
-		WebRequest response = WebRequest();
-		response.setHeader(WebRequest::TYPE_SERVER, "HTTP/1.1 101 Switching Protocols", false);
+		WebRequest response = WebRequest::createQuickServerResponse(101);
 		response.addKeyValue("Connection", "Upgrade");
 		response.addKeyValue("Upgrade", "websocket");
 
@@ -511,7 +510,7 @@ namespace smpl
 
 		//Parse as WebRequest
 		WebRequest rec = WebRequest();
-		rec.setHeader(WebRequest::TYPE_GET, "/", true);
+		rec.setHeader(WebRequest::TYPE_GET, "/");
 		rec.addKeyValue("Host", location+":"+StringTools::toString(port));
 		rec.addKeyValue("Connection", "keep-alive, Upgrade");
 		rec.addKeyValue("Upgrade", "websocket");

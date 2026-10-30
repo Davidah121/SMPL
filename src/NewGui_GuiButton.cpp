@@ -13,26 +13,26 @@ namespace smpl
 
     }
     
-    void GuiButton::setOnClickFunction(std::function<void(GuiButton*, int button)> onClick)
+    void GuiButton::setOnClickFunction(const std::function<void(GuiButton*, int button)>& onClick)
     {
         onClickFunc = onClick;
     }
-    void GuiButton::setOnClickReleaseFunction(std::function<void(GuiButton*, int button, bool hovering)> onClickReleased)
+    void GuiButton::setOnClickReleaseFunction(const std::function<void(GuiButton*, int button, bool hovering)>& onClickReleased)
     {
         onClickReleasedFunc = onClickReleased;
     }
 
-    void GuiButton::setOnMouseInFunction(std::function<void(GuiButton*)> onMouseIn)
+    void GuiButton::setOnMouseInFunction(const std::function<void(GuiButton*)>& onMouseIn)
     {
         onMouseInFunc = onMouseIn;
     }
 
-    void GuiButton::setOnMouseOutFunction(std::function<void(GuiButton*)> onMouseOut)
+    void GuiButton::setOnMouseOutFunction(const std::function<void(GuiButton*)>& onMouseOut)
     {
         onMouseOutFunc = onMouseOut;
     }
 
-    void GuiButton::addChild(SmartMemory<GuiItem> child)
+    void GuiButton::addChild(const SmartMemory<GuiItem>& child)
     {
         //can only have one child.
         //More efficient than GuiLayoutList::removeChild() since we are removing all.
@@ -50,7 +50,7 @@ namespace smpl
         GuiLayoutList::addChild(child);
     }
 
-    void GuiButton::update(SmartMemory<GuiManager> manager)
+    void GuiButton::update(const SmartMemory<GuiManager>& manager)
     {
         if(!hovering && !depressed)
             originalBackgroundColor = getBackgroundColor();
@@ -177,16 +177,16 @@ namespace smpl
         GuiLayoutList::update(manager);
     }
 
-    void GuiButton::setHoverColor(smpl::Color c)
+    void GuiButton::setHoverColor(const Color& c)
     {
         hoverColor = c;
     }
-    void GuiButton::setPressedColor(smpl::Color c)
+    void GuiButton::setPressedColor(const Color& c)
     {
         depressedColor = c;
     }
 
-    void GuiButton::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, SmartMemory<GuiManager> manager)
+    void GuiButton::loadDataFromXML(SimpleHashMap<std::string, std::string>& attribs, const SmartMemory<GuiManager>& manager)
     {
         GuiLayoutList::loadDataFromXML(attribs, manager);
 
@@ -205,7 +205,7 @@ namespace smpl
         }
     }
 
-    SmartMemory<GuiItem> GuiButton::loadFunction(SimpleHashMap<std::string, std::string>& attributes, SmartMemory<GuiManager> manager)
+    SmartMemory<GuiItem> GuiButton::loadFunction(SimpleHashMap<std::string, std::string>& attributes, const SmartMemory<GuiManager>& manager)
     {
         GuiButton* ins = new GuiButton();
         ins->loadDataFromXML(attributes, manager);

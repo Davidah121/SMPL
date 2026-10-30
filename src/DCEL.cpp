@@ -3,316 +3,335 @@
 
 namespace smpl
 {
-    DCEL::DCEL()
-    {
-        //add the most outer face that contains all the inner faces.
-        //this one is special and is never connected to any outerComponent.
-        //The root face as you might call it
-        allFaces.push_back(new DCELFace(nullptr, {}));
-    }
+	DCEL::DCEL()
+	{
+		//add the most outer face that contains all the inner faces.
+		//this one is special and is never connected to any outerComponent.
+		//The root face as you might call it
+		// allFaces.push_back(new DCELFace(nullptr, {}));
+	}
 
-    DCEL::~DCEL()
-    {
-        for(DCELVertex* vP : allVerticies)
-        {
-            if(vP != nullptr)
-                delete vP;
-        }
-        for(DCELEdge* eP : allEdges)
-        {
-            if(eP != nullptr)
-                delete eP;
-        }
-        for(DCELFace* fP : allFaces)
-        {
-            if(fP != nullptr)
-                delete fP;
-        }
-        allVerticies.clear();
-        allEdges.clear();
-        allFaces.clear();
-    }
+	DCEL::~DCEL()
+	{
+		for(DCELVertex* vP : allVerticies)
+		{
+			if(vP != nullptr)
+				delete vP;
+		}
+		for(DCELEdge* eP : allEdges)
+		{
+			if(eP != nullptr)
+				delete eP;
+		}
+		for(DCELEdge* eP : allTwinEdges)
+		{
+			if(eP != nullptr)
+				delete eP;
+		}
+		for(DCELFace* fP : allFaces)
+		{
+			if(fP != nullptr)
+				delete fP;
+		}
+		allVerticies.clear();
+		allEdges.clear();
+		allTwinEdges.clear();
+		allFaces.clear();
+	}
 
-    void DCEL::addPolygon(const std::vector<Vec2f>& points)
-    {
-        size_t startIndexOfNewVertices = allVerticies.size();
-        size_t startIndexOfNewEdges = allEdges.size();
+	void DCEL::addPolygon(const std::vector<Vec2f>& points)
+	{
+		// size_t startIndexOfNewVertices = allVerticies.size();
+		// size_t startIndexOfNewEdges = allEdges.size();
 
-        //determine if there is self intersection or intersection with the existing edges
-        //for those cases, ..... add new points/split/whatever else you need to do. Do this later
+		//determine if there is self intersection or intersection with the existing edges
+		//for those cases, ..... add new points/split/whatever else you need to do. Do this later
 
-        addVerticesFromPolygon(points);
-        addEdgesFromPolygon(points, startIndexOfNewVertices, startIndexOfNewEdges);
-        addFacesFromPolygon(startIndexOfNewEdges);
+		// addVerticesFromPolygon(points);
+		// addEdgesFromPolygon(points, startIndexOfNewVertices, startIndexOfNewEdges);
+		// addFacesFromPolygon(startIndexOfNewEdges);
 
-        //determine if new face is inside of other faces and update accordingly
-    }
+		//determine if new face is inside of other faces and update accordingly
 
-    void DCEL::addVerticesFromPolygon(const std::vector<Vec2f>& points)
-    {
-        //add all vertices
-        for(Vec2f c : points)
-        {
-            allVerticies.push_back(new DCELVertex(c, nullptr)); //no edge yet
-        }
-    }
 
-    void DCEL::addEdgesFromPolygon(const std::vector<Vec2f>& points, size_t startIndexOfNewVertices, size_t startIndexOfNewEdges)
-    {
-        //add edges connecting them to vertices
-        for(size_t i=0; i<points.size(); i++)
-        {
-            int currentVert = startIndexOfNewVertices + i;
-            int nextVert = startIndexOfNewVertices + (i+1) % points.size();
-            DCELEdge* newEdge = new DCELEdge(allVerticies[currentVert], nullptr, nullptr, nullptr, nullptr);
-            DCELEdge* twinEdge = new DCELEdge(allVerticies[nextVert], nullptr, nullptr, nullptr, nullptr);
-            newEdge->twin = twinEdge;
-            twinEdge->twin = newEdge;
+		//not ideal but its fine I guess. Would like to not have to go through the process of searching for verticies and edge intersections
+		//but that wouldn't be general
+		auto startVPointer = addVertex(points[0]);
+		auto lastVPointer = startVPointer;
+		for(size_t i=1; i<points.size(); i++)
+		{
+			auto nextVPointer = addVertex(points[i]);
+			addEdge(lastVPointer, nextVPointer);
+			lastVPointer = nextVPointer;
+		}
+		addEdge(lastVPointer, startVPointer);
 
-            if(i > 0)
-            {
-                newEdge->previous = allEdges[allEdges.size()-2];
-                twinEdge->previous = allEdges[allEdges.size()-1];
+		//Ignore face stuff
+	}
 
-                allEdges[allEdges.size()-2]->next = newEdge;
-                allEdges[allEdges.size()-1]->next = twinEdge;
-            }
-            
-            allEdges.push_back(newEdge);
-            allEdges.push_back(twinEdge);
-        }
+	DCELVertex* DCEL::addVertex(const Vec2f& coord)
+	{
+		//check if it self intersects with any vertex in our list
+		//Can be done in O(LogN) with sorting/binary search tree
+		//O(N) right now
+		for(size_t i=0; i<allVerticies.size(); i++)
+		{
+			if(allVerticies[i]->position == coord)
+			{
+				return allVerticies[i]; //don't add anything. Just return this vertex
+			}
+		}
 
-        //special case for first 2 edges
+		DCELVertex* newestVertex = new DCELVertex(coord, nullptr);
+		allVerticies.push_back(newestVertex);
 
-        allEdges[startIndexOfNewEdges + 0]->previous = allEdges[allEdges.size()-2];
-        allEdges[startIndexOfNewEdges + 1]->previous = allEdges[allEdges.size()-1];
+		//check if it intersects with existing edges.
+		//Can be done in O(LogN) or something with plane sweep
+		//note that twin edges are skipped as they are handled together
+		//O(N) right now
+		for(size_t i=0; i<allEdges.size(); i+=2)
+		{
+			try
+			{
+				Line l = allEdges[i]->getLine();
+				double tValue = l.getPointAsParametricValue(coord);
+				if(tValue != NAN && tValue > 0 && tValue < 1)
+				{
+					//intersection found. split edge into 2. Do the same for the twin edge
+					splitEdgeByVertex(allEdges[i], newestVertex);
+				}
+			}
+			catch(const std::exception& e)
+			{
+				StringTools::println("%llu - %s", i, e.what());
+			}
+			
+		}
+		return newestVertex;
+	}
 
-        allEdges[allEdges.size()-2]->next = allEdges[startIndexOfNewEdges + 0];
-        allEdges[allEdges.size()-1]->next = allEdges[startIndexOfNewEdges + 1];
-    }
+	DCELEdge* DCEL::addEdge(DCELVertex* v1, DCELVertex* v2)
+	{
+		//find the last twin edge connected to v1. Its twin is the previous
+		DCELEdge* previousEdge = nullptr;
+		DCELEdge* previousTwinEdge = nullptr;
+		DCELEdge* nextEdge = nullptr;
+		DCELEdge* nextTwinEdge = nullptr;
 
-    void DCEL::addFacesFromPolygon(size_t startIndexOfNewEdges)
-    {
-        //add faces using those edges (Skip outer faces right now)
-        //trace the edges to find a face. A face is inside another face if at least one vertex is inside
-        //assuming we don't allow self intersection
-        //Its a polygon so the face can be described by the first edge
-        
-        DCELFace* newFace = new DCELFace(allEdges[startIndexOfNewEdges], {});
-        allFaces.push_back(newFace); //the current polygon
-        
-        newFace->outerComponent->incidentFace = newFace;
-        DCELEdge* startEdge = newFace->outerComponent->next;
+		for(size_t i=0; i<allTwinEdges.size(); i++)
+		{
+			if(allTwinEdges[i]->origin == v1)
+			{
+				nextTwinEdge = allTwinEdges[i];
+				previousEdge = allTwinEdges[i]->twin;
+				break;
+			}
+		}
 
-        while(startEdge != newFace->outerComponent)
-        {
-            startEdge->incidentFace = newFace;
-            startEdge = startEdge->next;
-        }
-    }
+		//find what would be the next edge if it exists
+		for(size_t i=0; i<allEdges.size(); i++)
+		{
+			if(allEdges[i]->origin == v2)
+			{
+				nextEdge = allEdges[i];
+				previousTwinEdge = allEdges[i]->twin;
+				break;
+			}
+		}
 
-    DCELVertex* DCEL::addVertex(Vec2f coord)
-    {
-        //check if it self intersects with any vertex in our list
-        //Can be done in O(LogN) with sorting/binary search tree
-        for(size_t i=0; i<allVerticies.size(); i++)
-        {
-            if(allVerticies[i]->position == coord)
-            {
-                return allVerticies[i]; //don't add anything. Just return this vertex
-            }
-        }
+		DCELEdge* newEdge = new DCELEdge(v1, nullptr, nullptr, nextEdge, previousEdge);
+		DCELEdge* twinEdge = new DCELEdge(v2, newEdge, nullptr, nextTwinEdge, previousTwinEdge);
+		
 
-        DCELVertex* newestVertex = new DCELVertex(coord, nullptr);
-        allVerticies.push_back(newestVertex);
+		if(previousEdge != nullptr)
+			previousEdge->next = newEdge;
+		if(nextTwinEdge != nullptr)
+			nextTwinEdge->previous = twinEdge;
 
-        //check if it intersects with existing edges.
-        //Can be done in O(NLogN) or something with plane sweep
-        //note that twin edges are skipped as they are handled together
-        for(size_t i=0; i<allEdges.size(); i+=2)
-        {
-            try
-            {
-                Line l = allEdges[i]->getLine();
-                double tValue = l.getPointAsParametricValue(coord);
-                if(tValue != NAN && tValue > 0 && tValue < 1)
-                {
-                    //intersection found. split edge into 2. Do the same for the twin edge
-                    splitEdgeByVertex(allEdges[i], newestVertex);
-                }
-            }
-            catch(const std::exception& e)
-            {
-                StringTools::println("%llu - %s", i, e.what());
-            }
-            
-        }
-        return newestVertex;
-    }
+		if(nextEdge != nullptr)
+			nextEdge->previous = newEdge;
+		if(previousTwinEdge != nullptr)
+			previousTwinEdge->next = twinEdge;
 
-    DCELEdge* DCEL::addEdge(DCELVertex* v1, DCELVertex* v2)
-    {
-        //find the last twin edge connected to v1. Its twin is the previous
-        DCELEdge* previousEdge = nullptr;
-        DCELEdge* previousTwinEdge = nullptr;
-        for(size_t i=1; i<allEdges.size(); i+=2)
-        {
-            if(allEdges[i]->origin == v1)
-            {
-                previousTwinEdge = allEdges[i];
-                previousEdge = allEdges[i]->twin;
-                break;
-            }
-        }
+		newEdge->twin = twinEdge;
+		v1->incidentEdge = newEdge;
+		
+		allEdges.push_back(newEdge);
+		allTwinEdges.push_back(twinEdge);
 
-        //find what would be the next edge if it exists
-        DCELEdge* nextEdge = nullptr;
-        DCELEdge* nextTwinEdge = nullptr;
-        for(size_t i=0; i<allEdges.size(); i+=2)
-        {
-            if(allEdges[i]->origin == v2)
-            {
-                nextEdge = allEdges[i];
-                nextTwinEdge = allEdges[i]->twin;
-                break;
-            }
-        }
+		//check for intersection between edges
+		if(allEdges.size() > 0)
+		{
+			for(size_t i=0; i<allEdges.size(); i++)
+			{
+				if(newEdge != allEdges[i])
+					intersectEdges(allEdges[i], newEdge);
+			}
+		}
 
-        DCELEdge* newEdge = new DCELEdge(v1, nullptr, getRootFace(), nextEdge, previousEdge);
-        DCELEdge* twinEdge = new DCELEdge(v2, newEdge, getRootFace(), nextTwinEdge, previousTwinEdge);
+		//attempt to add a face for both the twin edge and outer edge
+		//should be the outer face. (will fail if its not inside another object)
+		//actually don't need this but keep it temporarily
+		// addFace(newEdge);
 
-        if(previousEdge != nullptr)
-        {
-            previousEdge->next = newEdge;
-            previousTwinEdge->next = twinEdge;
-        }
+		//should be the inner face
+		// addFace(twinEdge);
 
-        if(nextEdge != nullptr)
-        {
-            nextEdge->previous = newEdge;
-            nextTwinEdge->previous = twinEdge;
-        }
+		return newEdge;
+	}
+	
+	void DCEL::splitEdgeByVertex(DCELEdge* currEdge, DCELVertex* newVertex)
+	{
+		//create 2 new edges. One for e and one for its twin
+		DCELEdge* twinEdge = currEdge->twin;
 
-        newEdge->twin = twinEdge;
-        v1->incidentEdge = newEdge;
-        
-        allEdges.push_back(newEdge);
-        allEdges.push_back(twinEdge);
+		DCELEdge* newEdge = new DCELEdge(newVertex, nullptr, currEdge->incidentFace, currEdge->next, currEdge);
+		DCELEdge* newTwin = new DCELEdge(newVertex, newEdge, twinEdge->incidentFace, twinEdge->next, twinEdge);
 
-        //check for intersection between edges
-        for(size_t i=0; i<allEdges.size()-2; i+=2)
-        {
-            intersectEdges(allEdges[i], newEdge);
-        }
+		newEdge->twin = newTwin;
+		currEdge->next = newEdge;
+		twinEdge->next = newTwin;
 
-        //attempt to add a face for both the twin edge and outer edge
-        //should be the outer face. (will fail if its not inside another object)
-        //actually don't need this but keep it temporarily
-        addFace(newEdge);
+		if(newEdge->next != nullptr)
+			newEdge->next->previous = newEdge;
+		if(newTwin->next != nullptr)
+			newTwin->next->previous = newTwin;
+		
+		allEdges.push_back(newEdge);
+		allTwinEdges.push_back(newTwin);
 
-        //should be the inner face
-        addFace(twinEdge);
+		//NOTE: No need to use addFace() because these edges move in the same exact direction.
+		// Just spliting the edge but its still tracing the same boundary.
+	}
 
-        return newEdge;
-    }
-    
-    void DCEL::splitEdgeByVertex(DCELEdge* currEdge, DCELVertex* newVertex)
-    {
-        //create 2 new edges. One for e and one for its twin
-        DCELEdge* oldNextEdge = currEdge->next;
-        DCELEdge* oldTwinEdge = currEdge->twin;
-        DCELEdge* newEdge = new DCELEdge(newVertex, nullptr, currEdge->incidentFace, currEdge->next, currEdge);
+	
+	///TODO: FINISH
+	void DCEL::intersectEdges(DCELEdge* a1, DCELEdge* b1)
+	{
+		//upon an intersection, add a new vertex at that intersection
+		//you should now have 4 edges (and 4 twin edges) described by e1, e2, e1->next, e2->next
+		//now fix the references such that the clockwise (counter-clockwise) order is maintained
+		Line l1 = a1->getLine();
+		Line l2 = b1->getLine();
 
-        oldNextEdge->previous = newEdge;
-        currEdge->next = newEdge;
+		double timePoint = -1;
+		if(!l1.getIntersectionParametric(l2, timePoint))
+			return; //no intersection. Ignore
+		
+		if(timePoint <= 0 || timePoint >= 1 || timePoint == NAN)
+			return; //no intersection. Ignore
+		
+		//solve for the point of intersection which will be a new vertex likely
+		Vec2f intersectionPoint = l1.getPoint1() + timePoint*l1.getToPoint();
+		
+		//note that if the otherside has a timepoint of > 0 && < 1, its probably still an intersection. Should instead split that line by vertex or something actually.
+		//	odd case
+		double timePointOther = -1;
+		if(!l2.getIntersectionParametric(l1, timePointOther))
+			return; //no intersection. Ignore
+		if(timePointOther <= 0 || timePointOther >= 1 || timePointOther == NAN)
+			return; //no intersection. Ignore
+		
+		//now add that intersection point
+		DCELVertex* newestVertex = addVertex(intersectionPoint);
 
-        DCELEdge* newTwin = new DCELEdge(newVertex, currEdge, oldTwinEdge->incidentFace, oldTwinEdge->next, oldTwinEdge);
-        oldTwinEdge->next->previous = newTwin;
-        oldTwinEdge->next = newTwin;
+		//now you have a total of 8 edges (4 normal, 4 twin) to deal with. Constant amount of work though
+		DCELEdge* a2 = a1->next;
+		DCELEdge* b2 = b1->next;
+		DCELEdge* a1Twin = a1->twin;
+		DCELEdge* b1Twin = b1->twin;
 
-        //update twin references
-        currEdge->twin = newTwin;
-        oldTwinEdge->twin = newEdge;
-        newEdge->twin = oldTwinEdge;
+		DCELEdge* a2Twin = nullptr;
+		DCELEdge* b2Twin = nullptr;
+		if(a2 != nullptr)
+			a2Twin = a2->twin;
+		if(b2 != nullptr)
+			b2Twin = b2->twin;
+		
+		a1->next = b2;
 
-        allEdges.push_back(newEdge);
-        allEdges.push_back(newTwin);
-    }
+		if(b2 != nullptr)
+			b2->previous = a1;
+		
+		if(b2Twin != nullptr)
+			b2Twin->next = a2;
+		
+		if(a2 != nullptr)
+			a2->previous = b2Twin;
 
-    void DCEL::intersectEdges(DCELEdge* e1, DCELEdge* e2)
-    {
-        //upon an intersection, add a new vertex at that intersection
-        //you should now have 4 edges (and 4 twin edges) described by e1, e2, e1->next, e2->next
-        //now fix the references such that the clockwise (counter-clockwise) order is maintained
+		if(b2Twin != nullptr)
+			a2Twin->next = b1Twin;
 
-        Line l1 = e1->getLine();
-        Line l2 = e2->getLine();
+		b1Twin->previous = a2Twin;
 
-        Vec2f intersectionPoint;
-        if(!l1.getIntersection(l2, intersectionPoint))
-            return; //no intersection. Ignore
-        
-        //now add that intersection point
-        DCELVertex* newestVertex = addVertex(intersectionPoint);
+		b1->next = a1Twin;
+		a1Twin->previous = b1;
 
-        //now you have a total of 8 edges (4 normal, 4 twin) to deal with. Constant amount of work though
-        DCELEdge* e1Next = e1->next;
-        DCELEdge* e2Next = e2->next;
+		//in this case, the directions of the edges are changing so addFace() must be called
+		a1->incidentFace = nullptr;
+		a1Twin->incidentFace = nullptr;
+		b1->incidentFace = nullptr;
+		b1Twin->incidentFace = nullptr;
+		
+		//////////////////////
+		///NOTE: need a special case for the end of a line colliding with the middle of another line but handle this later.
+		////////////////////
+	}
 
-        //
 
-    }
+	void DCEL::generateFaces()
+	{
+		for(DCELEdge* edge : allEdges)
+		{
+			addFace(edge);
+		}
+		
+		for(DCELEdge* edge : allTwinEdges)
+		{
+			addFace(edge);
+		}
+	}
+	///TODO: Test? Looks complete but unsure
+	void DCEL::addFace(DCELEdge* e1)
+	{
+		if(e1->incidentFace != nullptr)
+			return; //already bound to a face.
 
-    void DCEL::addFace(DCELEdge* e1)
-    {
-        //IFF going around all of the boundary specified by following e1->next
-        //note that this does not handle the infinite loop case
-        DCELEdge* previousEdge = e1;
-        DCELEdge* nextEdge = e1->next;
-        double sumOverEdges = 0;
-        while(nextEdge != e1)
-        {
-            if(nextEdge == nullptr)
-                break;
-            Vec2f p1 = previousEdge->origin->position;
-            Vec2f p2 = nextEdge->origin->position;
+		//going around all of the boundary specified by following e1->next
+		//if it loops around back to the original edge, its a face.
+		//note that this does not handle the infinite loop case
+		DCELEdge* previousEdge = e1;
+		DCELEdge* nextEdge = e1->next;
+		double sumOverEdges = 0;
 
-            sumOverEdges += (p2.x-p1.x)*(p2.y+p1.y);
-            
-            previousEdge = nextEdge;
-            nextEdge = nextEdge->next;
-        }
+		do
+		{
+			if(nextEdge == nullptr)
+				return;
+			Vec2f p1 = previousEdge->origin->position;
+			Vec2f p2 = nextEdge->origin->position;
 
-        if(e1 != nextEdge)
-        {
-            //invalid.
-            return;
-        }
+			sumOverEdges += (p2.x-p1.x)*(p2.y+p1.y);
+			
+			previousEdge = nextEdge;
+			nextEdge = nextEdge->next;
+		} while (previousEdge != e1);
 
-        //if sumOverEdges is negative, don't add a new face. The twin edges will add it
-        if(sumOverEdges < 0)
-        {
-            return;
-        }
+		//if sumOverEdges is negative, counter clockwise. Useful for later
+		//add new face
+		DCELFace* incidentFace = new DCELFace(e1, ((sumOverEdges > 0) ? DCELFace::CLOCKWISE : DCELFace::COUNTER_CLOCKWISE));
+		allFaces.push_back(incidentFace);
 
-        //add new face
-        DCELFace* newestFace = new DCELFace(e1, {});
-        newestFace->windingOrder = true;
+		//add face to each edge
+		e1->incidentFace = incidentFace;
+		nextEdge = e1->next;
+		while(nextEdge != e1)
+		{
+			nextEdge->incidentFace = incidentFace;
+			nextEdge = nextEdge->next;
+		}
 
-        allFaces.push_back(newestFace);
-
-        //add face to each edge
-        e1->incidentFace = newestFace;
-        nextEdge = e1->next;
-        while(nextEdge != e1)
-        {
-            nextEdge->incidentFace = newestFace;
-            nextEdge = nextEdge->next;
-        }
-
-        //lazy approach. Add to the root face instantly.
-        //Should check if its in its inner components and add to those in a recursive manner
-        getRootFace()->innerComponents.push_back(e1);
-    }
+		//will need to handle parenting stuff eventually. Do it here
+	}
 
 }

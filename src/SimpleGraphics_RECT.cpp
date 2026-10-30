@@ -27,19 +27,19 @@ namespace smpl
             int tempWidth = otherImg->getWidth();
             int tempHeight = otherImg->getHeight();
 
-            int minXBound = MathExt::max(0, (int)clippingRect.getLeftBound());
-            int minYBound = MathExt::max(0, (int)clippingRect.getTopBound());
+            int minXBound = max(0, (int)clippingRect.getLeftBound());
+            int minYBound = max(0, (int)clippingRect.getTopBound());
 
-            int maxXBound = MathExt::min(tempWidth, (int)clippingRect.getRightBound());
-            int maxYBound = MathExt::min(tempHeight, (int)clippingRect.getBottomBound());
+            int maxXBound = min(tempWidth, (int)clippingRect.getRightBound());
+            int maxYBound = min(tempHeight, (int)clippingRect.getBottomBound());
 
-            int minX = MathExt::min(x, x2);
-            int maxX = MathExt::max(x, x2);
+            int minX = min(x, x2);
+            int maxX = max(x, x2);
             if(minX > maxXBound || maxX < minXBound)
                 return;
 
-            int minY = MathExt::min(y, y2);
-            int maxY = MathExt::max(y, y2);
+            int minY = min(y, y2);
+            int maxY = max(y, y2);
             if(minY > maxYBound || maxY < minYBound)
                 return;
             
@@ -58,37 +58,22 @@ namespace smpl
                 SIMD_U32 activeColorAsSIMD = activeColor.toUInt();
                 int stopPoint = minX + SIMD_U32::getSIMDBound((maxX-minX));
                 
-				SJQ_OMP_Replacement::parallelize([minX, otherImg, stopPoint, activeColorAsSIMD, maxX](size_t tStart, size_t tEnd, size_t incr)->void{
-					for(int tY = tStart; tY < tEnd; tY+=incr)
-					{
-						//should've been doing this
-						SimpleGraphics::fillBetween(activeColorAsSIMD, minX, maxX, tY, otherImg);
-					}
-				}, minY, maxY, 1, SJQ_DESIRED_THREADS(maxY-minY, SJQ_HEAVY_TASK));
+				// SJQ_OMP_Replacement::parallelize([minX, otherImg, activeColorAsSIMD, maxX](size_t tStart, size_t tEnd, size_t incr)->void{
+				// 	for(int tY = tStart; tY < tEnd; tY+=incr)
+				// 	{
+				// 		//should've been doing this
+				// 		SimpleGraphics::fillBetween(activeColorAsSIMD, minX, maxX, tY, otherImg);
+				// 	}
+				// }, minY, maxY, 1, 24);
 				
-                // LARGE_ENOUGH_CLAUSE(approxArea)
-				// omp_set_num_threads(MAX_THREADS_KNOWN);
-                // #pragma omp parallel for
-                // for(int tY = minY; tY < maxY; tY++)
-                // {
-                //     int tX = minX;
-                //     Color* startPoint = &otherImg->getPixels()[tX + tY*otherImg->getWidth()];
-                //     while(tX < stopPoint)
-                //     {
-                //         SIMD_U32 destC = SIMD_U32::load((unsigned int*)startPoint);
-                //         SIMD_U32 blendC = blend(activeColorAsSIMD.values, destC.values);
-                //         blendC.store((unsigned int*)startPoint);
-                //         startPoint += SIMD_U32::SIZE;
-                //         tX += SIMD_U32::SIZE;
-                //     }
-                //     while(tX < maxX)
-                //     {
-                //         *startPoint = blend(activeColor, *startPoint);
-                //         startPoint++;
-                //         tX++;
-                //     }
-                // }
-                // RESET_LARGE_ENOUGH_CLAUSE()
+				SET_OMP_THREADS(OMP_DESIRED_THREADS(maxY-minY, OMP_HEAVY_TASK));
+                #pragma omp parallel for
+                for(int tY = minY; tY < maxY; tY++)
+                {
+					//should've been doing this
+					SimpleGraphics::fillBetween(activeColorAsSIMD, minX, maxX, tY, otherImg);
+                }
+                RESET_LARGE_ENOUGH_CLAUSE()
             }
             else
             {

@@ -2,29 +2,28 @@
 #include "BuildOptions.h"
 #include "StandardTypes.h"
 #include "SimpleHashTable.h"
+#include "SmartMemory.h"
 
 namespace smpl
 {
 	template<typename T>
-	struct cacheDataInfo
+	struct CacheDataInfo
 	{
-		T* data;
-		long order;
-		bool shouldDelete;
+		SmartMemory<T> data;
+		size_t order;
 	};
 
-	template<typename T>
+	template<typename K, typename T>
 	class CachedDataList
 	{
 	public:
 		/**
 		* @brief Construct a new Cached Data List object
-		* 		It maintains a set number of pointers for a data type
-		* 			and removes older data when out of allowed space.
+		* 		It maintains a set number of smart pointers for a data type and removes older data when out of allowed allocations.
 		* 
 		* @param maxSize 
 		*/
-		CachedDataList(int maxSize);
+		CachedDataList(uint32_t maxSize);
 
 		/**
 		* @brief Destroy the Cached Data List
@@ -44,7 +43,8 @@ namespace smpl
 		* 		Whether the pointer should be deleted when removed from the list.
 		* 		By default, it is true.
 		*/
-		void addData(int key, T* data, bool shouldDelete = true);
+		void addData(const K& key, const SmartMemory<T>& data);
+		void addData(K&& key, SmartMemory<T>&& data);
 
 		/**
 		* @brief Gets whether the data corresponding to the key exists.
@@ -57,7 +57,7 @@ namespace smpl
 		* @return true 
 		* @return false 
 		*/
-		bool getDataExist(int key);
+		bool getDataExist(const K& key);
 
 		/**
 		* @brief Gets the Data pointer corresponding to key.
@@ -66,14 +66,14 @@ namespace smpl
 		* @param key 
 		* @return T* 
 		*/
-		T* getData(int key);
+		SmartMemory<T> getData(const K& key);
 
 		/**
 		* @brief Removes data from the cache list based on the key.
 		* 
 		* @param key 
 		*/
-		void removeData(int key);
+		void removeData(const K& key);
 
 	private:
 		/**
@@ -81,56 +81,53 @@ namespace smpl
 		* 
 		*/
 		void maintainCache();
-		int maxSize = 64;
-		long currOrder = 0;
-		SimpleHashMap<int, cacheDataInfo<T>> dataList;
+		uint32_t maxSize = 64;
+		size_t currOrder = 0;
+		SimpleHashMap<uint32_t, CacheDataInfo<T>> dataList;
 	};
 
-	template<typename T>
-	inline CachedDataList<T>::CachedDataList(int maxSize)
+	template<typename K, typename T>
+	inline CachedDataList<K, T>::CachedDataList(uint32_t maxSize)
 	{
 		this->maxSize = maxSize;
 	}
 
-	template<typename T>
-	inline CachedDataList<T>::~CachedDataList()
+	template<typename K, typename T>
+	inline CachedDataList<K, T>::~CachedDataList()
 	{
-		for(auto& pair : dataList)
-		{
-			if(pair.second.shouldDelete)
-			{
-				if(pair.second.data != nullptr)
-				{
-					delete pair.second.data;
-					pair.second.data = nullptr;
-				}
-			}
-		}
 		dataList.clear();
 		currOrder = 0;
 	}
 
-	template<typename T>
-	inline void CachedDataList<T>::addData(int key, T* data, bool shouldDelete)
+	template<typename K, typename T>
+	inline void CachedDataList<K, T>::addData(const K& key, const SmartMemory<T>& data)
 	{
-		cacheDataInfo<T> k;
+		CacheDataInfo<T> k;
 		k.data = data;
 		k.order = currOrder;
-		k.shouldDelete = shouldDelete;
-		dataList[key] = k;
+		dataList.insertOrReplace({key, k});
+		currOrder++;
+		maintainCache();
+	}
+	
+	template<typename K, typename T>
+	inline void CachedDataList<K, T>::addData(K&& key, SmartMemory<T>&& data)
+	{
+		std::pair<K, CacheDataInfo<T>> odr = {std::move(key), CacheDataInfo<T>{std::move(data), currOrder}};
+		dataList.insertOrReplace(std::move(odr));
 		currOrder++;
 		maintainCache();
 	}
 
-	template<typename T>
-	inline bool CachedDataList<T>::getDataExist(int key)
+	template<typename K, typename T>
+	inline bool CachedDataList<K, T>::getDataExist(const K& key)
 	{
 		auto value = dataList.find(key);
 		return value != dataList.end();
 	}
 
-	template<typename T>
-	inline T* CachedDataList<T>::getData(int key)
+	template<typename K, typename T>
+	inline SmartMemory<T> CachedDataList<K, T>::getData(const K& key)
 	{
 		auto value = dataList.find(key);
 		if(value != dataList.end())
@@ -140,52 +137,28 @@ namespace smpl
 		return nullptr;
 	}
 
-	template<typename T>
-	inline void CachedDataList<T>::removeData(int key)
+	template<typename K, typename T>
+	inline void CachedDataList<K, T>::removeData(const K& key)
 	{
-		auto tVal = dataList.find(key);
-		if(tVal != dataList.end())
-		{
-			if(tVal->second.shouldDelete)
-			{
-				if(tVal->second.data != nullptr)
-					delete tVal->second.data;
-			}
-		}
 		dataList.erase(key);
 	}
 
-	template<typename T>
-	inline void CachedDataList<T>::maintainCache()
+	template<typename K, typename T>
+	inline void CachedDataList<K, T>::maintainCache()
 	{
 		if(dataList.size() > maxSize)
 		{
 			//must remove a value.
 			//remove the oldest value.
-			
-			int keyToRemove = -1;
-			long previousOrder = currOrder;
-			cacheDataInfo<T> thingToDel = {nullptr, -1};
-
-			for(auto& pair : dataList)
+			auto oldestIT = dataList.begin();
+			for(auto it=dataList.begin(); it!=dataList.end(); ++it)
 			{
-				if(pair.second.order < previousOrder)
-				{
-					previousOrder = pair.second.order;
-					keyToRemove = pair.first;
-					thingToDel = pair.second;
-				}
+				if(it->second.order < oldestIT->second.order)
+					oldestIT = it;
 			}
 
-			if(keyToRemove >= 0)
-			{
-				if(thingToDel.shouldDelete)
-				{
-					if(thingToDel.data != nullptr)
-						delete thingToDel.data;
-				}
-				dataList.erase(keyToRemove);
-			}
+			//remove oldestIT
+			dataList.erase(oldestIT);
 		}
 	}
 };
